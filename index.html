@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="루틴트래커">
+    <title>하루 루틴 트래커 v3.2</title>
+    <style>
+    @font-face {
+        font-family: 'KBIZHanmaumMyungjo';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/KBIZHanmaumMyungjo.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    :root {
+        --bg-color: #f4f7f9;
+        --primary-color: #4A90E2;
+        --primary-dark: #3a7ac8;
+        --primary-light: #eaf2fa;
+        --text-color: #2c3e50;
+        --text-color-light: #7f8c8d;
+        --border-color: #dfe3e8;
+        --container-bg: #ffffff;
+        --danger-color: #e74c3c;
+        --warning-color: #f39c12;
+        --success-color: #2ecc71;
+        --neutral-color: #95a5a6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'KBIZHanmaumMyungjo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg-color); min-height: 100vh; padding: 20px; color: var(--text-color); }
+    button, input, select, textarea { font-family: inherit; }
+    .container { 
+        background: var(--container-bg); 
+        border-radius: 20px; 
+        padding: 50px 30px 65px 30px; /* 첫 번째 값(50px)이 상단 패딩 */
+        width: 100%; 
+        max-width: 500px; 
+        margin: 0 auto; 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        position: relative;
+    }
+    .header { text-align: center; margin-bottom: 25px; position: relative; }
+    .header h1 { color: var(--text-color); font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .header p { color: var(--text-color-light); font-size: 14px; }
+    #gameWarning { background: #fffbe6; color: #b77900; border: 1px solid #ffe58f; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 500; margin-bottom: 20px; display: none; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .month-nav { background: none; border: none; font-size: 24px; color: var(--text-color-light); cursor: pointer; padding: 10px; border-radius: 50%; transition: background 0.3s ease; }
+    .month-nav:hover { background: var(--bg-color); }
+    .month-year { font-size: 20px; font-weight: 700; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+    .calendar-header-cell { text-align: center; padding: 10px 5px; font-weight: 600; color: var(--text-color-light); font-size: 12px; }
+    .calendar-cell { aspect-ratio: 1; display: grid; grid-template-rows: 1fr auto 1fr; padding: 2px; align-items: center; justify-items: center; }
+    .cell-top-icons { grid-row: 1; display: flex; justify-content: center; gap: 2px; font-size: 9px; width: 100%; height: 100%; align-items: center; }
+    .cell-day-number { grid-row: 2; font-weight: 500; }
+    .calendar-cell.today .cell-day-number { font-weight: 700; }
+    /* 셀 하단에 들어갈 주간 글쓰기 요약 */
+    .cell-bottom-info { grid-row: 3; font-size: 8px; font-weight: 600; color: var(--text-color-light); width: 100%; text-align: left; padding-right: 4px; align-self: end; padding-bottom: 2px; }
+
+    .calendar-cell.has-data .cell-bottom-info { color: rgba(255, 255, 255, 0.8); }
+    .calendar-cell.off-day { background: #e9ecef; color: var(--neutral-color); }
+    .off-day-indicator { position: absolute; top: 4px; right: 4px; font-size: 10px; }
+    .calendar-cell:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .calendar-cell.other-month { color: #ccc; background: var(--bg-color); border-color: transparent; pointer-events: none; }
+    .calendar-cell.today { border-color: var(--primary-color); font-weight: 700; color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-light); }
+    .calendar-cell.has-data { color: white; border: none; font-weight: bold; }
+    .calendar-cell.score-high { background: var(--success-color); }
+    .calendar-cell.score-medium { background: var(--warning-color); }
+    .calendar-cell.score-low { background: var(--danger-color); }
+    .calendar-cell.score-negative { background: #34495e; }
+    .score-indicator { position: absolute; bottom: 4px; right: 4px; font-size: 9px; background: rgba(0,0,0,0.25); color: white; padding: 1px 4px; border-radius: 4px; font-weight: 700; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; color: var(--text-color); font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; transition: border-color 0.3s ease, box-shadow 0.3s ease; font-family: 'KBIZHanmaumMyungjo', sans-serif; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); }
+    .main-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+    .btn { width: 100%; padding: 15px; background-color: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .btn:hover { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .main-actions .btn { flex: 1; }
+    .btn.secondary { background: var(--neutral-color); }
+    .btn.secondary:hover { background: #7f8c8d; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 62, 80, 0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-content { background: var(--bg-color); padding: 0; border-radius: 16px; width: 90%; max-width: 800px; max-height: 95vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    #dayModal .modal-header, #excelExportModal .modal-header, .food-modal-content .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); background: #fff; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+    #dayModal .modal-body { padding: 25px; }
+    .modal-layout { display: block; }
+    /* @media 부분은 삭제하거나 display:block;으로 변경해도 좋습니다. */
+    @media (min-width: 768px) { .modal-layout { display: block; } }
+    .modal-side-column { display: flex; flex-direction: column; }
+    .modal-input-group { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+    .modal-input-group h4 { font-size: 16px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+    .modal-input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+    
+    /* 오늘의 한마디 드롭다운 스타일 */
+    #commentDetails summary { font-weight: 600; color: var(--text-color); cursor: pointer; padding: 10px; border-radius: 8px; background-color: var(--bg-color); border: 1px solid var(--border-color); list-style: none; position: relative; padding-left: 30px; }
+    #commentDetails summary::-webkit-details-marker { display: none; }
+    #commentDetails summary::before { content: '▶'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; transition: transform 0.2s; }
+    #commentDetails[open] > summary::before { transform: translateY(-50%) rotate(90deg); }
+
+    #dayModal .form-group { margin-bottom: 0; }
+    #dayModal .form-group label { font-size: 13px; margin-bottom: 6px; }
+    #dayModal .form-group input { padding: 10px; font-size: 16px; }
+    #dayModal .modal-input-group,
+    #dayModal .score-display-card { margin-bottom: 5px; }
+    #dayModal .modal-layout > div:last-child { margin-bottom: 0; }
+    .modal-header { display: flex; justify-content: center; align-items: center; position: relative; gap: 20px; }
+    .modal-title { flex: none; text-align: center; margin: 0; }
+    /* 데이 모달 날짜 네비게이션 */
+    .date-nav-btn { background: none; border: none; font-size: 24px; color: var(--text-color-light); cursor: pointer; padding: 10px; border-radius: 50%; transition: all 0.2s ease; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+    .date-nav-btn:hover { background: var(--bg-color); color: var(--text-color); }
+    .close-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-color-light); line-height: 1; position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+    .score-display-card { background: #fff; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border-color); }
+    .score-display-card .score { font-size: 40px; font-weight: 700; color: var(--primary-color); line-height: 1; }
+    .score-display-card .score.is-off { color: var(--neutral-color); }
+    .score-display-card div:last-child { font-size: 14px; color: var(--text-color-light); margin-top: 5px; }
+    .exercise-toggle-group { margin-bottom: 15px; }
+    .exercise-toggle-group label { display: block; color: var(--text-color); font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .exercise-toggle-btns { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+    .exercise-toggle-btn { flex: 1; padding: 10px; border: none; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.2s ease; font-size: 14px; }
+    .exercise-toggle-btn.active { background: var(--success-color); color: #fff; }
+    .legend { display: flex; justify-content: center; flex-wrap: wrap; margin: 20px 0 0; font-size: 12px; gap: 15px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+    .goal-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .goal-tab { padding: 8px 16px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; }
+    .goal-tab.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+    .goal-type-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
+    .goal-type-toggle button { flex: 1; padding: 8px; font-size: 14px; border: 1px solid var(--border-color); background: var(--bg-color); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+    .goal-type-toggle button.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+    #personalGoalsPage .header { text-align: left; }
+    .dday-header-container { height: auto; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: flex-start; position: absolute; top: 10px; left: 10px; right: 10px; z-index: 10; pointer-events: none; }
+    .dday-chip { background: var(--primary-light); backdrop-filter: blur(5px); color: var(--primary-color); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: all; border: 1px solid rgba(0,0,0,0.05); }
+    .battery { display: none; width: 30px; height: 14px; border: 1.5px solid var(--text-color-light); border-radius: 4px; position: relative; padding: 1.5px; }
+    .battery::after { content: ''; position: absolute; top: 50%; right: -4px; transform: translateY(-50%); width: 2px; height: 6px; background: var(--text-color-light); border-radius: 0 1px 1px 0; }
+    .battery-level { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+    .battery-level.green { background: var(--success-color); } .battery-level.yellow { background: var(--warning-color); } .battery-level.red { background: var(--danger-color); } .battery-level.black { background: var(--text-color); }
+    .budget-summary { display: flex; gap: 10px; margin-bottom: 20px; }
+    .budget-card { flex: 1; background: var(--primary-light); color: var(--primary-color); padding: 15px; border-radius: 12px; text-align: center; }
+    .budget-card-title { font-size: 12px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; }
+    .budget-card-value { font-size: 22px; font-weight: 700; }
+    #budgetPage .header p { font-size: 16px; font-weight: 600; color: var(--text-color); }
+    .personal-goals-section { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+    #modalPersonalGoalsList { max-height: 150px; overflow-y: auto; }
+    .personal-goal-checkbox { display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+    .personal-goal-item { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
+    .personal-goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .personal-goal-name { font-weight: 600; }
+    .personal-goal-actions button { padding: 5px 10px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; color: white; }
+    .edit-btn { background: var(--warning-color); }
+    .delete-btn { background: var(--danger-color); }
+    .complete-btn { background: var(--success-color); }
+    .reopen-btn { background: var(--primary-color); }
+    .empty-goals { text-align: center; color: var(--text-color-light); padding: 40px 20px; background: var(--bg-color); border-radius: 12px; margin-top: 20px; border: 1px solid var(--border-color); }
+    .budget-settings, .dday-settings { margin-bottom: 30px; }
+    .budget-input, .dday-actions { display: flex; gap: 10px; align-items: center; }
+    .dday-item { background: var(--bg-color); border-radius: 12px; padding: 12px 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .budget-input button { padding: 12px 20px; background: var(--success-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .wakeup-prompt { background: var(--primary-light); color: var(--primary-color); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .monthly-summary { display: flex; justify-content: space-around; gap: 15px; margin-bottom: 30px; }
+    .summary-card { flex-basis: 30%; background: var(--primary-light); color: var(--primary-color); padding: 20px; border-radius: 15px; text-align: center; }
+    .summary-title { font-size: 14px; opacity: 0.9; margin-bottom: 10px; font-weight: 600; }
+    .summary-value { font-size: 24px; font-weight: 700; }
+    .week-card { background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+    .week-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 600; }
+    .week-stats { display: flex; justify-content: space-around; align-items: center; text-align: center; font-size: 22px; font-weight: 600; }
+    .empty-expenses { text-align: center; color: var(--text-color-light); padding: 40px 20px; }
+    .feedback-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 2000; animation: fadeIn 0.3s ease; justify-content: center; align-items: center; }
+    .feedback-content { position: relative; background: white; padding: 40px; border-radius: 25px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: popIn 0.5s ease; }
+    .feedback-emoji { font-size: 60px; margin-bottom: 20px; display: block; }
+    .feedback-title { font-size: 24px; font-weight: 700; margin-bottom: 15px; color: #333; }
+    .feedback-message { font-size: 16px; color: #666; line-height: 1.5; margin-bottom: 25px; }
+    .feedback-celebration .feedback-title, .feedback-celebration .feedback-message, .feedback-reflection .feedback-title, .feedback-reflection .feedback-message, .feedback-disaster .feedback-title, .feedback-disaster .feedback-message, .feedback-encouragement .feedback-title, .feedback-encouragement .feedback-message, .feedback-warning .feedback-title, .feedback-warning .feedback-message { color: rgba(255,255,255,0.95); }
+    .feedback-celebration { background: linear-gradient(135deg, #2ecc71, #28b463); } .feedback-reflection { background: linear-gradient(135deg, #f39c12, #e67e22); } .feedback-disaster { background: linear-gradient(135deg, #34495e, #2c3e50); } .feedback-encouragement { background: linear-gradient(135deg, #3498db, #2980b9); } .feedback-warning { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    .feedback-btn { background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 12px 30px; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin: 0 10px; }
+    .feedback-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); transform: translateY(-2px); }
+    .feedback-budget-red { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; }
+    .feedback-budget-black { background: linear-gradient(135deg, #34495e, #2c3e50) !important; }
+    .expense-input-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    .expense-input-row input { flex: 1; padding: 12px; font-size: 14px; border-radius: 8px; }
+    .expense-input-row button { flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; background: var(--success-color); border: none; color: white; font-weight: bold; cursor: pointer; font-size: 24px; line-height: 44px; transition: background 0.2s ease; }
+    .expense-input-row button:hover { background: #27ae60; }
+    .expense-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; }
+    .dday-settings h4 { margin-bottom: 15px; }
+    .dday-item .dday-actions { display: flex; gap: 5px; }
+    .dday-item .dday-actions button { background: none; border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer; transition: all 0.2s ease; color: var(--text-color-light); }
+    .dday-item .dday-actions button:hover { background: var(--bg-color); color: var(--text-color); transform: scale(1.1); }
+    .excel-option-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
+    .excel-option-item input[type="radio"] { width: 18px; height: 18px; margin-right: 12px; }
+    .excel-option-item label { font-size: 16px; }
+    #customDateRange { display: flex; gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 20px; }
+    #customDateRange input[type="date"] { padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex: 1; font-family: inherit; }
+
+    .number-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.number-input-group input {
+    border: none;
+    text-align: center;
+    flex: 1;
+    padding: 10px 5px;
+    background: white;
+}
+
+.number-input-group input:focus {
+    box-shadow: none;
+    border: none;
+}
+
+.number-btn {
+    width: 32px;
+    height: 42px;
+    border: none;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.number-btn:hover {
+    background: var(--primary-light);
+}
+
+.number-btn:active {
+    background: var(--primary-color);
+    color: white;
+}
+
+    /* --- 식단 관련 스타일 (기능+디자인) --- */
+    .food-page-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+    .food-page-actions .btn.secondary.danger { background-color: var(--danger-color); color: white; }
+    .food-date-header { display: flex; align-items: center; text-align: center; margin: 30px 0 10px; color: var(--text-color-light); }
+    .food-date-header::before, .food-date-header::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .food-date-header span { padding: 0 15px; font-size: 13px; font-weight: 600; }
+    .food-record-item { display: grid; grid-template-columns: 50px 30px 1fr auto; gap: 15px; align-items: center; padding: 14px 5px; border-bottom: 1px solid var(--bg-color); position: relative; }
+    .food-record-item .food-admin-actions { position: absolute; right: 0px; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .food-records.admin-mode .food-record-item .food-admin-actions { opacity: 1; pointer-events: auto; }
+    .food-admin-actions button { background: none; border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 13px; transition: background-color 0.2s; }
+    .food-admin-actions button.edit { color: var(--warning-color); }
+    .food-admin-actions button.delete { color: var(--danger-color); }
+    .food-admin-actions button:hover { background-color: var(--bg-color); }
+    
+    /* 식단 내보내기를 영수증 스타일로 */
+#foodExportModal .modal-content {
+    max-width: 90vw;
+    background: white;
+    padding: 0;
+}
+#foodExportPreview {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    margin: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Courier New', monospace;
+}
+.food-receipt-header {
+    padding: 15px 20px 10px;
+    background: var(--primary-light);
+}
+.food-receipt-title {
+    display: block;
+    text-align: center;
+    margin-bottom: 5px;
+}
+.food-receipt-title h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+.food-receipt-header p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-color-light);
+    text-align: center;
+}
+.food-receipt-divider {
+    height: 1px;
+    background: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px,
+        var(--border-color) 3px,
+        transparent 3px,
+        transparent 6px
+    );
+    margin: 0 15px;
+}
+.food-receipt-items {
+    padding: 15px 20px 10px;
+}
+.food-receipt-date-header {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 13px;
+    margin: 15px 0 8px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.food-receipt-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+    line-height: 1.3;
+}
+.food-receipt-time {
+    color: var(--text-color-light);
+    font-size: 11px;
+    min-width: 45px;
+    margin-right: 10px;
+}
+.food-receipt-desc {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-right: 10px;
+}
+.food-receipt-quantity {
+    font-weight: 700;
+    color: var(--text-color);
+    font-size: 13px;
+    text-align: right;
+    min-width: 60px;
+}
+#foodExportModal .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 20px;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+#foodExportModal .close-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 767px) {
+    /* 모바일에서 배경 오버레이 숨기기 */
+    #foodExportModal.modal-overlay {
+        background: white;              /* 회색 배경 → 흰색 */
+        backdrop-filter: none;          /* 블러 효과 제거 */
+    }
+    
+    #foodExportModal .modal-content {
+        max-width: 100vw;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;               /* 그림자도 제거 */
+    }
+    
+    #foodExportPreview {
+        margin: 0;                      /* 여백 완전 제거 */
+        border-radius: 0;               /* 모서리 둥글기 제거 */
+        box-shadow: none;               /* 그림자 제거 */
+        height: calc(100vh - 50px);     /* 안내문구 공간만 빼고 */
+        overflow-y: auto;
+    }
+    
+    /* 닫기 버튼 */
+    #foodExportModal .close-btn {
+        position: fixed;                /* absolute → fixed */
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        z-index: 1000;
+    }
+    
+    /* 안내 텍스트 */
+    #foodExportModal .modal-content > div:last-child {
+        position: fixed;                /* 하단 고정 */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+    /* [컴팩트 모달] 식단 추가/수정 모달 전용 스타일 */
+    .food-modal { max-width: 420px; background-color: white; overflow: hidden; }
+    .food-modal .modal-header { padding: 15px 20px; background-color: var(--bg-color); border-bottom: 1px solid var(--border-color); }
+    .food-modal .modal-header h2 { font-size: 18px; }
+    .food-modal .modal-body { padding: 20px; }
+    .food-modal .form-group { margin-bottom: 15px; }
+    .food-modal .form-group label { font-size: 13px; margin-bottom: 6px; }
+    .food-modal .form-group input, .food-modal .form-group select { padding: 10px; font-size: 15px; }
+    .food-modal .quantity-input { display: flex; gap: 8px; }
+    .food-modal .quantity-input select { width: 90px; }
+    .food-modal .food-modal-actions { margin-top: 20px; display: flex; gap: 10px; }
+    .food-modal .food-modal-actions .btn { flex: 1; padding: 12px; }
+
+    .fame-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+    .fame-card { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; text-align: center; }
+    .fame-card-title { font-size: 18px; margin-bottom: 8px; }
+    .fame-card-value { font-size: 20px; font-weight: 700; color: var(--primary-color); }
+    .fame-card-date { font-size: 12px; color: var(--text-color-light); margin-top: 4px; }
+    /* 반성의 벽 카드는 다른 색상으로 */
+    #wallOfShame .fame-card-value { color: var(--danger-color); }
+
+    /* 오늘의 한마디 스타일 */
+    #modalCommentSection { margin-top: 20px; }
+    #modalComment { width: 100%; margin-top: 15px; height: 80px; resize: vertical; font-size: 16px; }
+    #modalPersonalGoalsList input[type="number"] { font-size: 16px; }
+    /* 오늘의 한마디 기록 페이지 스타일 */
+    .comment-history-list { max-height: 450px; overflow-y: auto; padding-right: 5px; }
+    .comment-item { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 20px; margin-bottom: 12px; }
+    .comment-item-header { font-size: 13px; color: var(--text-color-light); font-weight: 600; margin-bottom: 10px; }
+    .comment-item-body { font-size: 15px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    .empty-comments { text-align: center; color: var(--text-color-light); padding: 50px 20px; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color); }
+    
+/* 영수증 스타일 */
+.receipt-container {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    margin-top: 0; /* 위쪽 바깥 여백을 0으로 만듭니다. */
+    margin-bottom: 20px; /* 아래쪽 여백은 유지합니다. */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Courier New', monospace;
+    max-width: 100%;
+    overflow: hidden;
+}
+.receipt-header { padding: 15px 20px 10px; background: var(--primary-light); }
+.receipt-title { display: block; text-align: center; margin-bottom: 5px; position: relative; }
+.receipt-title h3 { margin: 0; font-size: 16px; color: var(--primary-color); font-weight: 700; }
+.budget-info { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-color); font-weight: 600; text-align: right; position: absolute;
+    top: -5px;
+    right: -8px;
+}
+.receipt-header p { margin: 0; font-size: 12px; color: var(--text-color-light); text-align: center; }
+.receipt-divider { height: 1px; background: repeating-linear-gradient(to right, var(--border-color) 0px, var(--border-color) 3px, transparent 3px, transparent 6px); margin: 0 15px; }
+.receipt-items { padding: 15px 20px 10px; }
+.receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 13px; line-height: 1.3; }
+.receipt-date { color: var(--text-color-light); font-size: 11px; min-width: 60px; margin-right: 15px; }
+.receipt-desc { flex: 1; font-weight: 600; color: var(--text-color); margin-right: 15px; }
+.receipt-amount { font-weight: 700; color: var(--text-color); font-size: 13px; text-align: right; min-width: 70px; }
+.receipt-total { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-color); font-weight: 700; font-size: 16px; font-family: 'Courier New', monospace; color: var(--primary-color); }
+
+/* 깔끔한 스켈레톤 UI */
+.calendar-cell.skeleton {
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.calendar-cell.skeleton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.calendar-cell.skeleton .cell-day-number {
+    color: #d0d0d0;
+    background: transparent;
+}
+
+.calendar-cell.skeleton .cell-top-icons,
+.calendar-cell.skeleton .cell-bottom-info {
+    background: transparent;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 로딩 상태 표시 */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-color-light);
+    font-size: 12px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+    @media (max-width: 767px) {
+        .modal-content {
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            max-height: 100vh;
+        }
+        .food-modal {
+            width: 90%;
+            height: auto;
+            border-radius: 16px;
+            max-height: 90vh;
+        }
+        .food-modal .modal-body {
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
+        }
+        #dayModal .modal-body {
+            padding: 20px 15px;
+        }
+        .modal-input-group {
+            padding: 15px;
+        }
+        .modal-input-group h4 {
+            font-size: 15px;
+        }
+        #dayModal .form-group label {
+            font-size: 13px;
+        }
+
+        #dayModal .modal-input-row {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .exercise-toggle-btns {
+            max-width: 180px;
+        }
+        .score-display-card, .personal-goals-section {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 15px;
+        }
+        .score-display-card .score {
+            font-size: 36px;
+        }
+
+        #modalTotalExpense {
+            text-align: left !important;
+        }
+        .expense-item {
+            font-size: 13px;
+            word-break: break-all;
+        }
+        .expense-item span:first-child {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .expense-item > div {
+            flex-shrink: 0;
+        }
+        
+        .modal-actions-container {
+            padding: 0 15px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .modal-actions-container .btn.delete {
+            order: 2;
+            background-color: transparent;
+            color: var(--text-color-light);
+            font-size: 14px;
+            font-weight: normal;
+            padding: 8px;
+            box-shadow: none;
+            margin-top: 10px;
+            max-width: 150px;
+        }
+        .modal-actions-container .btn.delete:hover {
+            background-color: transparent;
+            color: var(--danger-color);
+        }
+        .modal-actions-container .btn.save {
+            order: 1;
+        }
+
+        #budgetPage .budget-summary {
+            flex-wrap: wrap;
+        }
+        #budgetPage .budget-summary .budget-card:first-child {
+            flex-basis: 100%;
+        }
+        #budgetPage .budget-card-value {
+            font-size: 20px;
+        }
+        #dayModal .expense-input-row {
+            flex-direction: column;
+            gap: 10px;
+        }
+        #dayModal .expense-input-row input,
+        #dayModal .expense-input-row button {
+            width: 100%;
+        }
+        .dday-header-container {
+            top: 8px;
+            left: 3px;
+            right: 3px;
+        }
+        .container {
+            padding: 40px 20px 65px 20px;
+        }
+        .dday-chip {
+            font-size: 10px;
+            padding: 3px 8px;
+        }
+        .battery {
+            width: 25px;
+            height: 12px;
+        }
+        
+        .receipt-item {
+            font-size: 12px;
+        }
+    
+        .receipt-date {
+            min-width: 50px;
+            margin-right: 10px;
+            font-size: 10px;
+        }
+    
+        .receipt-desc {
+            margin-right: 10px;
+        }
+    
+        .receipt-amount {
+            min-width: 60px;
+            font-size: 12px;
+        }
+    
+        .budget-info {
+            flex-direction: column;
+            gap: 2px;
+            font-size: 10px;
+            text-align: right;
+        }
+    }    
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+    <!-- 로그인/로그아웃 UI -->
+    <div id="authContainer" style="position: absolute; bottom: 15px; right: 20px; text-align: right; z-index: 10;">
+        <div id="userInfo" style="display: none; font-size: 12px; margin-bottom: 5px;"></div>
+        <button id="loginBtn" class="btn" style="padding: 5px 10px; font-size: 12px;">Google 로그인</button>
+        <button id="logoutBtn" class="btn secondary" style="display: none; padding: 5px 10px; font-size: 12px;">로그아웃</button>
+    </div>
+        <!-- Goal Setup Page -->
+        <div id="goalSetup" class="page">
+             <div class="header"><h1>🎯 목표 설정</h1><p>시작이 반! 목표 기상 시간을 설정해주세요.</p></div>
+             <div class="form-group">
+                <label for="targetWakeTime">목표 기상 시간</label>
+                <input type="text" id="targetWakeTime" placeholder="HH:MM (예: 07:30)">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">한 번 설정하면 자동으로 저장됩니다.</small>
+            </div>
+            <button class="btn" onclick="saveGoalAndContinue()">저장하고 시작하기</button>
+        </div>
+        
+        <!-- Wake Up Prompt Page -->
+        <div id="wakeUpPrompt" class="page">
+            <div class="wakeup-prompt">
+                <h2>🌅 좋은 아침이에요!</h2>
+                <p id="wakeupDate"></p>
+                <p>오늘의 기상 시간을 입력해주세요.</p>
+            </div>
+            <div class="form-group">
+                <label for="promptWakeTime">실제 기상 시간</label>
+                <input type="text" id="promptWakeTime" placeholder="HH:MM (예: 07:30)">
+            </div>
+            <button class="btn" onclick="saveWakeTimeFromPrompt()">저장하고 시작</button>
+            <button class="btn secondary" onclick="skipToCalendar()" style="margin-top:10px;">나중에 입력</button>
+        </div>
+
+        <!-- Calendar Page -->
+        <div id="calendarPage" class="page active">
+            <div class="dday-header-container">
+                <div id="ddayContainer" style="display: flex; flex-direction: column; gap: 3px; pointer-events:all; padding-left: 5px;"></div>
+                <div class="dday-right-container" style="display: flex; align-items: center; gap: 10px; pointer-events:all; padding-right: 5px;">
+                    <div id="budgetBarSmall" class="battery">
+                        <div class="battery-level" id="budgetBarFillSmall"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="header">
+                <h1>🗓️ 루틴 캘린더</h1>
+                <div id="gameWarning"></div>
+                <div id="syncStatus" style="
+    position: absolute; 
+    top: 10px; 
+    right: 120px; 
+    font-size: 11px; 
+    color: var(--text-color-light);
+    background: rgba(255,255,255,0.9);
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: none;
+">☁️ 동기화 중...</div>
+            </div>
+            <div class="calendar-header">
+                <button class="month-nav" onclick="changeMonth(-1)"><</button>
+                <div class="month-year" id="monthYear"></div>
+                <button class="month-nav" onclick="changeMonth(1)">></button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div class="legend"><div class="legend-item"><div class="legend-color" style="background: var(--success-color)"></div><span>우수(80+)</span></div><div class="legend-item"><div class="legend-color" style="background: var(--warning-color)"></div><span>보통(40+)</span></div><div class="legend-item"><div class="legend-color" style="background: var(--danger-color)"></div><span>미흡(1+)</span></div><div class="legend-item"><div class="legend-color" style="background: #34495e"></div><span>최악(0미만)</span></div><div class="legend-item"><div class="legend-color" style="background: #e9ecef"></div><span>휴식일</span></div></div>
+            <div class="main-actions" style="margin-top: 20px;">
+                <button class="btn" onclick="showMonthlyStats()">통계</button>
+                <button class="btn" onclick="showPersonalGoals()">목표</button>
+            </div>
+            <div class="main-actions" style="margin-top: 10px;">
+                <button class="btn" onclick="showBudgetPage()">가계부</button>
+                <button class="btn" onclick="showFoodPage()">식단</button>
+            </div>
+            <button class="btn secondary" onclick="showSettings()" style="margin-top:10px;">⚙️ 설정</button>
+        </div>
+
+        <!-- Day Modal -->
+        <div id="dayModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="date-nav-btn" onclick="navigateModalDate(-1)"><</button>
+                    <div class="modal-title" id="modalTitle"></div>
+                    <button class="date-nav-btn" onclick="navigateModalDate(1)">></button>
+                    <button class="close-btn" onclick="closeDayModal()">×</button>
+                </div>
+                <div class="modal-body">
+<div class="modal-layout">
+    
+    <!-- 1. 인생은 타이밍 -->
+    <div class="modal-input-group">
+        <h4>⏰ 인생은 타이밍</h4>
+        <div class="modal-input-row">
+            <div class="form-group"><label for="modalWakeTime">기상 시간</label><input type="text" id="modalWakeTime" placeholder="HH:MM"></div>
+            <div class="form-group"><label for="modalSeatTime">착석 시간</label><input type="text" id="modalSeatTime" placeholder="HH:MM"></div>
+            <div class="form-group"><label for="modalSleepTime">취침 시간</label><input type="text" id="modalSleepTime" placeholder="HH:MM (익일 1시→25:00)"></div>
+        </div>
+    </div>
+
+    <!-- 2. 집중의 뽀모도로 -->
+    <div class="modal-input-group">
+        <h4>🍅 집중의 뽀모도로</h4>
+        <div class="modal-input-row">
+            <div class="form-group">
+                <label for="modalMorningPomodoro">오전</label>
+                <div class="number-input-group">
+                    <button type="button" class="number-btn minus" onclick="adjustPomodoro('modalMorningPomodoro', -1)">−</button>
+                    <input type="number" id="modalMorningPomodoro" min="0" value="0" readonly>
+                    <button type="button" class="number-btn plus" onclick="adjustPomodoro('modalMorningPomodoro', 1)">+</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="modalAfternoonPomodoro">오후</label>
+                <div class="number-input-group">
+                    <button type="button" class="number-btn minus" onclick="adjustPomodoro('modalAfternoonPomodoro', -1)">−</button>
+                    <input type="number" id="modalAfternoonPomodoro" min="0" value="0" readonly>
+                    <button type="button" class="number-btn plus" onclick="adjustPomodoro('modalAfternoonPomodoro', 1)">+</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="modalEveningPomodoro">저녁</label>
+                <div class="number-input-group">
+                    <button type="button" class="number-btn minus" onclick="adjustPomodoro('modalEveningPomodoro', -1)">−</button>
+                    <input type="number" id="modalEveningPomodoro" min="0" value="0" readonly>
+                    <button type="button" class="number-btn plus" onclick="adjustPomodoro('modalEveningPomodoro', 1)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 개인 목표 -->
+    <div class="personal-goals-section modal-input-group">
+        <h4>🎯 개인 목표</h4>
+        <div id="modalPersonalGoalsList"></div>
+    </div>
+
+    <!-- 4. 자기계발 -->
+    <div class="modal-input-group">
+        <h4>💪 자기계발</h4>
+        <div class="exercise-toggle-group">
+            <label>오늘 운동했나요?</label>
+            <div class="exercise-toggle-btns">
+                <button id="exerciseBtnYes" class="exercise-toggle-btn" onclick="toggleExercise(true)">✔️ Yes</button>
+                <button id="exerciseBtnNo" class="exercise-toggle-btn active" onclick="toggleExercise(false)">✖️ No</button>
+            </div>
+        </div>
+        <div class="modal-input-row" style="align-items: flex-end;">
+            <div class="form-group" id="modalExerciseTimeGroup" style="display: none; width: 100%;">
+                <label for="modalExerciseMinutes">운동 시간 (분)</label>
+                <input type="number" id="modalExerciseMinutes" min="0" value="0">
+            </div>
+            <div class="form-group" style="width: 100%;">
+                <label for="modalWriting">글쓰기 (자)</label>
+                <input type="text" id="modalWriting" value="0" inputmode="numeric" oninput="formatNumberWithCommas(this)">
+            </div>
+            <div class="form-group" style="width: 100%;">
+                <label for="modalGameTime">게임 (분)</label>
+                <input type="number" id="modalGameTime" min="0" value="0">
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 지출 기록 -->
+    <div class="modal-input-group">
+        <h4>💰 지출 기록</h4>
+        <div id="modalTotalExpense" style="text-align: left; font-weight: 600; margin-bottom: 10px; color: var(--primary-color); font-size: 14px;"></div>
+        <div id="modalExpenseList" class="expense-list"></div>
+        <div class="expense-input-row">
+            <input type="text" id="expenseDesc" placeholder="지출 내역">
+            <input type="text" id="expenseAmount" placeholder="금액" inputmode="numeric" oninput="formatNumberWithCommas(this)">
+            <button onclick="addExpense()">+</button>
+        </div>
+    </div>
+
+    <!-- 6. 오늘의 점수 -->
+    <div class="score-display-card">
+        <div class="score" id="modalScore">0</div>
+        <div>오늘의 점수</div>
+    </div>
+
+    <!-- 7. 오늘의 한마디 -->
+    <div class="modal-input-group" id="modalCommentSection">
+        <details id="commentDetails">
+            <summary>💬 오늘의 한마디 남기기</summary>
+                <textarea id="modalComment" placeholder="오늘 하루는 어땠나요? (최대 500자)" maxlength="500" oninput="updateCommentCounter()"></textarea>
+                <div id="commentCharCounter" style="text-align: right; font-size: 12px; color: var(--text-color-light); margin-top: 5px;">0/500</div>
+        </details>
+    </div>
+
+    <!-- 8. 오늘은 쉬기 -->
+    <div class="modal-input-group">
+        <div class="checkbox-group" style="display:flex; align-items:center; gap:10px; padding: 5px 0;">
+            <input type="checkbox" id="modalOffDay" style="width:18px; height:18px;">
+            <label for="modalOffDay" style="margin:0; font-weight:normal;">☕️ 오늘 쉬기 (Off Day)</label>
+        </div>
+    </div>
+
+    <!-- 오늘의 미션 (조건부 표시) -->
+    <div class="modal-input-group" id="modalMissionSection" style="display: none;">
+        <h4>🎲 오늘의 미션</h4>
+        <p id="modalMissionDesc" style="font-size: 14px; margin-bottom: 10px;"></p>
+        <div class="checkbox-group" style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" id="modalMissionComplete" style="width:18px; height:18px;">
+            <label for="modalMissionComplete" style="margin:0; font-weight:normal;">미션 완료!</label>
+        </div>
+    </div>
+
+</div>
+                </div>
+                <div id="saveStatus" style="text-align: center; font-size: 12px; color: var(--text-color-light); height: 20px; margin-bottom: 5px;"></div>
+                <div class="modal-actions-container">
+                    <button class="btn save" onclick="finalizeDay()">오늘의 일정 종료</button>
+                    <button class="btn delete" onclick="deleteModalData()">삭제</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Personal Goals Page -->
+        <div id="personalGoalsPage" class="page">
+            <div class="header">
+                <h1>🎯 집중 목표</h1>
+                <p>나만의 목표를 추가하고 달성률을 관리하세요.</p>
+            </div>
+            <div class="goal-tabs">
+                <button class="goal-tab active" onclick="switchGoalTab('active')">진행 중</button>
+                <button class="goal-tab" onclick="switchGoalTab('completed')">완료</button>
+            </div>
+            <div id="personalGoalsList" class="personal-goals-list"></div>
+            <div class="modal-input-group" style="margin-top:20px;">
+                <h4>새 목표 추가</h4>
+                <div class="goal-type-toggle">
+                    <button id="goalTypePositive" class="active" onclick="toggleGoalType('positive')">👍 늘리기 (Good Habits)</button>
+                    <button id="goalTypeNegative" onclick="toggleGoalType('negative')">👎 줄이기 (Bad Habits)</button>
+                </div>
+                <div class="form-group">
+                   <label for="newGoalName">목표 이름</label>
+                   <input type="text" id="newGoalName" placeholder="예: 수학 문제집 풀기">
+                </div>
+                <div class="modal-input-row">
+                   <div class="form-group">
+                       <label for="newGoalTarget">목표량</label>
+                       <input type="text" id="newGoalTarget" placeholder="예: 20" inputmode="numeric" oninput="formatNumberWithCommas(this)">
+                   </div>
+                   <div class="form-group">
+                       <label for="newGoalUnit">단위</label>
+                       <input type="text" id="newGoalUnit" placeholder="예: 쪽, 분">
+                   </div>
+                </div>
+                <button class="btn" onclick="addPersonalGoal()">목표 추가</button>
+            </div>
+            <button class="btn secondary" onclick="backToCalendar()" style="margin-top:20px;">돌아가기</button>
+        </div>
+
+        <!-- Budget Page -->
+        <div id="budgetPage" class="page">
+            <div id="expenseList" class="expense-list-page"></div>
+            <button class="btn secondary" onclick="backToCalendar()" style="margin-top: 30px;">돌아가기</button>
+        </div>
+
+                <!-- [최종 수정] Food Page -->
+                <div id="foodPage" class="page">
+                    <div class="header">
+                        <h1>🍽️ 식단 기록</h1>
+                        <p>오늘 뭘 드셨나요?</p>
+                    </div>
+        
+                    <!-- 컨트롤 버튼 -->
+                    <div class="food-page-actions">
+                        <button class="btn" onclick="showAddFoodModal()">+ 식단 추가</button>
+                        <button class="btn secondary" onclick="toggleFoodManageMode()" id="foodManageBtn">🔧 관리</button>
+                    </div>
+        
+                    <!-- 식단 기록이 표시될 영역 -->
+                    <div id="foodRecordsList" class="food-records"></div>
+        
+                    <!-- [위치 변경] 내보내기 버튼을 식단 목록 아래, 돌아가기 버튼 위로 이동 -->
+                    <div class="main-actions" style="margin-top: 30px; margin-bottom: 10px;">
+                         <button class="btn" onclick="exportFoodAsImage()" style="background-color: var(--primary-dark);">📸 이미지로 내보내기</button>
+                    </div>
+        
+                    <!-- 돌아가기 버튼 -->
+                    <button class="btn secondary" onclick="backToCalendar()">돌아가기</button>
+                </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page">
+            <div class="header"><h1>⚙️ 설정</h1></div>
+            <div class="form-group"><label for="settingsWakeTime">☀️ 목표 기상 시간</label><input type="text" id="settingsWakeTime" placeholder="HH:MM (예: 07:30)"></div>
+            <div class="budget-settings form-group">
+                <label for="monthlyBudgetInput">💰 월 예산 설정</label>
+                <input type="text" id="monthlyBudgetInput" placeholder="월 예산 (원)" inputmode="numeric" oninput="formatNumberWithCommas(this)">
+            </div>
+            <div class="form-group">
+                <label for="partnerEmailInput">🤝 책임 공유 파트너 이메일</label>
+                <input type="email" id="partnerEmailInput" placeholder="주간 리포트를 받을 파트너의 이메일">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">주간 평균 점수가 40점 미만일 경우, 파트너에게 자동으로 성과 보고서가 발송됩니다.</small>
+            </div>
+            <div class="dday-settings form-group">
+                <label>⏰ D-Day 설정</label>
+                <div id="ddaySettingsList" class="dday-settings-list"></div>
+                <button id="addDdayBtn" class="btn secondary" onclick="addDday()" style="margin-top: 10px;">D-Day 추가</button>
+            </div>
+            <button class="btn" onclick="updateSettings()" style="margin-top:20px;">설정 저장</button>
+            <button class="btn secondary" onclick="showCommentHistory()" style="margin-top:10px;">💬 나의 기록들 보기</button>
+            <button class="btn secondary" onclick="openExcelModal()" style="margin-top:10px;">📈 엑셀로 내보내기</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn secondary" onclick="exportData()" style="flex: 1;">데이터 내보내기 (백업)</button>
+                <button class="btn secondary" onclick="document.getElementById('importFile').click()" style="flex: 1;">데이터 불러오기 (복구)</button>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn" onclick="syncAllToFirebase()" style="flex: 1;">☁️ 클라우드 백업</button>
+                <button class="btn secondary" onclick="loadFromFirebase()" style="flex: 1;">📥 클라우드에서 복원</button>
+            </div>
+            <button class="btn secondary" onclick="backToCalendar()" style="margin-top:10px;">돌아가기</button>
+
+<input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+        </div>
+        
+        <!-- Monthly Stats Page -->
+        <div id="monthlyStatsPage" class="page">
+            <div class="header"> <h1>📊 월간통계</h1> <p id="statsMonth"></p> </div>
+            <div class="monthly-summary"> <div class="summary-card"> <div class="summary-title">평균 점수</div> <div class="summary-value" id="avgScore">📈 0점</div> </div> <div class="summary-card"> <div class="summary-title">개인목표 달성률</div> <div class="summary-value" id="avgGoalRate">😐 0%</div> </div> <div class="summary-card"> <div class="summary-title">글쓰기 완성</div> <div class="summary-value" id="writingBooks">📖 0권</div> </div> </div>
+            <div class="hall-of-fame-container" style="margin-bottom: 30px;">
+                <h3 style="text-align: center; margin-bottom: 15px;">🏆 명예의 전당 🏆</h3>
+                <div id="hallOfFame" class="fame-grid">
+                    <!-- JS로 내용이 채워질 예정 -->
+                </div>
+            </div>
+            
+            <div class="wall-of-shame-container" style="margin-bottom: 30px;">
+                <h3 style="text-align: center; margin-bottom: 15px;">🧱 반성의 벽 🧱</h3>
+                <div id="wallOfShame" class="fame-grid">
+                    <!-- JS로 내용이 채워질 예정 -->
+                </div>
+            </div>
+            <div id="weeklyDetails" class="weekly-details"></div>
+            <button class="btn secondary" onclick="backToCalendar()">돌아가기</button>
+        </div>
+        
+        <!-- Feedback and Reason Modals -->
+        <div id="feedbackPopup" class="feedback-popup"> <div class="feedback-content"><div class="feedback-emoji" id="feedbackEmoji">🎉</div><div class="feedback-title" id="feedbackTitle"></div><div class="feedback-message" id="feedbackMessage"></div><div style="margin-top: 20px;"><button class="feedback-btn" onclick="closeFeedbackPopup()">확인</button></div></div></div>
+        <div id="reasonModal" class="modal-overlay"> <div class="modal-content" style="background:white; padding: 25px;"><div class="modal-header"><h2 class="modal-title">주간 성찰</h2><button class="close-btn" onclick="closeReasonModal()">×</button></div><p style="margin-bottom: 15px; color: #555;">이번 주 평균 점수가 25점 미만입니다. 성과가 저조했던 이유를 솔직하게 적어주세요.</p><div class="form-group"><textarea id="reasonText" rows="5" placeholder="예: 회사 프로젝트 마감 때문에 너무 바빴어요."></textarea></div><button class="btn" onclick="submitReason()">제출하고 피드백 받기</button></div></div>
+        
+        <!-- Comment History Page -->
+        <div id="commentHistoryPage" class="page">
+            <div class="header">
+                <h1>💬 나의 기록들</h1>
+                <p>내가 남긴 하루의 흔적들</p>
+            </div>
+            <div id="commentHistoryList" class="comment-history-list">
+                <!-- JS로 내용이 채워질 예정 -->
+            </div>
+            <button class="btn secondary" onclick="showSettings()" style="margin-top:20px;">돌아가기</button>
+        </div>
+
+        <!-- Excel Export Modal -->
+        <div id="excelExportModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">엑셀 데이터 내보내기</h2>
+                    <button class="close-btn" onclick="closeExcelModal()">×</button>
+                </div>
+                <div style="padding: 25px;">
+                    <p style="margin-bottom: 15px; color: #555;">내보낼 데이터의 기간을 선택해주세요.</p>
+                    <div id="periodSelector">
+                        <div class="excel-option-item"><input type="radio" id="periodThisMonth" name="period" value="thisMonth" checked onchange="toggleDateInputs(false)"><label for="periodThisMonth">이번 달</label></div>
+                        <div class="excel-option-item"><input type="radio" id="periodLastMonth" name="period" value="lastMonth" onchange="toggleDateInputs(false)"><label for="periodLastMonth">지난달</label></div>
+                        <div class="excel-option-item"><input type="radio" id="periodAllTime" name="period" value="allTime" onchange="toggleDateInputs(false)"><label for="periodAllTime">전체 기간</label></div>
+                        <div class="excel-option-item"><input type="radio" id="periodCustom" name="period" value="custom" onchange="toggleDateInputs(true)"><label for="periodCustom">기간 직접 선택</label></div>
+                    </div>
+                    <div id="customDateRange" style="display: none;"><input type="date" id="startDate"><span>~</span><input type="date" id="endDate"></div>
+                    <button class="btn" onclick="exportToExcel()" style="margin-top: 20px;">확인 및 내보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- [컴팩트 모달] Food Modals (키워드/수동) -->
+        <div id="foodSuggestionModal" class="modal-overlay">
+            <div class="modal-content food-modal">
+                <div class="modal-header"><h2 class="modal-title">🍽️ 식단 기록</h2><button class="close-btn" onclick="closeFoodSuggestion()">×</button></div>
+                <div class="modal-body">
+                    <p style="text-align:center; color: var(--text-color-light); margin-bottom: 20px;">지출 내역에 음식 관련 키워드가 감지되었어요!</p>
+                    <div class="form-group"><label for="foodNameInput">무엇을 드셨나요?</label><input type="text" id="foodNameInput" placeholder="예: 아메리카노"></div>
+                    <div class="form-group"><label for="foodQuantityInput">얼마나 드셨나요?</label><div class="quantity-input"><input type="text" id="foodQuantityInput" placeholder="1" inputmode="decimal"><select id="foodUnitSelect"><option>개</option><option>잔</option><option>ml</option><option>g</option><option>조각</option><option>그릇</option><option>인분</option><option>병</option></select></div></div>
+                    <div class="food-modal-actions"><button class="btn" onclick="saveFoodRecord()">식단 저장</button><button class="btn secondary" onclick="closeFoodSuggestion()">취소</button></div>
+                </div>
+            </div>
+        </div>
+    
+        <div id="manualFoodModal" class="modal-overlay">
+            <div class="modal-content food-modal">
+                <div class="modal-header"><h2 class="modal-title" id="manualFoodModalTitle">🍽️ 식단 기록 추가</h2><button class="close-btn" onclick="closeManualFoodModal()">×</button></div>
+                <div class="modal-body">
+                    <div class="form-group"><label for="manualFoodDate">날짜</label><input type="date" id="manualFoodDate"></div>
+                    <div class="form-group"><label for="manualFoodTime">시간</label><input type="time" id="manualFoodTime"></div>
+                    <div class="form-group"><label for="manualFoodName">무엇을 드셨나요?</label><input type="text" id="manualFoodName" placeholder="예: 닭가슴살 샐러드"></div>
+                    <div class="form-group"><label for="manualFoodQuantity">얼마나 드셨나요?</label><div class="quantity-input"><input type="text" id="manualFoodQuantity" placeholder="1" inputmode="decimal"><select id="manualFoodUnit"><option>개</option><option>잔</option><option>ml</option><option>g</option><option>조각</option><option>그릇</option><option>인분</option><option>병</option></select></div></div>
+                    <div class="food-modal-actions"><button class="btn" onclick="saveManualFoodRecord()">식단 저장</button><button class="btn secondary" onclick="closeManualFoodModal()">취소</button></div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Food Export Modal for Image Capture -->
+    <div id="foodExportModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeFoodExportModal()">×</button>
+            <div id="foodExportPreview">
+                <!-- 여기에 내보낼 식단 기록이 렌더링됩니다. -->
+            </div>
+            <div style="padding: 20px; text-align: center;">
+                <p style="color: var(--text-color-light); font-size: 14px; margin: 0;">이 화면을 캡처하여 저장하거나 공유하세요!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Modal -->
+    <div id="missionModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 450px; background: white;">
+            <div class="modal-header">
+                <h2 class="modal-title">🎲 오늘의 미션</h2>
+                <button class="close-btn" onclick="closeMissionModal(false)">×</button>
+            </div>
+            <div style="padding: 25px;">
+                <p id="missionDesc" style="font-size: 16px; margin-bottom: 15px; line-height: 1.5;"></p>
+                <p id="missionReward" style="font-size: 14px; color: var(--primary-color); font-weight: 600; margin-bottom: 20px;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" onclick="acceptMission()">도전 수락!</button>
+                    <button class="btn secondary" onclick="closeMissionModal(false)">다음에...</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB 관리 클래스
+class IndexedDBManager {
+    constructor() {
+        this.dbName = 'RoutineTrackerDB';
+        this.version = 1;
+        this.db = null;
+    }
+    
+    async init() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, this.version);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                this.db = request.result;
+                resolve();
+            };
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('data')) {
+                    db.createObjectStore('data', { keyPath: 'key' });
+                }
+            };
+        });
+    }
+    
+    async set(key, value) {
+        const transaction = this.db.transaction(['data'], 'readwrite');
+        const store = transaction.objectStore('data');
+        return store.put({ key, value, timestamp: Date.now() });
+    }
+    
+    async get(key) {
+        const transaction = this.db.transaction(['data'], 'readonly');
+        const store = transaction.objectStore('data');
+        const result = await new Promise((resolve) => {
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result);
+        });
+        return result ? result.value : null;
+    }
+    
+    async getAll() {
+        const transaction = this.db.transaction(['data'], 'readonly');
+        const store = transaction.objectStore('data');
+        return new Promise((resolve) => {
+            const request = store.getAll();
+            request.onsuccess = () => {
+                resolve(request.result.map(item => ({ key: item.key, value: item.value })));
+            };
+        });
+    }
+    
+    async delete(key) {
+        const transaction = this.db.transaction(['data'], 'readwrite');
+        const store = transaction.objectStore('data');
+        return store.delete(key);
+    }
+}
+
+const localDB = new IndexedDBManager();
+let syncQueue = new Set(); // 동기화 대기 큐
+        
+        // Firebase 앱 초기화 및 전역 변수 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiHL1nkWtAh6xSXLi9V-TqWwmfPLUfX0U",
+            authDomain: "routine-tracker-be367.firebaseapp.com",
+            projectId: "routine-tracker-be367",
+            storageBucket: "routine-tracker-be367.appspot.com",
+            messagingSenderId: "687819364391",
+            appId: "1:687819364391:web:f30b0660887af52e16d602"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore(); // 이제 'db'는 Firestore를 가리킵니다.
+        let currentUser = null; // 현재 로그인한 사용자 정보를 저장할 변수
+        let currentUserName = "사용자";
+        const EMAILJS_SERVICE_ID = 'service_kjtvf9i';
+        const EMAILJS_TEMPLATE_ID = 'template_hq8bm4c';
+        const EMAILJS_PUBLIC_KEY = 'irHy1AuEA7_OkkyrC';
+
+// 디바운스 함수: 특정 시간 동안 반복 호출 시 마지막 호출만 실행
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 명언 및 감성 분석 데이터
+const SENTIMENT_DATA = {
+    positive: {
+        keywords: ['좋았다', '기쁘다', '신난다', '뿌듯', '행복', '성공', '만족', '최고', '달성', '즐겁'],
+        quotes: [
+            { title: "기쁨은 힘이다!", msg: "오늘의 기쁨이 내일의 더 큰 성공을 불러올 것입니다." },
+            { title: "끈기가 답이다", msg: "성공은 가장 끈기 있는 사람에게 찾아온다. - 나폴레옹" },
+            { title: "최고의 나날", msg: "그 좋은 기운을 계속 이어나가세요. 당신은 무엇이든 할 수 있습니다!" },
+            { title: "역사를 쓰다", msg: "당신이 가는 길이 바로 역사가 됩니다. 계속 전진하세요." },
+            { title: "성장의 증거", msg: "오늘 느낀 뿌듯함, 그것이 바로 당신이 성장하고 있다는 증거입니다." },
+            { title: "믿음의 힘", msg: "스스로를 믿는 것처럼 강력한 동기부여는 없다." },
+            { title: "티끌 모아 태산", msg: "작은 성공들이 모여 위대한 성취를 이룹니다." },
+            { title: "긍정 에너지", msg: "당신의 긍정적인 에너지가 주변까지 밝게 만들고 있어요." },
+            { title: "정상에서 만나요", msg: "계속 그렇게 나아가세요. 정상에서 만납시다!" },
+            { title: "더 높은 곳으로", msg: "오늘의 만족에 안주하지 말고, 더 높은 곳을 향해 도전하세요." }
+        ]
+    },
+    negative: {
+        keywords: ['우울', '슬프다', '짜증', '분노', '힘들다', '지친다', '최악', '망했다', '실패', '화난'],
+        quotes: [
+            { title: "새벽이 온다", msg: "가장 어두운 시간은 해 뜨기 바로 직전이다. - 파울로 코엘료" },
+            { title: "봄은 온다", msg: "겨울이 오면 봄이 멀지 않으리. - 퍼시 비시 셸리" },
+            { title: "강력한 주문", msg: "'나는 할 수 있다.' 이 말은 스스로에게 하는 가장 강력한 주문입니다." },
+            { title: "무한한 가능성", msg: "너 자신을 믿어라. 네 안에는 무한한 가능성이 있다. - 간디" },
+            { title: "심호흡", msg: "깊은 숨을 쉬고, 천천히 생각하고, 모든 것이 잘 될 것이라고 스스로에게 말하라." },
+            { title: "강인함", msg: "당신은 생각보다 훨씬 강한 사람입니다. 포기하지 마세요." },
+            { title: "휴식의 필요성", msg: "오늘 하루도 정말 수고 많았어요. 잠시 쉬어가도 괜찮아요." },
+            { title: "진정한 영광", msg: "가장 큰 영광은 실패할 때마다 다시 일어나는 데에 있다. - 공자" },
+            { title: "살아있다는 증거", msg: "힘든 감정은 약함의 표시가 아니라, 치열하게 살아있다는 증거입니다." },
+            { title: "내려놓기", msg: "힘들 때는 잠시 모든 것을 내려놓고 깊게 숨을 쉬어보세요." }
+        ]
+    }
+};
+
+        function formatNumberWithCommas(inputElement) {
+            let value = inputElement.value.replace(/[^0-9]/g, '');
+            if (value === '') {
+                inputElement.value = '';
+            } else {
+                inputElement.value = parseInt(value, 10).toLocaleString('ko-KR');
+            }
+        }
+        function unformatNumber(formattedValue) {
+            if (typeof formattedValue !== 'string') return formattedValue;
+            return Number(formattedValue.replace(/,/g, '')) || 0;
+        }
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let currentModalData = {};
+        let currentGoalTab = 'active';
+        let newGoalType = 'positive';
+        const foodKeywords = [
+            '카페', '스타벅스', '컴포즈', '메가', '매머드', '이디야', '할리스', '투썸', '빽다방', '커피빈',
+            '베이커리', '빵', '파리바게트', '뚜레쥬르', '던킨', '크로플', '도넛', '크리스피',
+            '간식', '주전부리', '디저트', '팝콘', '아이스크림', '젤라또', '과자', '초콜릿', '사탕', '떡볶이', '베스킨',
+            '편의점', '마트', '씨유', 'cu', 'gs25', '세븐일레븐', '7eleven',
+            '치킨', '피자', '햄버거', '맥도날드', '버거킹', 'kfc', '롯데리아', '라면',
+            '음료', '주스', '탄산', '콜라', '사이다', '밀크티', '버블티', '스무디'
+        ];
+        let currentFoodExpenseData = null;
+        let foodManageMode = false;
+        const nf = new Intl.NumberFormat('ko-KR');
+        const formatCurrency = (value) => `₩${nf.format(value)}`;
+    
+    // 사용자별로 데이터를 저장하기 위한 경로 생성 함수
+    function getUserDataRef() {
+        if (!currentUser) throw new Error("로그인한 사용자가 없습니다.");
+        return db.collection('users').doc(currentUser.uid).collection('data');
+    }
+
+    // 기존 dbSet, dbGet, dbGetAll, dbDelete 함수를 모두 이것으로 교체
+async function dbSet(key, value) {
+    const sanitizedValue = JSON.parse(JSON.stringify(value, (k, v) => v === undefined ? null : v));
+    
+    // 1. IndexedDB에 즉시 저장
+    await localDB.set(key, sanitizedValue);
+    
+    // 2. 동기화 큐에 추가
+    syncQueue.add(key);
+    
+    // 3. 백그라운드 Firebase 동기화 (로그인 상태일 때만)
+    if (currentUser) {
+        setTimeout(() => syncToFirebase(key, sanitizedValue), 0);
+    }
+}
+
+async function dbGet(key) {
+    // IndexedDB에서 먼저 조회 (초고속)
+    return await localDB.get(key);
+}
+
+async function dbGetAll() {
+    // IndexedDB에서 모든 데이터 조회
+    return await localDB.getAll();
+}
+
+async function dbDelete(key) {
+    // 1. IndexedDB에서 삭제
+    await localDB.delete(key);
+    
+    // 2. Firebase에서도 삭제 (로그인 상태일 때)
+    if (currentUser) {
+        setTimeout(() => deleteFromFirebase(key), 0);
+    }
+}
+
+    // 앱 데이터 전체 초기화 (주의해서 사용)
+    async function dbClear() {
+        if (!confirm("정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+        const snapshot = await getUserDataRef().get();
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+        alert("모든 데이터가 삭제되었습니다.");
+        location.reload();
+    }
+
+    // 로그인/로그아웃 함수
+    async function signIn() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            await auth.signInWithPopup(provider);
+        } catch (error) {
+            console.error("로그인 에러", error);
+            alert("로그인에 실패했습니다.");
+        }
+    }
+    
+    async function signOut() {
+    if (confirm("로그아웃 하시겠습니까?")) {
+        try {
+            // 자동 동기화 중단
+            stopAutoSync();
+            
+            // Firebase에서 로그아웃
+            await auth.signOut();
+            
+            // UI 즉시 업데이트
+            currentUser = null;
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            
+            // 동기화 상태 업데이트
+            updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
+            
+            alert('로그아웃되었습니다.');
+            
+        } catch (error) {
+            console.error("로그아웃 에러:", error);
+            alert("로그아웃 중 오류가 발생했습니다.");
+        }
+    }
+}
+
+    // Firebase와의 백그라운드 동기화
+async function syncToFirebase(key, value) {
+    if (!currentUser) return;
+    try {
+        await getUserDataRef().doc(key).set({ value });
+        syncQueue.delete(key);
+        updateSyncStatus('✅ 동기화 완료');
+    } catch (error) {
+        console.error('Firebase 동기화 실패:', error);
+        updateSyncStatus('⚠️ 동기화 대기 중');
+    }
+}
+
+// 자동 동기화 시스템
+let autoSyncInterval = null;
+
+function startAutoSync() {
+    if (!currentUser || autoSyncInterval) return;
+    
+    autoSyncInterval = setInterval(async () => {
+        if (syncQueue.size > 0) {
+            updateSyncStatus('☁️ 자동 백업 중...');
+            // 대기 중인 데이터만 동기화
+            const pendingKeys = Array.from(syncQueue);
+            for (const key of pendingKeys) {
+                const data = await localDB.get(key);
+                if (data) {
+                    await syncToFirebase(key, data);
+                }
+            }
+        }
+    }, 300000); // 5분 = 300000ms
+}
+
+function stopAutoSync() {
+    if (autoSyncInterval) {
+        clearInterval(autoSyncInterval);
+        autoSyncInterval = null;
+    }
+}
+
+async function deleteFromFirebase(key) {
+    if (!currentUser) return;
+    try {
+        await getUserDataRef().doc(key).delete();
+    } catch (error) {
+        console.error('Firebase 삭제 실패:', error);
+    }
+}
+
+// 전체 동기화 (수동 백업용)
+async function syncAllToFirebase() {
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+    
+    if (!confirm('현재 로컬 데이터를 클라우드에 백업하시겠습니까?\n\n※ 클라우드의 기존 데이터가 덮어써집니다.')) {
+        return;
+    }
+    
+    try {
+        updateSyncStatus('☁️ 클라우드 백업 중...');
+        const allData = await localDB.getAll();
+        
+        let successCount = 0;
+        for (const item of allData) {
+            await syncToFirebase(item.key, item.value);
+            successCount++;
+        }
+        
+        updateSyncStatus(`✅ 백업 완료 (${successCount}개 항목)`);
+        setTimeout(() => {
+            alert(`클라우드 백업이 완료되었습니다!\n백업된 항목: ${successCount}개`);
+        }, 500);
+        
+    } catch (error) {
+        console.error('백업 실패:', error);
+        updateSyncStatus('❌ 백업 실패');
+        alert('백업 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
+    }
+}
+
+// Firebase에서 데이터 가져오기 (복원용)
+async function loadFromFirebase() {
+    if (!currentUser) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+    
+    if (!confirm('클라우드에서 데이터를 복원하시겠습니까?\n\n⚠️ 현재 로컬 데이터가 모두 삭제되고 클라우드 데이터로 교체됩니다.\n\n이 작업은 되돌릴 수 없습니다.')) {
+        return;
+    }
+    
+    try {
+        updateSyncStatus('📥 클라우드에서 데이터 로딩 중...');
+        
+        // 기존 로컬 데이터 삭제
+        const existingData = await localDB.getAll();
+        for (const item of existingData) {
+            await localDB.delete(item.key);
+        }
+        
+        // Firebase에서 데이터 가져오기
+        const snapshot = await getUserDataRef().get();
+        
+        let restoredCount = 0;
+        for (const doc of snapshot.docs) {
+            await localDB.set(doc.id, doc.data().value);
+            restoredCount++;
+        }
+        
+        updateSyncStatus(`✅ 복원 완료 (${restoredCount}개 항목)`);
+        
+        // 캘린더 새로고침
+        await renderCalendar();
+        
+        setTimeout(() => {
+            alert(`클라우드 복원이 완료되었습니다!\n복원된 항목: ${restoredCount}개\n\n캘린더가 업데이트되었습니다.`);
+        }, 500);
+        
+    } catch (error) {
+        console.error('복원 실패:', error);
+        updateSyncStatus('❌ 복원 실패');
+        alert('복원 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.');
+    }
+}
+
+function updateSyncStatus(message) {
+    const statusEl = document.getElementById('syncStatus');
+    if (statusEl) {
+        statusEl.textContent = message;
+        statusEl.style.display = 'block';
+        
+        // 로그인 안된 상태에서는 경고 색상
+        if (!currentUser && message.includes('로컬')) {
+            statusEl.style.background = 'rgba(255, 243, 205, 0.95)';
+            statusEl.style.color = '#b7791f';
+            statusEl.style.border = '1px solid #ffd666';
+        } else {
+            statusEl.style.background = 'rgba(255,255,255,0.9)';
+            statusEl.style.color = 'var(--text-color-light)';
+            statusEl.style.border = 'none';
+        }
+        
+        // 모든 메시지를 3초 후 숨김 (활성화/로컬저장 메시지도 포함)
+        setTimeout(() => {
+            statusEl.style.display = 'none';
+        }, 3000);
+    }
+}
+        
+        function formatDate(date) { const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        function formatDateForLabel(dateString) { const d = parseDate(dateString); return `${d.getMonth() + 1}/${d.getDate()}`; }
+        function parseDate(dateString) { return new Date(dateString + 'T00:00:00'); }
+        function timeToMinutes(time) { if (!time) return 0; const [h, m] = time.split(':').map(Number); return h * 60 + m; }
+        function getWeekDates(date) { const d = new Date(date); const day = d.getDay(); const diff = d.getDate() - day + (day === 0 ? -6 : 1); const mon = new Date(d.setDate(diff)); const week = []; for (let i = 0; i < 7; i++) { const day = new Date(mon); day.setDate(mon.getDate() + i); week.push(formatDate(new Date(day))); } return week; }
+        function getMonthDates(date) { const y = date.getFullYear(), m = date.getMonth(); const lastDay = new Date(y, m + 1, 0); const dates = []; for (let d = new Date(y, m, 1); d <= lastDay; d.setDate(d.getDate() + 1)) { dates.push(formatDate(new Date(d))); } return dates; }
+        function getMonthDateRange(date) { const year = date.getFullYear(); const month = date.getMonth(); const start = formatDate(new Date(year, month, 1)); const end = formatDate(new Date(year, month + 1, 0)); return { start, end }; }
+        async function getPersonalGoals() { return await dbGet('personalGoals') || []; }
+        function getEmojiForAchievement(percentage) { if (percentage <= 20) return '😡'; if (percentage <= 40) return '😢'; if (percentage <= 60) return '😐'; if (percentage <= 80) return '😊'; return '🎉'; }
+        async function getDayData(date) { return await dbGet(`day_${formatDate(date)}`) || { date: formatDate(date), wakeTime: null, seatTime: null, pomodoro: { morning: 0, afternoon: 0, evening: 0 }, exercise: { done: false, minutes: 0 }, gameTime: 0, writing: 0, sleepTime: null, personalGoals: {}, score: 0, isOffDay: false, comment: "" }; }
+        async function saveDayData(date, data) { const dateString = formatDate(date); data.date = dateString; data.score = data.isOffDay ? 0 : await calculateScore(data); await dbSet(`day_${dateString}`, data); }
+        
+function adjustPomodoro(inputId, change) {
+    const input = document.getElementById(inputId);
+    const currentValue = parseInt(input.value) || 0;
+    const newValue = Math.max(0, currentValue + change);
+    input.value = newValue;
+    
+    // 점수 업데이트 및 자동 저장
+    updateModalScore();
+    autoSaveModalData();
+}
+
+        async function calculatePersonalGoalAverage(data, date) {
+            const allGoals = await getPersonalGoals();
+            const checkDate = parseDate(date);
+            checkDate.setHours(0, 0, 0, 0);
+            const applicableGoals = allGoals.filter(goal => {
+                const goalDate = new Date(goal.createdAt);
+                goalDate.setHours(0, 0, 0, 0);
+                return checkDate >= goalDate;
+            });
+            if (applicableGoals.length === 0) return 0;
+            const personalGoalsData = data.personalGoals || {};
+            let totalPercentage = 0;
+            applicableGoals.forEach(goal => {
+                const achieved = personalGoalsData[goal.id] || 0;
+                let percentage = 0;
+                if (goal.type === 'negative') {
+                    const usageRatio = achieved / goal.target;
+                    percentage = Math.max(0, (1 - usageRatio) * 100);
+                } else {
+                    percentage = Math.min(100, (achieved / goal.target) * 100);
+                }
+                totalPercentage += percentage;
+            });
+            return applicableGoals.length > 0 ? Math.round(totalPercentage / applicableGoals.length) : 0;
+        }
+        async function calculateScore(data) {
+            if (data.isOffDay) return 0;
+            let score = 0;
+            const targetWakeTime = await dbGet('targetWakeTime');
+            if (!targetWakeTime || !data.wakeTime) return (data.bonusPoints || 0);
+            const targetMinutes = timeToMinutes(targetWakeTime);
+            const actualMinutes = timeToMinutes(data.wakeTime);
+            const wakeDiff = actualMinutes - targetMinutes;
+            if (wakeDiff < 0) score += 10; else if (wakeDiff <= 30) score += 5; else if (wakeDiff <= 60) score += 3; else if (wakeDiff <= 90) score += 1; else score -= Math.floor((wakeDiff - 120) / 30 + 1) * 2;
+            if (data.seatTime) { const seatMinutes = timeToMinutes(data.seatTime); const seatDiff = seatMinutes - actualMinutes; if (seatDiff >= 0 && seatDiff <= 60) score += 5; else if (seatDiff >= 0 && seatDiff <= 90) score += 3; }
+            const totalPomodoro = (data.pomodoro.morning || 0) + (data.pomodoro.afternoon || 0) + (data.pomodoro.evening || 0);
+            score += totalPomodoro * 5;
+            if (data.pomodoro.morning >= 6) score += 5; if (data.pomodoro.afternoon >= 6) score += 5; if (data.pomodoro.evening >= 4) score += 5;
+            if (data.exercise.done) { score += 10; score += Math.floor((data.exercise.minutes || 0) / 30) * 5; }
+            if (data.gameTime > 60) { score -= Math.floor((data.gameTime - 60) / 30) * 2; }
+            if (data.sleepTime) { const sleepMinutes = timeToMinutes(data.sleepTime); let adjustedSleep = sleepMinutes < 360 ? sleepMinutes + 1440 : sleepMinutes; if (adjustedSleep >= 1440 && adjustedSleep <= 1470) score += 5; else if (adjustedSleep <= 1500) score += 3; else if (adjustedSleep <= 1560) score += 1; else if (adjustedSleep > 1560) score -= Math.floor((adjustedSleep - 1560) / 30 + 1) * 3; }
+            score += (data.bonusPoints || 0);
+            return score;
+        }
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            const authContainer = document.getElementById('authContainer');
+            if (authContainer) { // authContainer가 존재하는지 확인
+                // 목표 설정 및 기상 시간 입력 창에서는 버튼 숨기기
+                if (pageId === 'goalSetup' || pageId === 'wakeUpPrompt') {
+                    authContainer.style.display = 'none';
+                } else {
+                    // 그 외 모든 페이지에서는 버튼 표시
+                    authContainer.style.display = 'block';
+                }
+            }
+        }
+        async function saveGoalAndContinue() { const targetTime = document.getElementById('targetWakeTime').value; if (!/^\d{2}:\d{2}$/.test(targetTime)) { alert('목표 기상 시간을 HH:MM 형식으로 입력해주세요!'); return; } await dbSet('targetWakeTime', targetTime); await initApp(); }
+        async function saveWakeTimeFromPrompt() { 
+            const wakeTime = document.getElementById('promptWakeTime').value; 
+            if (!/^\d{2}:\d{2}$/.test(wakeTime)) { alert('기상 시간을 HH:MM 형식으로 입력해주세요!'); return; } 
+            const today = new Date(); 
+            const todayData = await getDayData(today); 
+            todayData.wakeTime = wakeTime; 
+            await saveDayData(today, todayData); 
+            sessionStorage.setItem('promptSkipped', 'true'); 
+            showPage('calendarPage'); 
+            await renderCalendar(); 
+            await triggerRandomMission();
+        }
+        async function skipToCalendar() { 
+            sessionStorage.setItem('promptSkipped', 'true'); 
+            showPage('calendarPage'); 
+            await renderCalendar();
+            await triggerRandomMission();
+        }
+        async function changeMonth(direction) { currentDate.setMonth(currentDate.getMonth() + direction); await renderCalendar(); }
+        async function backToCalendar() { 
+            showPage('calendarPage'); 
+            await renderCalendar(); 
+        }
+        async function updateSettings() {
+            const targetTime = document.getElementById('settingsWakeTime').value;
+            if (targetTime && !/^\d{2}:\d{2}$/.test(targetTime)) { alert('목표 기상 시간을 HH:MM 형식으로 입력해주세요!'); return; }
+            await dbSet('targetWakeTime', targetTime);
+            const budget = unformatNumber(document.getElementById('monthlyBudgetInput').value);
+            if (budget) { await dbSet('monthlyBudget', budget); } else { await dbDelete('monthlyBudget'); }
+            const partnerEmail = document.getElementById('partnerEmailInput').value.trim();
+            if (partnerEmail) {
+                await dbSet('partnerEmail', partnerEmail);
+            } else {
+                await dbDelete('partnerEmail');
+            }
+            alert('설정이 저장되었습니다!');
+            await backToCalendar();
+        }
+        async function showSettings() {
+            showPage('settingsPage');
+            document.getElementById('settingsWakeTime').value = await dbGet('targetWakeTime') || '';
+            const budgetSetting = await dbGet('monthlyBudget');
+            document.getElementById('monthlyBudgetInput').value = budgetSetting ? budgetSetting.toLocaleString('ko-KR') : '';
+            const partnerEmail = await dbGet('partnerEmail');
+            document.getElementById('partnerEmailInput').value = partnerEmail || '';
+            await renderDdaySettings();
+        }
+        async function showPersonalGoals() { showPage('personalGoalsPage'); await renderPersonalGoalsList(); }
+        async function showMonthlyStats() { showPage('monthlyStatsPage'); await renderMonthlyStats(); }
+        async function showBudgetPage() { showPage('budgetPage'); await renderBudgetPage(); }
+        async function closeDayModal() { document.getElementById('dayModal').style.display = 'none'; await renderCalendar(); }
+        async function navigateModalDate(direction) {
+        // 현재 선택된 날짜에서 direction만큼 이동
+            const newDate = new Date(selectedDate);
+            newDate.setDate(newDate.getDate() + direction);
+    
+        // 새로운 날짜로 모달 다시 열기
+        await openDayModal(newDate);
+        }
+
+        async function initApp() {
+    // 1. 목표 기상 시간 설정 여부부터 확인
+    const targetWakeTime = await dbGet('targetWakeTime');
+    if (!targetWakeTime) { 
+        showPage('goalSetup'); 
+        return; 
+    }
+
+    // 2. 기상 시간 입력 최우선 (이건 즉시 처리)
+    const today = new Date();
+    const todayData = await getDayData(today);
+    if (!todayData.wakeTime && today.getHours() >= 6 && !sessionStorage.getItem('promptSkipped')) { 
+        document.getElementById('wakeupDate').textContent = today.toLocaleDateString('ko-KR'); 
+        showPage('wakeUpPrompt'); 
+        return;
+    }
+    
+    // 3. 캘린더 즉시 표시 (기본 구조만)
+    showPage('calendarPage');
+    await renderBasicCalendar(); // 새로 만들 함수
+    
+    // 4. 백그라운드에서 나머지 처리 (사용자가 못 느끼게)
+    setTimeout(() => enhanceCalendarWithData(), 100);
+    setTimeout(() => runBackgroundTasks(), 200);
+}
+
+// 주간 성과 분석 및 리포트 발송 로직
+async function checkWeeklyPerformance() {
+    const partnerEmail = await dbGet('partnerEmail');
+    if (!partnerEmail) return; // 파트너 이메일이 없으면 실행 안함
+
+    const today = new Date();
+    const lastWeekCheckKey = `weeklyReportSent_${getWeekDates(today)[0]}`;
+    if (await dbGet(lastWeekCheckKey)) return; // 이미 이번 주에 보냈으면 실행 안함
+
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    const lastWeekDates = getWeekDates(lastWeek);
+
+    let totalScore = 0;
+    let validDays = 0;
+    let performanceDetails = {
+        lateWakeUp: 0,
+        totalGameMinutes: 0,
+        exerciseCount: 0,
+        targetWakeTime: await dbGet('targetWakeTime') || "미설정"
+    };
+
+    for (const dateStr of lastWeekDates) {
+        const dayData = await getDayData(parseDate(dateStr));
+        if (dayData && !dayData.isOffDay && dayData.wakeTime) {
+            validDays++;
+            totalScore += dayData.score || 0;
+            
+            if (dayData.wakeTime && performanceDetails.targetWakeTime !== "미설정") {
+                const diff = timeToMinutes(dayData.wakeTime) - timeToMinutes(performanceDetails.targetWakeTime);
+                if (diff > 0) performanceDetails.lateWakeUp += diff;
+            }
+            performanceDetails.totalGameMinutes += dayData.gameTime || 0;
+            if (dayData.exercise.done) performanceDetails.exerciseCount++;
+        }
+    }
+
+    if (validDays === 0) return;
+
+    const avgScore = Math.round(totalScore / validDays);
+
+    if (avgScore < 40) {
+        if (confirm(`지난주 평균 점수가 ${avgScore}점입니다. 책임 공유 파트너에게 성과 보고서를 보내시겠습니까?`)) {
+            const analysisHtml = analyzeWeeklyPerformance(performanceDetails, validDays);
+            const weekRange = `${formatDateForLabel(lastWeekDates[0])} ~ ${formatDateForLabel(lastWeekDates[6])}`;
+            
+            await sendAccountabilityReport(partnerEmail, avgScore, analysisHtml, weekRange);
+            await dbSet(lastWeekCheckKey, true); // 발송 완료 기록
+        }
+    }
+}
+
+// 주간 성과를 분석하여 HTML 텍스트를 생성하는 함수
+function analyzeWeeklyPerformance(details, validDays) {
+    let html = '<ul>';
+    if (details.lateWakeUp > 0 && validDays > 0) {
+        const avgLateMinutes = Math.round(details.lateWakeUp / validDays);
+        html += `<li><strong>기상 시간:</strong> 목표 시간보다 평균 ${avgLateMinutes}분 늦게 일어났습니다. (목표: ${details.targetWakeTime})</li>`;
+    }
+    if (details.totalGameMinutes > 60 * validDays) { // 하루 평균 1시간 이상 게임 시
+        const avgGameMinutes = Math.round(details.totalGameMinutes / validDays);
+        html += `<li><strong>게임 시간:</strong> 주간 총 게임 시간이 ${Math.round(details.totalGameMinutes / 60)}시간을 초과했습니다. (하루 평균 ${avgGameMinutes}분)</li>`;
+    }
+    if (details.exerciseCount < 3) {
+        html += `<li><strong>운동:</strong> 주 3회 이상 목표였으나, ${details.exerciseCount}회만 수행했습니다.</li>`;
+    }
+    if (html === '<ul>') {
+        html += '<li>전반적으로 꾸준한 노력이 필요합니다. 작은 목표부터 다시 시작해보세요!</li>';
+    }
+    html += '</ul>';
+    return html;
+}
+
+// EmailJS를 사용하여 이메일을 발송하는 함수
+async function sendAccountabilityReport(partnerEmail, avgScore, analysisHtml, weekRange) {
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            user_name: currentUserName,
+            partner_email: partnerEmail,
+            avg_score: avgScore,
+            analysis_html: analysisHtml,
+            week_range: weekRange
+        }, EMAILJS_PUBLIC_KEY);
+        alert('파트너에게 보고서가 성공적으로 발송되었습니다.');
+        unlockAchievement('ACH_ACCOUNTABILITY'); // 업적 달성
+    } catch (error) {
+        alert('이메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        console.error('EmailJS Error:', error);
+    }
+}
+
+async function renderBasicCalendar() {
+    const year = currentDate.getFullYear(), month = currentDate.getMonth();
+    document.getElementById('monthYear').textContent = `${year}년 ${month + 1}월`;
+    const grid = document.getElementById('calendarGrid'); 
+    grid.innerHTML = '';
+    
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    weekdays.forEach(day => { 
+        const cell = document.createElement('div'); 
+        cell.className = 'calendar-header-cell'; 
+        cell.textContent = day; 
+        grid.appendChild(cell); 
+    });
+    
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDayOfMonth);
+    startDate.setDate(startDate.getDate() - firstDayOfMonth.getDay());
+    const endDate = new Date(lastDayOfMonth);
+    endDate.setDate(endDate.getDate() + (6 - lastDayOfMonth.getDay()));
+
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const cellDate = new Date(d);
+        const cell = document.createElement('div');
+        
+        if (cellDate.getMonth() !== month) {
+            cell.className = 'calendar-cell other-month';
+        } else {
+            // 이번 달 셀들은 스켈레톤으로 시작
+            cell.className = 'calendar-cell skeleton';
+            
+            if (cellDate.toDateString() === new Date().toDateString()) {
+                cell.classList.add('today');
+            }
+        }
+        
+        cell.innerHTML = `
+            <div class="cell-top-icons"></div>
+            <div class="cell-day-number">${cellDate.getDate()}</div>
+            <div class="cell-bottom-info"></div>
+        `;
+
+        // 클릭 이벤트는 나중에 추가될 예정
+        cell.dataset.date = formatDate(cellDate);
+        
+        grid.appendChild(cell);
+    }
+    
+    // 로딩 표시 추가
+    showLoadingIndicator();
+}
+
+async function enhanceCalendarWithData() {
+    const allDbData = await dbGetAll();
+    const allPersonalGoals = await getPersonalGoals();
+    const year = currentDate.getFullYear(), month = currentDate.getMonth();
+    const dataMap = new Map(allDbData.map(item => [item.key, item.value]));
+
+    // 스켈레톤 셀들을 찾아서 실제 데이터로 교체
+    const skeletonCells = document.querySelectorAll('.calendar-cell.skeleton');
+    
+    skeletonCells.forEach((cell, index) => {
+        // 점진적 로딩을 위한 지연 (체감 효과)
+        setTimeout(() => {
+            const dateStr = cell.dataset.date;
+            const cellDate = parseDate(dateStr);
+            
+            // 스켈레톤 클래스 제거
+            cell.classList.remove('skeleton');
+            
+            const topIconsContainer = cell.querySelector('.cell-top-icons');
+            const bottomInfoContainer = cell.querySelector('.cell-bottom-info');
+            
+            // 기존 데이터 처리 로직
+            const dayData = dataMap.get(`day_${dateStr}`);
+            
+            if (dayData) {
+                const applicableGoals = allPersonalGoals.filter(goal => {
+                    if (goal.isCompleted) return false;
+                    const goalCreatedDate = new Date(goal.createdAt);
+                    goalCreatedDate.setHours(0, 0, 0, 0);
+                    return goalCreatedDate <= cellDate;
+                });
+                
+                if (applicableGoals.length > 0 && dayData.personalGoals) {
+                    let iconsHtml = '';
+                    applicableGoals.slice(0, 3).forEach(goal => {
+                        const achieved = dayData.personalGoals[goal.id] || 0;
+                        let percentage = 0;
+                        if (goal.type === 'negative') {
+                            const usageRatio = achieved / goal.target;
+                            percentage = Math.max(0, (1 - usageRatio) * 100);
+                        } else {
+                            percentage = Math.min(100, (achieved / goal.target) * 100);
+                        }
+                        iconsHtml += `<span>${getEmojiForAchievement(percentage)}</span>`;
+                    });
+                    topIconsContainer.innerHTML = iconsHtml;
+                } else {
+                    topIconsContainer.innerHTML = '';
+                }
+
+                if (dayData.isOffDay) {
+                    cell.classList.add('off-day');
+                    cell.querySelector('.cell-day-number').innerHTML += `<div class="off-day-indicator">☕️</div>`;
+                } else if (dayData.wakeTime || dayData.exercise?.done || dayData.sleepTime || (dayData.bonusPoints && dayData.bonusPoints > 0) || Object.keys(dayData.personalGoals || {}).length > 0) {
+                    cell.classList.add('has-data');
+                    const score = dayData.score !== undefined ? dayData.score : 0;
+                    if (score >= 80) cell.classList.add('score-high');
+                    else if (score >= 40) cell.classList.add('score-medium');
+                    else if (score >= 1) cell.classList.add('score-low');
+                    else cell.classList.add('score-negative');
+                }
+            } else {
+                // 데이터가 없는 셀은 아이콘 영역 비우기
+                topIconsContainer.innerHTML = '';
+                bottomInfoContainer.innerHTML = '';
+            }
+            
+            // 주간 글쓰기 요약 (일요일에만)
+            if (cellDate.getDay() === 0) {
+                const weekDates = getWeekDates(cellDate);
+                let weeklyWritingTotal = 0;
+                for (const dateStr of weekDates) {
+                    const weeklyDayData = dataMap.get(`day_${dateStr}`);
+                    if (weeklyDayData) {
+                        weeklyWritingTotal += weeklyDayData.writing || 0;
+                    }
+                }
+                if (weeklyWritingTotal > 0) {
+                    const bookCount = (weeklyWritingTotal / 100000).toFixed(2);
+                    bottomInfoContainer.innerHTML += `<span>📖${bookCount}</span>`;
+                }
+            }
+
+            // 클릭 이벤트 추가 (스켈레톤 해제 후)
+            cell.addEventListener('click', () => openDayModal(cellDate));
+            
+        }, index * 30); // 30ms씩 지연해서 점진적 로딩 효과
+    });
+    
+    // 모든 셀 로딩 완료 후 로딩 표시 제거
+    setTimeout(() => {
+        hideLoadingIndicator();
+    }, skeletonCells.length * 30 + 100);
+}
+
+function showLoadingIndicator() {
+    const container = document.querySelector('.container');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loadingIndicator';
+    loadingDiv.className = 'loading-indicator';
+    loadingDiv.innerHTML = '데이터 로딩 중...';
+    container.appendChild(loadingDiv);
+}
+
+function hideLoadingIndicator() {
+    const loadingDiv = document.getElementById('loadingIndicator');
+    if (loadingDiv) {
+        loadingDiv.style.opacity = '0';
+        setTimeout(() => loadingDiv.remove(), 300);
+    }
+}
+
+async function runBackgroundTasks() {
+    // 사용자가 못 느끼는 백그라운드 작업들
+    try {
+        // D-Day 표시
+        await renderDdayDisplay();
+        
+        // 예산 바 표시
+        await renderSmallBudgetBar();
+        
+        // 게임 경고 체크
+        await checkAndDisplayGameWarning();
+        
+        // 더 무거운 작업들은 더 뒤에
+        setTimeout(async () => {
+            const today = new Date();
+            
+            // 월요일인 경우에만 주간 성과 체크
+            if (today.getDay() === 1) {
+                await checkWeeklyPerformance();
+            }
+            
+            // 1일인 경우에만 월간 보너스 체크
+            if (today.getDate() === 1) {
+                await checkForMonthlyBonus();
+            }
+            
+            // 랜덤 미션 (가장 나중에)
+            await triggerRandomMission();
+            
+        }, 1000); // 1초 후에 실행
+        
+    } catch (error) {
+        console.error('백그라운드 작업 오류:', error);
+    }
+}
+
+async function renderCalendar() {
+    await renderBasicCalendar();
+    await enhanceCalendarWithData();
+    await runBackgroundTasks();
+}
+
+        async function renderMonthlyStats() {
+            const monthDates = getMonthDates(currentDate);
+            document.getElementById('statsMonth').textContent = currentDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' });
+            
+            let totalScore = 0, totalGoalRate = 0, totalWriting = 0, validDays = 0;
+            const dataPromises = monthDates.map(date => dbGet(`day_${date}`));
+            const monthlyData = (await Promise.all(dataPromises)).filter(d => d);
+
+            for (const dayData of monthlyData) {
+                totalWriting += (dayData.writing || 0);
+                if (!dayData.isOffDay && (dayData.wakeTime || dayData.exercise.done || dayData.sleepTime || dayData.bonusPoints)) {
+                    totalScore += dayData.score || 0;
+                    totalGoalRate += await calculatePersonalGoalAverage(dayData, dayData.date);
+                    validDays++;
+                }
+            }
+            const avgScore = validDays > 0 ? Math.round(totalScore / validDays) : 0;
+            const avgGoalRate = validDays > 0 ? Math.round(totalGoalRate / validDays) : 0;
+            document.getElementById('avgScore').textContent = `⭐ ${avgScore}점`;
+            document.getElementById('avgGoalRate').textContent = `${getEmojiForAchievement(avgGoalRate)} ${avgGoalRate}%`;
+            document.getElementById('writingBooks').textContent = `📖 ${(totalWriting / 100000).toFixed(2)}권`;
+
+            const fameContainer = document.getElementById('hallOfFame');
+            const shameContainer = document.getElementById('wallOfShame');
+            fameContainer.innerHTML = '';
+            shameContainer.innerHTML = '';
+            
+            if (monthlyData.length > 0) {
+                const validDataDays = monthlyData.filter(d => !d.isOffDay);
+
+                if (validDataDays.length > 0) {
+                    const bestScoreDay = [...validDataDays].sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+                    const worstScoreDay = [...validDataDays].sort((a, b) => (a.score || 0) - (b.score || 0))[0];
+
+                    fameContainer.innerHTML += `<div class="fame-card"><div class="fame-card-title">✨</div><div class="fame-card-value">${bestScoreDay.score}점</div><div class="fame-card-date">최고 점수 (${formatDateForLabel(bestScoreDay.date)})</div></div>`;
+                    shameContainer.innerHTML += `<div class="fame-card"><div class="fame-card-title">💀</div><div class="fame-card-value">${worstScoreDay.score}점</div><div class="fame-card-date">최저 점수 (${formatDateForLabel(worstScoreDay.date)})</div></div>`;
+                    
+                    const pomoKingDay = [...validDataDays].sort((a, b) => {
+                        const totalA = (a.pomodoro?.morning || 0) + (a.pomodoro?.afternoon || 0) + (a.pomodoro?.evening || 0);
+                        const totalB = (b.pomodoro?.morning || 0) + (b.pomodoro?.afternoon || 0) + (b.pomodoro?.evening || 0);
+                        return totalB - totalA;
+                    })[0];
+                    const totalPomos = (pomoKingDay.pomodoro?.morning || 0) + (pomoKingDay.pomodoro?.afternoon || 0) + (pomoKingDay.pomodoro?.evening || 0);
+                    if (totalPomos > 0) {
+                        fameContainer.innerHTML += `<div class="fame-card"><div class="fame-card-title">🍅</div><div class="fame-card-value">${totalPomos}개</div><div class="fame-card-date">뽀모도로 킹 (${formatDateForLabel(pomoKingDay.date)})</div></div>`;
+                    }
+
+                    const exerciseGodDay = [...validDataDays].sort((a,b) => (b.exercise?.minutes || 0) - (a.exercise?.minutes || 0))[0];
+                    if (exerciseGodDay.exercise?.minutes > 0) {
+                         fameContainer.innerHTML += `<div class="fame-card"><div class="fame-card-title">💪</div><div class="fame-card-value">${exerciseGodDay.exercise.minutes}분</div><div class="fame-card-date">운동 괴물 (${formatDateForLabel(exerciseGodDay.date)})</div></div>`;
+                    }
+
+                    const gameAddictDay = [...validDataDays].sort((a,b) => (b.gameTime || 0) - (a.gameTime || 0))[0];
+                    if (gameAddictDay.gameTime > 0) {
+                        shameContainer.innerHTML += `<div class="fame-card"><div class="fame-card-title">🎮</div><div class="fame-card-value">${gameAddictDay.gameTime}분</div><div class="fame-card-date">게임 중독 (${formatDateForLabel(gameAddictDay.date)})</div></div>`;
+                    }
+                }
+            }
+
+            if (fameContainer.innerHTML === '') {
+                fameContainer.innerHTML = '<p style="text-align:center; color:#999;">이번 달 기록이 부족합니다.</p>';
+            }
+            if (shameContainer.innerHTML === '') {
+                shameContainer.innerHTML = '<p style="text-align:center; color:#999;">이번 달 기록이 부족합니다.</p>';
+            }
+            
+            await renderWeeklyDetails();
+        }
+        async function renderWeeklyDetails() {
+            const container = document.getElementById('weeklyDetails');
+            container.innerHTML = '<h3>📅 주간별 요약</h3>';
+
+            const monthDates = getMonthDates(currentDate);
+            const mondays = [...new Set(monthDates.map(dateStr => getWeekDates(parseDate(dateStr))[0]))];
+            let hasAnyData = false;
+
+            for (const mondayStr of mondays.sort().reverse()) {
+                const weekDates = getWeekDates(parseDate(mondayStr));
+                const dayDatas = await Promise.all(weekDates.map(dateStr => getDayData(parseDate(dateStr))));
+                const isWeekRecorded = dayDatas.some(d => d.wakeTime || d.writing > 0 || d.exercise.done || Object.keys(d.personalGoals).length > 0);
+
+                if (isWeekRecorded) {
+                    hasAnyData = true;
+                    const validDays = dayDatas.filter(d => d && !d.isOffDay && d.wakeTime);
+                    
+                    let avgScore = 0;
+                    if (validDays.length > 0) { avgScore = Math.round(validDays.reduce((sum, d) => sum + (d.score || 0), 0) / validDays.length); }
+                    let avgGoalRate = 0;
+                    if (validDays.length > 0) { const goalRates = await Promise.all(validDays.map(d => calculatePersonalGoalAverage(d, d.date))); avgGoalRate = Math.round(goalRates.reduce((sum, rate) => sum + rate, 0) / validDays.length); }
+                    const totalWriting = dayDatas.reduce((sum, data) => sum + (data?.writing || 0), 0);
+                    const exerciseCount = dayDatas.reduce((sum, data) => sum + (data?.exercise.done ? 1 : 0), 0);
+
+                    container.innerHTML += `<div class="week-card"><div class="week-header"><span>${formatDateForLabel(weekDates[0])} ~ ${formatDateForLabel(weekDates[6])}</span></div><div class="week-stats"><span>⭐ ${avgScore}</span><span>${getEmojiForAchievement(avgGoalRate)} ${avgGoalRate}%</span><span>📖 ${(totalWriting / 100000).toFixed(2)}</span><span>💪 ${exerciseCount}/7</span></div></div>`;
+                }
+            }
+            if (!hasAnyData) { container.innerHTML += '<p style="text-align:center; color:#666; padding: 20px 0;">아직 기록된 주간 데이터가 없습니다.</p>'; }
+        }
+        
+        async function checkAndDisplayGameWarning() { const warningDiv = document.getElementById('gameWarning'); const weekDates = getWeekDates(new Date()); const dataPromises = weekDates.map(dateStr => dbGet(`day_${dateStr}`)); const weekData = await Promise.all(dataPromises); const totalGameTime = weekData.reduce((sum, dayData) => sum + (dayData?.gameTime || 0), 0); if (totalGameTime > 1200) { warningDiv.textContent = `⚠️이번 주 게임 시간이 ${(totalGameTime / 60).toFixed(1)}시간을 넘었습니다. 자기 절제가 필요합니다.`; warningDiv.style.display = 'block'; }  else { warningDiv.style.display = 'none'; } }
+        async function checkForMonthlyBonus() { 
+            const today = new Date(); 
+            const currentMonthKey = `bonusAwarded_${today.getFullYear()}-${today.getMonth()}`; 
+            if (await dbGet(currentMonthKey)) return; 
+
+            const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1); 
+            const prevMonthDates = getMonthDates(prevMonthDate); 
+            const dataPromises = prevMonthDates.map(dateStr => dbGet(`day_${dateStr}`)); 
+            const monthlyData = await Promise.all(dataPromises); 
+            
+            let totalScore = 0, validDays = 0; 
+            for (const dayData of monthlyData) { 
+                if (dayData && !dayData.isOffDay && dayData.wakeTime) { 
+                    totalScore += dayData.score || 0; 
+                    validDays++; 
+                } 
+            } 
+            
+            if (validDays > 0 && (totalScore / validDays) >= 80) { 
+                const firstDayData = await getDayData(new Date(today.getFullYear(), today.getMonth(), 1)); 
+                firstDayData.bonusPoints = (firstDayData.bonusPoints || 0) + 30; 
+                await saveDayData(new Date(today.getFullYear(), today.getMonth(), 1), firstDayData); 
+                setTimeout(async () => { 
+                    showFeedbackPopup(100, { class: 'feedback-celebration', emoji: '🏆', title: '월간 보너스 획득!', message: `지난달 평균 ${Math.round(totalScore/validDays)}점을 달성! 이번 달의 시작에 보너스 +30점이 부여됩니다!` }); 
+                    await renderCalendar(); 
+                }, 1000); 
+            }
+            
+            await checkMonthlyPerformanceAndNotify();
+            await checkExerciseAndDietBalance();
+
+            await dbSet(currentMonthKey, true); 
+        }
+
+        async function checkExerciseAchievements(date) {
+            const today = new Date(date);
+            const weekDates = getWeekDates(today);
+            const monthDates = getMonthDates(today);
+
+            const weekKey = `weeklyExercisePopup_${weekDates[0]}`;
+            if (!(await dbGet(weekKey))) {
+                const weekDataPromises = weekDates.map(d => dbGet(`day_${d}`));
+                const weekData = await Promise.all(weekDataPromises);
+                if (weekData.reduce((c, data) => c + (data?.exercise.done ? 1 : 0), 0) >= 5) {
+                    showFeedbackPopup(100, { class: 'feedback-celebration', emoji: '🔥', title: '주 5일 운동 달성!', message: '체지방률 20%... 어쩌면 금방 도달할지도?' });
+                    await dbSet(weekKey, true);
+                }
+            }
+    
+            const monthKey = `monthlyExercisePopup_${today.getFullYear()}-${today.getMonth()}`;
+            if (!(await dbGet(monthKey))) {
+                const monthDataPromises = monthDates.map(d => dbGet(`day_${d}`));
+                const monthData = await Promise.all(monthDataPromises);
+                if (monthData.reduce((c, data) => c + (data?.exercise.done ? 1 : 0), 0) > 20) {
+                    showFeedbackPopup(100, { class: 'feedback-celebration', emoji: '🥳', title: '이달의 운동 20회 돌파!', message: '기분이다! 오늘은 치팅데이를 가져도 좋습니다! 수고했어요!' });
+                    await dbSet(monthKey, true);
+                }
+            }
+        }
+        function showFeedbackPopup(score, customOptions = {}) { const popup = document.getElementById('feedbackPopup'); const content = popup.querySelector('.feedback-content'); const emoji = document.getElementById('feedbackEmoji'); const title = document.getElementById('feedbackTitle'); const message = document.getElementById('feedbackMessage'); content.className = 'feedback-content'; let options = {}; if (Object.keys(customOptions).length > 0) { options = customOptions; } else if (score >= 80) { options = { class: 'feedback-celebration', emoji: '🎉', title: 'Perfect! 완벽해요!', message: '오늘 정말 잘했어요!' }; } else if (score >= 40) { options = { class: 'feedback-reflection', emoji: '✨', title: '꽤 괜찮아요!', message: '어떤 부분을 개선할 수 있을까요?' }; } else if (score >= 1) { options = { class: 'feedback-encouragement', emoji: '🌱', title: '괜찮아요!', message: '내일은 새로운 기회예요!' }; } else { options = { class: 'feedback-disaster', emoji: '💀', title: '오늘은 재앙이었네요...', message: '이제 올라갈 일만 남았어요!' }; } content.classList.add(options.class); emoji.textContent = options.emoji; title.textContent = options.title; message.textContent = options.message; popup.style.display = 'flex'; setTimeout(() => { if (popup.style.display === 'flex') closeFeedbackPopup(); }, 6000); }
+        function closeFeedbackPopup() { const popup = document.getElementById('feedbackPopup'); if(popup) popup.style.display = 'none'; }
+        
+        async function checkBudgetAndShowPopup() {
+            const budget = await dbGet('monthlyBudget');
+            if (!budget) return false;
+            
+            const { start, end } = getMonthDateRange(new Date());
+            const allData = await dbGetAll();
+            const expenses = allData.filter(item => 
+                item.key.startsWith('expense_') && 
+                item.value.date >= start && 
+                item.value.date <= end
+            );
+            
+            const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0);
+            const percentage = (totalSpent / budget) * 100;
+            
+            const checkKey = `budgetWarning_${new Date().getFullYear()}-${new Date().getMonth()}`;
+            const warningStatus = await dbGet(checkKey);
+
+            let popupShown = false;
+            
+            if (percentage > 100 && warningStatus !== 'black') {
+                showFeedbackPopup(0, {
+                    class: 'feedback-budget-black', emoji: '💀', title: '예산 초과',
+                    message: "계획 없는 소비는 미래의 나에게 빚을 지는 것과 같습니다. 재정 습관을 점검하고, 다음 달에는 반드시 예산 안에서 생활하는 훈련을 해야 합니다."
+                });
+                await dbSet(checkKey, 'black');
+                popupShown = true;
+            } else if (percentage > 90 && warningStatus !== 'red' && warningStatus !== 'black') {
+                showFeedbackPopup(0, {
+                    class: 'feedback-budget-red', emoji: '🚨', title: '지갑 경보!',
+                    message: "돈은 버는 것보다 쓰는 게 훨씬 쉽다는 사실, 잊지 마세요. 지금부터의 지출은 신중해야 합니다."
+                });
+                await dbSet(checkKey, 'red');
+                popupShown = true;
+            } else if (percentage > 70 && !warningStatus) {
+                showFeedbackPopup(0, {
+                    class: 'feedback-reflection', emoji: '🤔', title: '예산 70% 도달',
+                    message: "예산의 70%를 사용했습니다. 남은 기간 동안 현명한 소비 계획이 필요합니다."
+                });
+                await dbSet(checkKey, 'yellow');
+                popupShown = true;
+            }
+
+            return popupShown;
+        }
+
+        async function openDayModal(date) {
+            const saveStatus = document.getElementById('saveStatus');
+            if (saveStatus) saveStatus.textContent = '';
+            selectedDate = date;
+            const data = await getDayData(date);
+            currentModalData = { ...data };
+            
+            document.getElementById('modalTitle').textContent = new Date(date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            document.getElementById('modalWakeTime').value = data.wakeTime || '';
+            document.getElementById('modalSeatTime').value = data.seatTime || '';
+            document.getElementById('modalSleepTime').value = data.sleepTime || '';
+            document.getElementById('modalMorningPomodoro').value = data.pomodoro?.morning || 0;
+            document.getElementById('modalAfternoonPomodoro').value = data.pomodoro?.afternoon || 0;
+            document.getElementById('modalEveningPomodoro').value = data.pomodoro?.evening || 0;
+            document.getElementById('modalWriting').value = (data.writing || 0).toLocaleString('ko-KR');
+            document.getElementById('modalGameTime').value = data.gameTime || 0;
+            document.getElementById('modalOffDay').checked = data.isOffDay;
+            document.getElementById('modalComment').value = data.comment || '';
+            const commentDetails = document.getElementById('commentDetails');
+            if (data.comment) {
+                commentDetails.open = true;
+            } else {
+                commentDetails.open = false;
+            }
+            updateCommentCounter();
+            
+            toggleExercise(data.exercise.done, false);
+            document.getElementById('modalExerciseMinutes').value = data.exercise.minutes || 0;
+            
+            await renderModalPersonalGoals(data);
+            await renderModalExpenses(formatDate(selectedDate));
+            await updateModalScore();
+            
+            const missionSection = document.getElementById('modalMissionSection');
+            if (data.mission) {
+                const missionInfo = MISSIONS_LIST.find(m => m.id === data.mission.id);
+                if (missionInfo) {
+                    missionSection.style.display = 'block';
+                    document.getElementById('modalMissionDesc').textContent = missionInfo.desc;
+                    document.getElementById('modalMissionComplete').checked = data.mission.completed;
+                }
+            } else {
+                missionSection.style.display = 'none';
+            }
+
+            document.getElementById('dayModal').style.display = 'flex';
+        }
+
+function toggleExercise(isDone, shouldAutoSave = true) {
+    const btnYes = document.getElementById('exerciseBtnYes');
+    const btnNo = document.getElementById('exerciseBtnNo');
+    const timeGroup = document.getElementById('modalExerciseTimeGroup');
+    
+    if (isDone) {
+        btnYes.classList.add('active');
+        btnNo.classList.remove('active');
+        timeGroup.style.display = 'block';
+    } else {
+        btnNo.classList.add('active');
+        btnYes.classList.remove('active');
+        timeGroup.style.display = 'none';
+        document.getElementById('modalExerciseMinutes').value = 0; // 운동 안함 선택 시 시간 초기화
+    }
+    
+    // currentModalData의 exercise 상태를 즉시 업데이트합니다.
+    currentModalData.exercise = { 
+        ...currentModalData.exercise, 
+        done: isDone,
+        minutes: isDone ? parseInt(document.getElementById('modalExerciseMinutes').value) || 0 : 0
+    };
+    
+    // 화면의 점수를 업데이트합니다.
+    updateModalScore();
+    
+    // 사용자가 직접 클릭했을 때만 (모달이 처음 열릴 때가 아닐 때) 자동 저장을 호출합니다.
+    if (shouldAutoSave) {
+        autoSaveModalData();
+    }
+}
+
+        async function updateModalScore() {
+            const scoreEl = document.getElementById('modalScore');
+            const isOffDay = document.getElementById('modalOffDay').checked;
+            if (isOffDay) { scoreEl.textContent = '휴식'; scoreEl.classList.add('is-off'); return; }
+            scoreEl.classList.remove('is-off');
+            const data = { 
+                wakeTime: document.getElementById('modalWakeTime').value || null, 
+                seatTime: document.getElementById('modalSeatTime').value || null, 
+                pomodoro: { morning: parseInt(document.getElementById('modalMorningPomodoro').value) || 0, afternoon: parseInt(document.getElementById('modalAfternoonPomodoro').value) || 0, evening: parseInt(document.getElementById('modalEveningPomodoro').value) || 0 }, 
+                exercise: { done: document.getElementById('exerciseBtnYes').classList.contains('active'), minutes: parseInt(document.getElementById('modalExerciseMinutes').value) || 0 }, 
+                gameTime: parseInt(document.getElementById('modalGameTime').value) || 0, 
+                writing: unformatNumber(document.getElementById('modalWriting').value), 
+                sleepTime: document.getElementById('modalSleepTime').value || null, 
+                bonusPoints: currentModalData.bonusPoints 
+            }; 
+            scoreEl.textContent = await calculateScore(data); 
+        }
+
+function getModalDataForSave() {
+    const isOffDay = document.getElementById('modalOffDay').checked;
+    
+    const mission = currentModalData.mission ? { ...currentModalData.mission } : null;
+    if (mission) {
+        const missionCompleteCheckbox = document.getElementById('modalMissionComplete');
+        if (missionCompleteCheckbox) {
+            mission.completed = missionCompleteCheckbox.checked;
+        }
+    }
+
+    const data = {
+        ...currentModalData, 
+        wakeTime: document.getElementById('modalWakeTime').value || null, 
+        seatTime: document.getElementById('modalSeatTime').value || null, 
+        pomodoro: { morning: parseInt(document.getElementById('modalMorningPomodoro').value) || 0, afternoon: parseInt(document.getElementById('modalAfternoonPomodoro').value) || 0, evening: parseInt(document.getElementById('modalEveningPomodoro').value) || 0 }, 
+        exercise: { done: document.getElementById('exerciseBtnYes').classList.contains('active'), minutes: parseInt(document.getElementById('modalExerciseMinutes').value) || 0 }, 
+        gameTime: parseInt(document.getElementById('modalGameTime').value) || 0, 
+        writing: unformatNumber(document.getElementById('modalWriting').value), 
+        sleepTime: document.getElementById('modalSleepTime').value || null, 
+        isOffDay, 
+        mission: mission,
+        comment: document.getElementById('modalComment').value.trim() || ""
+    };
+    return data;
+}
+
+// 자동 저장을 위한 디바운싱 함수 (딜레이 0.5초로 단축 및 피드백 추가)
+const autoSaveModalData = debounce(async () => {
+    if (!selectedDate) return;
+
+    const saveStatus = document.getElementById('saveStatus');
+    if (saveStatus) saveStatus.textContent = '저장 중...';
+
+    const data = getModalDataForSave();
+    
+    data.score = await calculateScore(data);
+    await dbSet(`day_${formatDate(selectedDate)}`, data); // Firestore에 직접 저장
+    
+    // 현재 모달 데이터 업데이트
+    currentModalData = { ...data };
+
+    if (saveStatus) {
+        setTimeout(() => {
+            saveStatus.textContent = '모든 변경사항이 저장되었습니다.';
+        }, 300); // "저장 중..."을 잠시 보여준 후 변경
+    }
+}, 500); // 대기 시간을 1000ms -> 500ms로 수정
+
+
+// 기존 saveModalData를 대체하는 finalizeDay 함수
+async function finalizeDay() {
+    const data = getModalDataForSave();
+
+    // 미션 완료 보너스 점수 계산 (finalize 시점에만)
+    if (data.mission) {
+        const originalData = await getDayData(selectedDate);
+        const wasCompleted = originalData.mission?.completed || false;
+        if (data.mission.completed && !wasCompleted) {
+            const missionInfo = MISSIONS_LIST.find(m => m.id === data.mission.id);
+            if (missionInfo) {
+                data.bonusPoints = (data.bonusPoints || 0) + missionInfo.reward;
+                alert(`미션 완료! 보너스 ${missionInfo.reward}점을 획득했습니다!`);
+            }
+        }
+    }
+
+    // 최종 점수 계산 및 저장
+    data.score = await calculateScore(data);
+    await dbSet(`day_${formatDate(selectedDate)}`, data);
+
+    // 감성 분석 및 명언 팝업
+    const quoteShown = await analyzeSentimentAndShowQuote(selectedDate, data.comment);
+
+    closeDayModal();
+
+    // 점수 피드백 팝업 (명언 팝업이 떴으면 약간 지연)
+    if (!data.isOffDay) {
+        const finalScore = data.score;
+        setTimeout(() => showFeedbackPopup(finalScore), quoteShown ? 1000 : 0);
+    }
+}
+
+// 감성 분석 및 명언 팝업 함수
+async function analyzeSentimentAndShowQuote(date, currentComment) {
+    if (!currentComment) return false;
+
+    const analyze = (comment, type) => SENTIMENT_DATA[type].keywords.some(k => comment.includes(k));
+    
+    const today = new Date(date);
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    const dayBeforeYesterday = new Date(today); dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
+
+    const dataYesterday = await getDayData(yesterday);
+    const dataDayBefore = await getDayData(dayBeforeYesterday);
+
+    for (const type of ['positive', 'negative']) {
+        if (analyze(currentComment, type) && 
+            analyze(dataYesterday.comment, type) && 
+            analyze(dataDayBefore.comment, type)) {
+            
+            const quotes = SENTIMENT_DATA[type].quotes;
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            const options = {
+                class: type === 'positive' ? 'feedback-celebration' : 'feedback-encouragement',
+                emoji: type === 'positive' ? '☀️' : '🌧️',
+                title: randomQuote.title,
+                message: randomQuote.msg
+            };
+            showFeedbackPopup(0, options);
+            return true; // 팝업 표시됨
+        }
+    }
+    return false; // 팝업 표시 안됨
+}
+
+        async function checkForWeeklyReflection(date) {
+            const today = new Date(date);
+            if (today.getDay() !== 0) return;
+
+            const weekDates = getWeekDates(today);
+            const checkKey = `weeklyReflectionChecked_${weekDates[0]}`;
+            if (await dbGet(checkKey)) return;
+
+            const dataPromises = weekDates.map(d => getDayData(parseDate(d)));
+            const weekData = await Promise.all(dataPromises);
+            const validDays = weekData.filter(d => d && !d.isOffDay && d.wakeTime);
+            if (validDays.length === 0) return;
+
+            const avgScore = Math.round(validDays.reduce((sum, d) => sum + (d.score || 0), 0) / validDays.length);
+            if (avgScore < 25) {
+                document.getElementById('reasonModal').style.display = 'flex';
+            }
+            await dbSet(checkKey, true);
+        }
+        function closeReasonModal() { document.getElementById('reasonModal').style.display = 'none'; }
+        function submitReason() { 
+            const reason = document.getElementById('reasonText').value; 
+            closeReasonModal(); 
+            analyzeReason(reason); 
+            document.getElementById('reasonText').value = ''; 
+            unlockAchievement('ACH_META_AWARENESS');
+        }
+        function analyzeReason(reason) {
+            const negative = ['게임', '빈둥', '하기 싫어서', '노느라', '유튜브', '넷플릭스', '뒹굴']; 
+            const acceptable = ['생리', '회사', '업무', '출간', '프로젝트', '마감', '몸살', '병원', '아파서'];
+            let type = 'neutral';
+            if (negative.some(k => reason.includes(k))) type = 'negative'; 
+            else if (acceptable.some(k => reason.includes(k))) type = 'acceptable';
+            let options = {};
+            switch (type) {
+                case 'negative': options = { class: 'feedback-disaster', emoji: '😡', title: '코치의 따끔한 한마디', message: `"${reason.substring(0, 15)}..." 그건 변명입니다. 시간을 지배하지 못하는 자는 결국 시간의 노예가 될 뿐입니다.` }; break;
+                case 'acceptable': options = { class: 'feedback-encouragement', emoji: '👍', title: '이해합니다. 수고했어요.', message: '힘든 상황에서도 기록을 놓지 않은 것만으로도 대단합니다. 잘 추스르고 다음 주에 다시 시작해봅시다.' }; break;
+                default: options = { class: 'feedback-reflection', emoji: '🤔', title: '성찰의 시간', message: '솔직한 답변 고맙습니다. 원인을 파악하고 다음 주에 어떻게 개선할지 계획하는 것이 중요합니다.' }; break;
+            }
+            showFeedbackPopup(0, options);
+        }
+
+        async function deleteModalData() { if (!confirm("정말로 이 날의 데이터를 삭제하시겠습니까?")) return; await dbDelete(`day_${formatDate(selectedDate)}`); closeDayModal(); await renderCalendar(); }
+        async function renderModalPersonalGoals(data) {
+            const allGoals = await getPersonalGoals();
+            const goals = allGoals.filter(goal => {
+                if (goal.isCompleted) return false;
+                const goalCreatedDate = new Date(goal.createdAt);
+                goalCreatedDate.setHours(0, 0, 0, 0); 
+                return goalCreatedDate <= selectedDate;
+            });
+            const container = document.getElementById('modalPersonalGoalsList');
+            if (goals.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; font-size:13px;">진행 중인 개인 목표가 없습니다.</p>';
+                return;
+            }
+            const personalGoalsData = data.personalGoals || {};
+            container.innerHTML = goals.map(goal => {
+                const achieved = personalGoalsData[goal.id] || 0;
+                let percentage = 0;
+                if (goal.type === 'negative') {
+                    const usageRatio = achieved / goal.target;
+                    percentage = Math.max(0, (1 - usageRatio) * 100);
+                } else {
+                    percentage = Math.min(100, (achieved / goal.target) * 100);
+                }
+                const emoji = getEmojiForAchievement(percentage);
+                return `<div class="personal-goal-checkbox"><div style="flex: 1;"><div style="font-weight: 600; font-size:13px; margin-bottom: 5px;">${goal.name} ${goal.type === 'negative' ? '👎' : '👍'}</div><div style="display: flex; align-items: center; gap: 10px;"><input type="number" id="goal_${goal.id}" value="${achieved}" min="0" onchange="updatePersonalGoalProgress('${goal.id}', this.value)" style="width: 70px; padding: 5px; border: 1px solid #ddd; border-radius: 5px; font-size:12px;"><span>/ ${goal.target}${goal.unit}</span><span style="color: #666; font-size: 12px;">(${Math.round(percentage)}%)</span></div></div><div class="goal-emoji">${emoji}</div></div>`;
+            }).join('');
+        }
+        async function updatePersonalGoalProgress(goalId, value) { const achieved = Math.max(0, parseInt(value) || 0); currentModalData.personalGoals = currentModalData.personalGoals || {}; currentModalData.personalGoals[goalId] = achieved; const goals = await getPersonalGoals(); const goal = goals.find(g => g.id === goalId); if (!goal) return; 
+            let percentage = 0;
+            if (goal.type === 'negative') {
+                const usageRatio = achieved / goal.target;
+                percentage = Math.max(0, (1 - usageRatio) * 100);
+            } else {
+                percentage = Math.min(100, (achieved / goal.target) * 100);
+            }
+            const emoji = getEmojiForAchievement(percentage); const container = document.querySelector(`#goal_${goal.id}`).closest('.personal-goal-checkbox'); container.querySelector('.goal-emoji').textContent = emoji; container.querySelector('span:last-of-type').textContent = `(${Math.round(percentage)}%)`; 
+            autoSaveModalData();
+        }
+        
+// 글쓰기 마일스톤 체크 함수
+async function checkWritingMilestone(newlyAddedChars) {
+    if (!newlyAddedChars || newlyAddedChars <= 0) return;
+    let currentProgress = await dbGet('writingMilestoneProgress') || 0;
+    currentProgress += newlyAddedChars;
+    const MILESTONE_GOAL = 120000;
+    if (currentProgress >= MILESTONE_GOAL) {
+        showFeedbackPopup(100, {
+            class: 'feedback-celebration',
+            emoji: '✍️',
+            title: '원고 완성!',
+            message: '축하합니다! 책 한 권 분량의 글이 완성되었습니다. 당신은 진정한 작가입니다!'
+        });
+        await dbSet('writingMilestoneProgress', 0);
+    } else {
+        await dbSet('writingMilestoneProgress', currentProgress);
+    }
+}
+
+function addWeeklyWritingSummary(cellDate, container, dataMap) {
+    const weekDates = getWeekDates(cellDate);
+    let weeklyWritingTotal = 0;
+    
+    for (const dateStr of weekDates) {
+        const weeklyDayData = dataMap.get(`day_${dateStr}`);
+        if (weeklyDayData) {
+            weeklyWritingTotal += weeklyDayData.writing || 0;
+        }
+    }
+    
+    if (weeklyWritingTotal > 0) {
+        const bookCount = (weeklyWritingTotal / 100000).toFixed(2);
+        container.innerHTML += `<span>📖${bookCount}</span>`;
+    }
+}
+        async function addPersonalGoal() { const name = document.getElementById('newGoalName').value.trim(), target = unformatNumber(document.getElementById('newGoalTarget').value), unit = document.getElementById('newGoalUnit').value.trim(); if (!name || !target || !unit) return alert('모든 필드를 입력해주세요!'); const goals = await getPersonalGoals(); goals.push({ id: Date.now().toString(), name, target, unit, createdAt: new Date().toISOString(), isCompleted: false, type: newGoalType }); await dbSet('personalGoals', goals); document.getElementById('newGoalName').value = ''; document.getElementById('newGoalTarget').value = ''; document.getElementById('newGoalUnit').value = ''; await renderPersonalGoalsList(); }
+        function toggleGoalType(type) {
+            newGoalType = type;
+            const positiveBtn = document.getElementById('goalTypePositive');
+            const negativeBtn = document.getElementById('goalTypeNegative');
+            const targetLabel = document.querySelector('label[for="newGoalTarget"]');
+
+            if (type === 'positive') {
+                positiveBtn.classList.add('active');
+                negativeBtn.classList.remove('active');
+                targetLabel.textContent = '목표량';
+            } else {
+                negativeBtn.classList.add('active');
+                positiveBtn.classList.remove('active');
+                targetLabel.textContent = '최대 허용량';
+            }
+        }
+        async function deletePersonalGoal(goalId) { if (!confirm('이 목표를 삭제하시겠습니까?')) return; const goals = (await getPersonalGoals()).filter(goal => goal.id !== goalId); await dbSet('personalGoals', goals); await renderPersonalGoalsList(); }
+        function switchGoalTab(tabName) { currentGoalTab = tabName; document.querySelectorAll('.goal-tab').forEach(tab => tab.classList.remove('active')); document.querySelector(`.goal-tab[onclick="switchGoalTab('${tabName}')"]`).classList.add('active'); renderPersonalGoalsList(); }
+        async function renderPersonalGoalsList() { 
+            const allGoals = await getPersonalGoals(); 
+            const goals = allGoals.filter(goal => currentGoalTab === 'active' ? !goal.isCompleted : goal.isCompleted); 
+            const container = document.getElementById('personalGoalsList'); 
+            if (goals.length === 0) { 
+                const emptyMessage = currentGoalTab === 'active' ? '<p>아직 진행 중인 목표가 없습니다.</p><p>아래에서 새 목표를 추가해보세요!</p>' : '<p>완료된 목표가 없습니다.</p><p>목표를 달성하고 완료 표시를 해보세요!</p>'; 
+                container.innerHTML = `<div class="empty-goals"><div style="font-size: 48px; margin-bottom: 15px;">🎯</div>${emptyMessage}</div>`; 
+                const addGoalSection = document.querySelector('#personalGoalsPage .modal-input-group');
+                if (addGoalSection) { addGoalSection.style.display = currentGoalTab === 'completed' ? 'none' : 'block'; }
+                return; 
+            } 
+            container.innerHTML = goals.map(goal => { 
+                const actionButton = currentGoalTab === 'active' ? `<button class="complete-btn" onclick="completePersonalGoal('${goal.id}')">완료</button>` : `<button class="reopen-btn" onclick="reopenPersonalGoal('${goal.id}')">재개</button>`; 
+                const statusText = currentGoalTab === 'completed' && goal.completedAt ? `완료일: ${new Date(goal.completedAt).toLocaleDateString('ko-KR')}` : `생성일: ${new Date(goal.createdAt).toLocaleDateString('ko-KR')}`; 
+                return `<div class="personal-goal-item"><div class="personal-goal-header"><div class="personal-goal-name">${goal.name} ${goal.type === 'negative' ? '👎' : '👍'} (${goal.target}${goal.unit}) ${goal.isCompleted ? '✅' : ''}</div><div class="personal-goal-actions" style="display:flex; gap:5px;">${currentGoalTab === 'active' ? `<button class="edit-btn" onclick="editPersonalGoal('${goal.id}')">수정</button>` : ''}${actionButton}<button class="delete-btn" onclick="deletePersonalGoal('${goal.id}')">삭제</button></div></div><small style="color: #666;">${statusText}</small></div>`; 
+            }).join(''); 
+            const addGoalSection = document.querySelector('#personalGoalsPage .modal-input-group');
+            if (addGoalSection) { addGoalSection.style.display = currentGoalTab === 'completed' ? 'none' : 'block'; }
+        }
+        async function completePersonalGoal(goalId) { if (!confirm('이 목표를 완료로 표시하시겠습니까?')) return; const goals = await getPersonalGoals(); const goal = goals.find(g => g.id === goalId); if (goal) { goal.isCompleted = true; goal.completedAt = new Date().toISOString(); await dbSet('personalGoals', goals); await renderPersonalGoalsList(); } }
+        async function reopenPersonalGoal(goalId) { if (!confirm('이 목표를 다시 진행 중으로 변경하시겠습니까?')) return; const goals = await getPersonalGoals(); const goal = goals.find(g => g.id === goalId); if (goal) { goal.isCompleted = false; delete goal.completedAt; await dbSet('personalGoals', goals); await renderPersonalGoalsList(); } }
+        async function editPersonalGoal(goalId) { const goals = await getPersonalGoals(); const goal = goals.find(g => g.id === goalId); if (!goal) return; const newName = prompt('목표 이름을 수정하세요:', goal.name); if (!newName || !newName.trim()) return; const newTarget = prompt('목표량을 수정하세요:', goal.target); if (!newTarget || isNaN(newTarget) || newTarget <= 0) return; const newUnit = prompt('단위를 수정하세요:', goal.unit); if (!newUnit || !newUnit.trim()) return; goal.name = newName.trim(); goal.target = parseInt(newTarget); goal.unit = newUnit.trim(); await dbSet('personalGoals', goals); await renderPersonalGoalsList(); }
+
+        async function renderSmallBudgetBar() { const budget = await dbGet('monthlyBudget'); const budgetContainer = document.getElementById('budgetBarSmall'); const budgetFill = document.getElementById('budgetBarFillSmall'); if (!budget) { budgetContainer.style.display = 'none'; return; } const { start, end } = getMonthDateRange(currentDate); const allData = await dbGetAll(); const expenses = allData.filter(item => item.key.startsWith('expense_') && item.value.date >= start && item.value.date <= end); const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0); const percentage = budget > 0 ? (totalSpent / budget) * 100 : 0; let colorClass = 'green'; if (percentage > 100) colorClass = 'black'; else if (percentage > 85) colorClass = 'red'; else if (percentage > 70) colorClass = 'yellow'; budgetFill.className = `battery-level ${colorClass}`; budgetFill.style.width = `${Math.min(percentage, 100)}%`; budgetContainer.style.display = 'flex'; budgetContainer.title = `예산: ${formatCurrency(budget)} / 지출: ${formatCurrency(totalSpent)}`; }
+        async function renderBudgetBar(containerId = 'budgetDetailBar') { const container = document.getElementById(containerId); if (!container) return; container.innerHTML = ''; const budget = await dbGet('monthlyBudget'); if (!budget) return; const { start, end } = getMonthDateRange(currentDate); const allData = await dbGetAll(); const expenses = allData.filter(item => item.key.startsWith('expense_') && item.value.date >= start && item.value.date <= end); const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0); const percentage = budget > 0 ? (totalSpent / budget) * 100 : 0; let colorClass = 'green'; if (percentage > 100) colorClass = 'black'; else if (percentage > 85) colorClass = 'red'; else if (percentage > 70) colorClass = 'yellow'; container.innerHTML = `<div style="width:100%; height:8px; background:#eee; border-radius:4px; overflow:hidden;"><div style="width:${Math.min(percentage, 100)}%; height:100%; background:var(--${colorClass}-color)"></div></div>`; }
+        async function renderBudgetPage() { await renderExpenseList(); }
+async function renderExpenseList() {
+    const container = document.getElementById('expenseList');
+    const { start, end } = getMonthDateRange(currentDate);
+    const allData = await dbGetAll();
+    const budget = await dbGet('monthlyBudget') || 0;
+    const expenses = allData
+        .filter(item => item.key.startsWith('expense_') && item.value.date >= start && item.value.date <= end)
+        .map(item => ({ ...item.value, id: item.key }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (expenses.length === 0) {
+        container.innerHTML = `<div class="empty-expenses"><p>이번 달 지출 내역이 없습니다.</p></div>`;
+        return;
+    }
+
+    const totalAmount = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+    
+    // 영수증 스타일 HTML 생성
+    let receiptHTML = `
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <div class="receipt-title">
+                <h3>🧾 영수증</h3>
+                <div class="budget-info">
+                    <span>예산: ${formatCurrency(budget || 0)}</span>
+                    <span>잔액: ${formatCurrency((budget || 0) - totalAmount)}</span>
+                </div>
+            </div>
+            <p>${currentDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}</p>
+        </div>
+`;
+
+    expenses.forEach(ex => {
+        const dateObj = new Date(ex.date);
+        const formattedDate = `${String(dateObj.getFullYear()).slice(-2)}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${String(dateObj.getDate()).padStart(2, '0')}`;
+        
+        receiptHTML += `
+            <div class="receipt-item">
+                <span class="receipt-date">${formattedDate}</span>
+                <span class="receipt-desc">${ex.description}</span>
+                <span class="receipt-amount">${formatCurrency(ex.amount)}</span>
+            </div>
+        `;
+    });
+    
+    receiptHTML += `
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-total">
+                <span>총 지출</span>
+                <span>₩${nf.format(totalAmount)}</span>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = receiptHTML;
+}
+        async function renderModalExpenses(dateString) { const container = document.getElementById('modalExpenseList'); const allData = await dbGetAll(); const expenses = allData.filter(item => item.key.startsWith('expense_') && item.value.date === dateString).map(item => ({ ...item.value, id: item.key })); if (expenses.length === 0) { container.innerHTML = `<p style="text-align:center; color:#999; font-size:12px; padding:10px 0;">오늘 지출 내역 없음</p>`; } else { container.innerHTML = expenses.map(ex => `<div class="expense-item"><span>${ex.description}</span><div><span style="margin-right:10px;">${formatCurrency(ex.amount)}</span><button class="expense-delete-btn" style="background:var(--danger-color); border:none; color:white; border-radius:50%; width:18px; height:18px; cursor:pointer;" onclick="deleteExpense('${ex.id}', '${dateString}')">×</button></div></div>`).join(''); } const total = expenses.reduce((sum, ex) => sum + ex.amount, 0); document.getElementById('modalTotalExpense').textContent = `오늘 총 지출: ${formatCurrency(total)}`; }
+        async function addExpense() { 
+            const desc = document.getElementById('expenseDesc').value.trim(); 
+            const amount = unformatNumber(document.getElementById('expenseAmount').value); 
+            if (!desc || !amount || amount <= 0) return alert('내역과 금액을 올바르게 입력해주세요.'); 
+    
+            const expenseId = `expense_${Date.now()}`; 
+            const expenseData = { date: formatDate(selectedDate), description: desc, amount: amount }; 
+            await dbSet(expenseId, expenseData); 
+    
+            document.getElementById('expenseDesc').value = ''; 
+            document.getElementById('expenseAmount').value = ''; 
+            await renderModalExpenses(formatDate(selectedDate)); 
+            await renderSmallBudgetBar(); 
+            
+            const isFood = foodKeywords.some(keyword => desc.toLowerCase().includes(keyword.toLowerCase()));
+            if (isFood) {
+                currentFoodExpenseData = { expenseId, expenseData };
+                showFoodSuggestion(desc);
+            } else {
+                await checkBudgetAndShowPopup();
+            }
+        }
+        async function deleteExpense(id, dateString) { 
+            if (!confirm('이 지출 내역을 삭제하시겠습니까? 연관된 식단 기록도 함께 삭제됩니다.')) return;
+            const allData = await dbGetAll();
+            const relatedFoodRecords = allData.filter(item => item.key.startsWith('food_') && item.value.expenseId === id);
+            for (const foodRecord of relatedFoodRecords) { await dbDelete(foodRecord.key); }
+            await dbDelete(id); 
+            await renderModalExpenses(dateString); 
+            await renderSmallBudgetBar(); 
+            if (relatedFoodRecords.length > 0 && document.getElementById('foodPage').classList.contains('active')) {
+                await renderFoodRecords();
+            }
+        }
+        
+        async function renderDdayDisplay() {
+            const ddays = await dbGet('ddayGoals') || [];
+            const ddayContainer = document.getElementById('ddayContainer');
+            ddayContainer.innerHTML = '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            ddays.slice(0, 3).forEach(dday => {
+                const targetDate = parseDate(dday.date);
+                const diffTime = targetDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let displayString = diffDays === 0 ? `${dday.name} D-Day` : diffDays > 0 ? `${dday.name} D-${diffDays}` : `${dday.name} D+${-diffDays}`;
+                const chip = document.createElement('div');
+                chip.className = 'dday-chip';
+                chip.textContent = displayString;
+                chip.style.display = 'block';
+                ddayContainer.appendChild(chip);
+            });
+        }
+        async function renderDdaySettings() {
+            const ddays = await dbGet('ddayGoals') || [];
+            const container = document.getElementById('ddaySettingsList');
+            container.innerHTML = '';
+            ddays.forEach(dday => {
+                container.innerHTML += `<div class="dday-item"><span><strong>${dday.name}</strong> (${dday.date})</span><div class="dday-actions"><button onclick="editDday('${dday.id}')" title="수정">✏️</button><button onclick="deleteDday('${dday.id}')" title="삭제">🗑️</button></div></div>`;
+            });
+            document.getElementById('addDdayBtn').style.display = ddays.length < 3 ? 'block' : 'none';
+        }
+        async function addDday() { const ddays = await dbGet('ddayGoals') || []; if (ddays.length >= 3) { alert("D-Day는 최대 3개까지만 설정할 수 있습니다."); return; } const name = prompt("D-Day의 이름을 입력하세요:"); if (!name) return; const date = prompt("날짜를 입력하세요 (YYYY-MM-DD 형식):"); if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { alert("올바른 날짜 형식이 아닙니다."); return; } ddays.push({ id: Date.now().toString(), name: name, date: date }); await dbSet('ddayGoals', ddays); await renderDdaySettings(); await renderDdayDisplay(); }
+        async function editDday(id) { const ddays = await dbGet('ddayGoals') || []; const dday = ddays.find(d => d.id === id); if (!dday) return; const newName = prompt("새 D-Day 이름을 입력하세요:", dday.name); if (!newName) return; const newDate = prompt("새 날짜를 입력하세요 (YYYY-MM-DD 형식):", dday.date); if (!newDate || !/^\d{4}-\d{2}-\d{2}$/.test(newDate)) { alert("올바른 날짜 형식이 아닙니다."); return; } dday.name = newName; dday.date = newDate; await dbSet('ddayGoals', ddays); await renderDdaySettings(); await renderDdayDisplay(); }
+        async function deleteDday(id) { if (!confirm("정말로 이 D-Day를 삭제하시겠습니까?")) return; let ddays = await dbGet('ddayGoals') || []; ddays = ddays.filter(d => d.id !== id); await dbSet('ddayGoals', ddays); await renderDdaySettings(); await renderDdayDisplay(); }
+        
+        async function exportData() { const allData = await dbGetAll(); const exportObject = {}; allData.forEach(item => { exportObject[item.key] = item.value; }); const dataStr = JSON.stringify(exportObject, null, 2); const dataBlob = new Blob([dataStr], {type: 'application/json'}); const url = URL.createObjectURL(dataBlob); const link = document.createElement('a'); link.href = url; link.download = `routine_data_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); alert('데이터 내보내기가 완료되었습니다.'); }
+        function importData(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { try { const data = JSON.parse(e.target.result); if (!confirm("정말로 데이터를 불러오시겠습니까? 현재 기록이 백업 파일로 덮어쓰여집니다.")) { event.target.value = ''; return; } await dbClear(); for (const key in data) { if (Object.hasOwnProperty.call(data, key)) { await dbSet(key, data[key]); } } alert("데이터를 성공적으로 불러왔습니다! 앱을 다시 시작합니다."); location.reload(); } catch (error) { alert("파일을 읽는 데 실패했습니다."); event.target.value = ''; } }; reader.readAsText(file); }
+
+        function openExcelModal() { document.getElementById('excelExportModal').style.display = 'flex'; }
+        function closeExcelModal() { document.getElementById('excelExportModal').style.display = 'none'; }
+        function toggleDateInputs(show) { document.getElementById('customDateRange').style.display = show ? 'flex' : 'none'; }
+        
+        // 오늘의 한마디 기록 보기 페이지를 보여주는 함수
+        async function showCommentHistory() { showPage('commentHistoryPage'); await renderCommentHistory(); }
+
+// 오늘의 한마디 글자 수 카운터 및 색상 변경 함수
+function updateCommentCounter() {
+    const commentInput = document.getElementById('modalComment');
+    const counter = document.getElementById('commentCharCounter');
+    
+    const currentLength = commentInput.value.length;
+    const maxLength = commentInput.maxLength;
+    counter.textContent = `${currentLength}/${maxLength}`;
+
+    if (currentLength >= maxLength) {
+        commentInput.style.borderColor = 'var(--danger-color)';
+        counter.style.color = 'var(--danger-color)';
+    } else if (currentLength >= 400) {
+        commentInput.style.borderColor = 'var(--warning-color)';
+        counter.style.color = 'var(--warning-color)';
+    } else {
+        commentInput.style.borderColor = 'var(--border-color)';
+        counter.style.color = 'var(--text-color-light)';
+    }
+}
+
+// 오늘의 한마디 기록을 렌더링하는 함수
+async function renderCommentHistory() {
+    const container = document.getElementById('commentHistoryList');
+    const allData = await dbGetAll();
+    const comments = allData
+        .filter(item => item.key.startsWith('day_') && item.value.comment)
+        .map(item => item.value)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    if (comments.length === 0) {
+        container.innerHTML = `<div class="empty-comments"><p>아직 기록된 한마디가 없습니다.</p></div>`;
+        return;
+    }
+
+    container.innerHTML = comments.map(day => {
+        const dateObj = parseDate(day.date);
+        const formattedDate = dateObj.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+        // HTML Injection을 막기 위해 텍스트를 안전하게 처리
+        const safeComment = document.createElement('div');
+        safeComment.innerText = day.comment;
+
+        return `
+            <div class="comment-item">
+                <div class="comment-item-header">${formattedDate}</div>
+                <div class="comment-item-body">${safeComment.innerHTML.replace(/\n/g, '<br>')}</div>
+            </div>
+        `;
+    }).join('');
+}
+        
+async function exportToExcel() {
+    alert('엑셀 파일을 생성 중입니다. 데이터 양에 따라 시간이 걸릴 수 있습니다.');
+    const period = document.querySelector('input[name="period"]:checked').value;
+    let startDate, endDate;
+    const today = new Date();
+    
+    switch (period) {
+        case 'thisMonth': startDate = new Date(today.getFullYear(), today.getMonth(), 1); endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); break;
+        case 'lastMonth': startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1); endDate = new Date(today.getFullYear(), today.getMonth(), 0); break;
+        case 'custom': startDate = document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value) : null; endDate = document.getElementById('endDate').value ? new Date(document.getElementById('endDate').value) : null; if (!startDate || !endDate) { alert('시작일과 종료일을 모두 선택해주세요.'); return; } endDate.setHours(23, 59, 59, 999); break;
+        default: startDate = new Date('1970-01-01'); endDate = new Date('2999-12-31'); break;
+    }
+    
+    const startDateStr = formatDate(startDate);
+    const endDateStr = formatDate(endDate);
+
+    const allData = await dbGetAll();
+    const routineData = allData.filter(item => item.key.startsWith('day_') && item.value.date >= startDateStr && item.value.date <= endDateStr).map(item => item.value);
+    const expenseData = allData.filter(item => item.key.startsWith('expense_') && item.value.date >= startDateStr && item.value.date <= endDateStr).map(item => item.value);
+
+    // '오늘의 한마디' 헤더 추가
+    const sheet1Headers = ['날짜 (요일)', '점수', '개인목표(%)', '기상 시간', '착석 시간', '취침 시간', '총 뽀모도로', '운동 여부', '운동 시간(분)', '글쓰기(자)', '게임 시간(분)', '휴식일', '오늘의 한마디', '경고'];
+    const sheet1Rows = [sheet1Headers];
+    for (const day of routineData.sort((a,b) => a.date.localeCompare(b.date))) {
+        const dateObj = parseDate(day.date);
+        const dayOfWeek = ['일','월','화','수','목','금','토'][dateObj.getDay()];
+        let warnings = [];
+        if (!day.isOffDay && day.score < 40) warnings.push('점수 미흡');
+        if (day.gameTime > 120) warnings.push('게임 초과');
+
+        // '오늘의 한마디' 데이터 행 추가
+        sheet1Rows.push([ 
+            `${day.date} (${dayOfWeek})`, 
+            day.score, 
+            await calculatePersonalGoalAverage(day, day.date) + '%', 
+            day.wakeTime || '', 
+            day.seatTime || '', 
+            day.sleepTime || '', 
+            (day.pomodoro?.morning || 0) + (day.pomodoro?.afternoon || 0) + (day.pomodoro?.evening || 0), 
+            day.exercise?.done ? 'O' : 'X', 
+            day.exercise?.minutes || 0, 
+            day.writing || 0, 
+            day.gameTime || 0, 
+            day.isOffDay ? 'O' : '',
+            day.comment || '',
+            warnings.join(', ') 
+        ]);
+    }
+
+    const monthlyBudget = await dbGet('monthlyBudget') || 0;
+    const totalSpent = expenseData.reduce((sum, ex) => sum + ex.amount, 0);
+    const budgetRate = monthlyBudget > 0 ? ((totalSpent / monthlyBudget) * 100).toFixed(1) + '%' : 'N/A';
+    const sheet2Summary = [ ['조회 기간', `${startDateStr} ~ ${endDateStr}`], ['월 설정 예산', `₩${nf.format(monthlyBudget)}`], ['총 지출', `₩${nf.format(totalSpent)}`], ['예산 달성률', budgetRate], [] ];
+    const sheet2Headers = ['날짜', '지출 내역', '금액'];
+    const sheet2Rows = expenseData.sort((a,b) => a.date.localeCompare(b.date)).map(ex => [ex.date, ex.description, ex.amount]);
+    
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.aoa_to_sheet(sheet1Rows);
+    const ws2 = XLSX.utils.aoa_to_sheet(sheet2Summary);
+    XLSX.utils.sheet_add_aoa(ws2, [sheet2Headers, ...sheet2Rows], { origin: 'A6' });
+    
+    ws1['!cols'] = sheet1Headers.map(h => ({ wch: h.length > 10 ? 20 : 12 }));
+    // 오늘의 한마디 컬럼 넓게 설정 (12번 컬럼)
+    if (ws1['!cols'][12]) ws1['!cols'][12].wch = 50; 
+
+    ws2['!cols'] = [{wch: 15}, {wch: 30}, {wch: 15}];
+
+    XLSX.utils.book_append_sheet(wb, ws1, '종합 루틴 기록');
+    XLSX.utils.book_append_sheet(wb, ws2, '가계부');
+
+    XLSX.writeFile(wb, `루틴트래커_기록_${formatDate(new Date())}.xlsx`);
+    closeExcelModal();
+    unlockAchievement('ACH_EXCEL_GURU');
+}
+
+        let editingFoodRecordId = null; 
+
+        function showFoodSuggestion(expenseDesc) {
+            document.getElementById('foodNameInput').value = expenseDesc;
+            document.getElementById('foodQuantityInput').value = '1';
+            document.getElementById('foodSuggestionModal').style.display = 'flex';
+        }
+        function closeFoodSuggestion() {
+            document.getElementById('foodSuggestionModal').style.display = 'none';
+        }
+        async function saveFoodRecord() {
+            const foodName = document.getElementById('foodNameInput').value.trim();
+            const quantity = document.getElementById('foodQuantityInput').value.trim();
+            const unit = document.getElementById('foodUnitSelect').value;
+            if (!foodName || !quantity) return alert('음식 이름과 양을 입력해주세요!');
+            const recordDate = currentFoodExpenseData?.expenseData?.date;
+            if (!recordDate) return alert('오류: 식단을 기록할 날짜 정보를 찾을 수 없습니다.');
+            
+            const foodRecord = {
+                id: `food_${Date.now()}`, date: recordDate, time: new Date().toTimeString().slice(0, 5),
+                foodName, quantity, unit, expenseId: currentFoodExpenseData?.expenseId || null
+            };
+            await dbSet(foodRecord.id, foodRecord);
+            closeFoodSuggestion();
+            alert('식단이 기록되었습니다! 🍽️');
+            if (document.getElementById('foodPage').classList.contains('active')) await renderFoodRecords();
+        }
+
+        function getFoodEmoji(foodName) {
+            const lowerFoodName = foodName.toLowerCase();
+            const emojiKeywordMap = {
+                '☕': ['커피', '아메리카노', '라떼', '카푸치노', '에스프레소'], '🥤': ['스무디', '자바칩', '프라푸치노', '프라페', '주스', '에이드', '콜라', '사이다', '탄산'], '🧋': ['버블티', '밀크티'], '🍞': ['빵', '베이글', '토스트'], '🥐': ['크로와상', '베이커리', '파이'], '🍩': ['도넛', '던킨'], '🍕': ['피자'], '🍔': ['햄버거', '버거'], '🍗': ['치킨', '닭강정', '윙'], '🥗': ['샐러드'], '🍦': ['아이스크림', '젤라또', '빙수'], '🍰': ['케이크', '조각케익', '타르트'], '🍙': ['김밥', '주먹밥'], '🍜': ['라면', '국수', '우동'], '🥘': ['마라탕'], '🍝': ['파스타', '스파게티'], '🍢': ['떡볶이', '오뎅', '어묵'], '🍣': ['스시', '초밥', '회'], '🍿': ['스낵', '과자'], '🍹': ['칵테일'], '🍺': ['맥주', '술'], '🍤': ['튀김', '돈까스', '돈가스', '카츠', '탕수육'], '🍚': ['한식'], '🍛': ['덮밥', '카레'], '🍫': ['초콜릿'], '🍬': ['캔디'], '🍠': ['간식']
+            };
+            let lastMatch = { emoji: '🍽️', position: -1 };
+            for (const [emoji, keywords] of Object.entries(emojiKeywordMap)) {
+                for (const keyword of keywords) {
+                    const currentPosition = lowerFoodName.lastIndexOf(keyword);
+                    if (currentPosition > -1 && currentPosition > lastMatch.position) {
+                        lastMatch = { emoji: emoji, position: currentPosition };
+                    }
+                }
+            }
+            return lastMatch.emoji;
+        }
+
+        async function showFoodPage() {
+            showPage('foodPage');
+            foodManageMode = false;
+            const btn = document.getElementById('foodManageBtn');
+            btn.textContent = '🔧 관리';
+            btn.classList.remove('danger');
+            document.getElementById('foodRecordsList').classList.remove('admin-mode');
+            await renderFoodRecords();
+        }
+
+        async function renderFoodRecords() {
+            const container = document.getElementById('foodRecordsList');
+            container.innerHTML = '';
+            const allData = await dbGetAll();
+            const foodRecords = allData.filter(item => item.key.startsWith('food_')).map(item => item.value).sort((a, b) => new Date(`${b.date}T${b.time || '00:00'}`) - new Date(`${a.date}T${a.time || '00:00'}`));
+
+            if (foodRecords.length === 0) {
+                container.innerHTML = `<div class="empty-goals" style="margin-top: 20px;"><div style="font-size: 48px; margin-bottom: 15px;">🥗</div><p>아직 기록된 식단이 없습니다.</p><p>위 버튼으로 추가해보세요!</p></div>`;
+                return;
+            }
+
+            const groupedRecords = foodRecords.reduce((acc, record) => { (acc[record.date] = acc[record.date] || []).push(record); return acc; }, {});
+            let finalHtml = '';
+            Object.keys(groupedRecords).sort().reverse().forEach(date => {
+                const dateObj = parseDate(date);
+                const dayOfWeek = ['일','월','화','수','목','금','토'][dateObj.getDay()];
+                finalHtml += `<div class="food-date-header"><span>${date} (${dayOfWeek})</span></div>`;
+                groupedRecords[date].forEach(record => {
+                    finalHtml += `
+                        <div class="food-record-item">
+                            <div class="food-time">${record.time}</div>
+                            <div class="food-emoji">${getFoodEmoji(record.foodName)}</div>
+                            <div class="food-name">${record.foodName}</div>
+                            <div class="food-quantity">${record.quantity}${record.unit}</div>
+                            <div class="food-admin-actions">
+                                <button class="edit" onclick="editFoodRecord('${record.id}')">✏️</button>
+                                <button class="delete" onclick="deleteFoodRecord('${record.id}')">🗑️</button>
+                            </div>
+                        </div>`;
+                });
+            });
+            container.innerHTML = finalHtml;
+        }
+
+        function showAddFoodModal() {
+            editingFoodRecordId = null;
+            document.getElementById('manualFoodModalTitle').textContent = '🍽️ 식단 기록 추가';
+            const today = new Date();
+            document.getElementById('manualFoodDate').value = formatDate(today);
+            document.getElementById('manualFoodTime').value = today.toTimeString().slice(0, 5);
+            document.getElementById('manualFoodName').value = '';
+            document.getElementById('manualFoodQuantity').value = '1';
+            document.getElementById('manualFoodUnit').selectedIndex = 0;
+            document.getElementById('manualFoodModal').style.display = 'flex';
+        }
+
+        async function editFoodRecord(recordId) {
+            editingFoodRecordId = recordId;
+            const record = await dbGet(recordId);
+            if (!record) return alert('기록을 찾을 수 없습니다.');
+            document.getElementById('manualFoodModalTitle').textContent = '🍽️ 식단 기록 수정';
+            document.getElementById('manualFoodDate').value = record.date;
+            document.getElementById('manualFoodTime').value = record.time;
+            document.getElementById('manualFoodName').value = record.foodName;
+            document.getElementById('manualFoodQuantity').value = record.quantity;
+            document.getElementById('manualFoodUnit').value = record.unit;
+            document.getElementById('manualFoodModal').style.display = 'flex';
+        }
+
+        function closeManualFoodModal() {
+            document.getElementById('manualFoodModal').style.display = 'none';
+            editingFoodRecordId = null;
+        }
+        async function saveManualFoodRecord() {
+            const date = document.getElementById('manualFoodDate').value;
+            const time = document.getElementById('manualFoodTime').value;
+            const foodName = document.getElementById('manualFoodName').value.trim();
+            const quantity = document.getElementById('manualFoodQuantity').value.trim();
+            const unit = document.getElementById('manualFoodUnit').value;
+            if (!date || !time || !foodName || !quantity) return alert('모든 필드를 입력해주세요!');
+            
+            const recordId = editingFoodRecordId || `food_${Date.now()}`;
+            const foodRecord = { id: recordId, date, time, foodName, quantity, unit, expenseId: null };
+            
+            await dbSet(recordId, foodRecord);
+            closeManualFoodModal();
+            alert(`식단이 ${editingFoodRecordId ? '수정' : '기록'}되었습니다! 🍽️`);
+            await renderFoodRecords();
+        }
+
+        function toggleFoodManageMode() {
+            foodManageMode = !foodManageMode;
+            const btn = document.getElementById('foodManageBtn');
+            const listContainer = document.getElementById('foodRecordsList');
+            if (foodManageMode) {
+                btn.textContent = '✅ 관리모드 종료';
+                btn.classList.add('danger');
+                listContainer.classList.add('admin-mode');
+            } else {
+                btn.textContent = '🔧 관리';
+                btn.classList.remove('danger');
+                listContainer.classList.remove('admin-mode');
+            }
+        }
+
+        async function deleteFoodRecord(recordId) {
+            if (!confirm('이 식단 기록을 삭제하시겠습니까?')) return;
+            await dbDelete(recordId);
+            await renderFoodRecords();
+        }
+
+        function closeFoodExportModal() {
+            document.getElementById('foodExportModal').style.display = 'none';
+        }
+        async function exportFoodAsImage() {
+            const startDateStr = prompt("내보내기 시작 날짜를 입력하세요 (YYYY-MM-DD)", formatDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)));
+            if (!startDateStr) return;
+            const endDateStr = prompt("내보내기 종료 날짜를 입력하세요 (YYYY-MM-DD)", formatDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)));
+            if (!endDateStr) return;
+            
+            const allData = await dbGetAll();
+            const foodRecords = allData
+                .filter(item => item.key.startsWith('food_') && item.value.date >= startDateStr && item.value.date <= endDateStr)
+                .map(item => item.value)
+                .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
+
+            if (foodRecords.length === 0) {
+                alert("해당 기간에 기록된 식단이 없습니다.");
+                return;
+            }
+            const previewContainer = document.getElementById('foodExportPreview');
+            const groupedRecords = foodRecords.reduce((acc, record) => {
+                (acc[record.date] = acc[record.date] || []).push(record);
+                return acc;
+            }, {});
+
+            // 기존 html 생성 부분을 모두 삭제하고 아래로 교체
+        let html = `
+        <div class="food-receipt-header">
+            <div class="food-receipt-title">
+                <h3>🍽️ 나의 식단 기록</h3>
+            </div>
+            <p>${startDateStr} ~ ${endDateStr}</p>
+        </div>
+        <div class="food-receipt-divider"></div>
+        <div class="food-receipt-items">`;
+
+        Object.keys(groupedRecords).sort().forEach(date => {
+            const dateObj = parseDate(date);
+            const dayOfWeek = ['일','월','화','수','목','금','토'][dateObj.getDay()];
+            html += `<div class="food-receipt-date-header">${date} (${dayOfWeek})</div>`;
+            groupedRecords[date].forEach(record => {
+                html += `
+                    <div class="food-receipt-item">
+                        <span class="food-receipt-time">${record.time}</span>
+                        <span class="food-receipt-desc">${getFoodEmoji(record.foodName)} ${record.foodName}</span>
+                        <span class="food-receipt-quantity">${record.quantity}${record.unit}</span>
+                    </div>`;
+            });
+        });
+
+        html += `</div>`;
+        previewContainer.innerHTML = html;
+        document.getElementById('foodExportModal').style.display = 'flex';
+        }
+
+        // =======================================================================
+        // 게임 시스템 로직
+        // =======================================================================
+
+        const ACHIEVEMENTS_LIST = {
+            'ACH_FIRST_STEP': { name: "첫걸음", desc: "첫 루틴 데이터를 성공적으로 저장했습니다." },
+            'ACH_CONSISTENCY_7': { name: "성실의 증표 (브론즈)", desc: "7일 연속으로 데이터를 기록했습니다." },
+            'ACH_CONSISTENCY_30': { name: "성실의 증표 (실버)", desc: "30일 연속으로 데이터를 기록했습니다." },
+            'ACH_CONSISTENCY_100': { name: "성실의 증표 (골드)", desc: "100일 연속으로 데이터를 기록했습니다." },
+            'ACH_PERFECT_MONTH': { name: "월간 개근상", desc: "한 달의 모든 날에 데이터를 기록했습니다." },
+            'ACH_100TH_RECORD': { name: "100번째 기록", desc: "통산 100번째 날의 데이터를 기록했습니다." },
+            'ACH_POMO_10': { name: "뽀모도로 입문자", desc: "통산 뽀모도로 10개를 달성했습니다." },
+            'ACH_POMO_50': { name: "뽀모도로 초급자", desc: "통산 뽀모도로 50개를 달성했습니다." },
+            'ACH_POMO_120': { name: "뽀모도로 중급자", desc: "통산 뽀모도로 120개를 달성했습니다." },
+            'ACH_POMO_200': { name: "뽀모도로 숙련자", desc: "통산 뽀모도로 200개를 달성했습니다." },
+            'ACH_POMO_320': { name: "뽀모도로 상급자", desc: "통산 뽀모도로 320개를 달성했습니다." },
+            'ACH_POMO_500': { name: "뽀모도로 전문가", desc: "통산 뽀모도로 500개를 달성했습니다." },
+            'ACH_POMO_GOD': { name: "집중의 화신", desc: "하루에 뽀모도로 15개 이상을 기록했습니다." },
+            'ACH_WRITER_1': { name: "신인 작가 (1권)", desc: "글쓰기 누적 12만 자를 달성했습니다." },
+            'ACH_WRITER_5': { name: "알 만한 작가 (5권)", desc: "글쓰기 누적 60만 자를 달성했습니다." },
+            'ACH_WRITER_10': { name: "위대한 작가 (10권)", desc: "글쓰기 누적 120만 자를 달성했습니다." },
+            'ACH_WRITER_20': { name: "유명 작가 (20권)", desc: "글쓰기 누적 240만 자를 달성했습니다." },
+            'ACH_WRITER_50': { name: "베스트셀러 작가 (50권)", desc: "글쓰기 누적 600만 자를 달성했습니다." },
+            'ACH_WRITING_GOD': { name: "일필휘지", desc: "하루에 글쓰기 10,000자 이상을 기록했습니다." },
+            'ACH_DIGITAL_DETOX': { name: "디지털 디톡스", desc: "주말(토, 일) 이틀 동안 게임 시간 총 0분을 기록했습니다." },
+            'ACH_SAGE_MODE': { name: "현자타임", desc: "7일 연속으로 게임 시간 총 0분을 기록했습니다." },
+            'ACH_SAVING_KING': { name: "저축의 왕", desc: "한 달 동안 설정한 예산의 50% 미만으로 지출했습니다." },
+            'ACH_NO_RAMEN': { name: "철의 위장", desc: "한 달 동안 식단에 '라면' 키워드가 기록되지 않았습니다." },
+            'ACH_NO_LATTE': { name: "액상과당 안녕", desc: "한 달 동안 식단에 '라떼' 키워드가 기록되지 않았습니다." },
+            'ACH_PERFECT_CONTROL': { name: "완벽한 통제", desc: "'부정적 습관' 목표를 7일 연속으로 100% 달성했습니다." },
+            'ACH_EARLY_BIRD': { name: "올빼미, 아니 독수리", desc: "새벽 5시 이전에 3일 연속 기상했습니다." },
+            'ACH_REGULAR_SLEEP': { name: "규칙적인 취침", desc: "일주일 내내 목표 취침 시간(±15분) 내로 기록했습니다." },
+            'ACH_FIRST_WORKOUT': { name: "운동의 시작", desc: "첫 운동 기록을 달성했습니다." },
+            'ACH_IRON_BODY': { name: "강철 체력", desc: "한 달 동안 운동 20회 이상을 달성했습니다." },
+            'ACH_CLEAN_EATER': { name: "클린 이터", desc: "일주일 동안 간식/외식 기록이 3회 미만입니다." },
+            'ACH_NEW_YEAR': { name: "새해 다짐", desc: "1월 1일에 데이터를 기록했습니다." },
+            'ACH_XMAS': { name: "나 홀로 성실하게", desc: "12월 25일에 데이터를 기록했습니다." },
+            'ACH_MIDNIGHT_CODER': { name: "자정의 기록자", desc: "밤 12시 00분에 정확히 데이터를 저장했습니다." },
+            'ACH_INDOMITABLE_WILL': { name: "불굴의 의지", desc: "마이너스였던 점수를 그날 다시 수정하여 플러스로 만들었습니다." },
+            'ACH_META_AWARENESS': { name: "메타인지", desc: "'주간 성찰' 기능을 처음으로 사용했습니다." },
+            'ACH_ACCOUNTABILITY': { name: "약속은 지킨다", desc: "'책임 공유' 기능을 처음으로 성공적으로 사용했습니다." },
+            'ACH_EXCEL_GURU': { name: "엑셀 좀 만져본 놈", desc: "'엑셀 내보내기' 기능을 처음 사용했습니다." },
+            'ACH_STREAK_3': { name: "불타는 3일", desc: "3일 연속으로 80점 이상을 달성했습니다! 이 기세 그대로!" },
+            'ACH_STREAK_7': { name: "인간 승리의 7일", desc: "일주일 내내 80점 이상을 달성했습니다. 당신은 이미 승리자입니다." },
+            'ACH_STREAK_14': { name: "습관 형성기", desc: "2주 연속 80점 이상 달성! 이제 완벽한 당신의 루틴입니다." },
+        };
+
+        async function unlockAchievement(id) {
+            const unlocked = await dbGet('unlockedAchievements') || [];
+            if (unlocked.includes(id)) return;
+
+            const achievement = ACHIEVEMENTS_LIST[id];
+            if (!achievement) return;
+
+            showFeedbackPopup(100, {
+                class: 'feedback-celebration',
+                emoji: '🏅',
+                title: `업적 달성! [${achievement.name}]`,
+                message: achievement.desc
+            });
+
+            unlocked.push(id);
+            await dbSet('unlockedAchievements', unlocked);
+        }
+
+        async function checkAllAchievements(currentDate, todayData, previousData, allDbData) {
+            const unlocked = await dbGet('unlockedAchievements') || [];
+            
+            const totalDayRecords = allDbData.filter(item => item.key.startsWith('day_')).length;
+            if (!unlocked.includes('ACH_FIRST_STEP') && totalDayRecords === 1) await unlockAchievement('ACH_FIRST_STEP');
+            if (!unlocked.includes('ACH_100TH_RECORD') && totalDayRecords >= 100) await unlockAchievement('ACH_100TH_RECORD');
+            
+            if (todayData.pomodoro.morning + todayData.pomodoro.afternoon + todayData.pomodoro.evening >= 15) await unlockAchievement('ACH_POMO_GOD');
+            if (todayData.writing >= 10000) await unlockAchievement('ACH_WRITING_GOD');
+            
+            const today = new Date(currentDate);
+            if (today.getMonth() === 0 && today.getDate() === 1) await unlockAchievement('ACH_NEW_YEAR');
+            if (today.getMonth() === 11 && today.getDate() === 25) await unlockAchievement('ACH_XMAS');
+
+            let consecutiveDays = 0;
+            for (let i = 0; i < 101; i++) {
+                const d = new Date(currentDate);
+                d.setDate(d.getDate() - i);
+                if (allDbData.some(item => item.key === `day_${formatDate(d)}`)) consecutiveDays++;
+                else break;
+            }
+            if (consecutiveDays >= 100) await unlockAchievement('ACH_CONSISTENCY_100');
+            else if (consecutiveDays >= 30) await unlockAchievement('ACH_CONSISTENCY_30');
+            else if (consecutiveDays >= 7) await unlockAchievement('ACH_CONSISTENCY_7');
+
+            const allDayData = allDbData.filter(i => i.key.startsWith('day_')).map(i=>i.value);
+            const totalPomos = allDayData.reduce((sum, day) => sum + (day.pomodoro?.morning || 0) + (day.pomodoro?.afternoon || 0) + (day.pomodoro?.evening || 0), 0);
+            if (totalPomos >= 500) await unlockAchievement('ACH_POMO_500');
+            else if (totalPomos >= 320) await unlockAchievement('ACH_POMO_320');
+            else if (totalPomos >= 200) await unlockAchievement('ACH_POMO_200');
+            else if (totalPomos >= 120) await unlockAchievement('ACH_POMO_120');
+            else if (totalPomos >= 50) await unlockAchievement('ACH_POMO_50');
+            else if (totalPomos >= 10) await unlockAchievement('ACH_POMO_10');
+            
+            const totalWriting = allDayData.reduce((sum, day) => sum + (day.writing || 0), 0);
+            if (totalWriting >= 6000000) await unlockAchievement('ACH_WRITER_50');
+            else if (totalWriting >= 2400000) await unlockAchievement('ACH_WRITER_20');
+            else if (totalWriting >= 1200000) await unlockAchievement('ACH_WRITER_10');
+            else if (totalWriting >= 600000) await unlockAchievement('ACH_WRITER_5');
+            else if (totalWriting >= 120000) await unlockAchievement('ACH_WRITER_1');
+
+            if (previousData && previousData.score < 0 && todayData.score >= 0) await unlockAchievement('ACH_INDOMITABLE_WILL');
+            if (todayData.exercise.done && !allDayData.some(d => d.date < todayData.date && d.exercise.done)) await unlockAchievement('ACH_FIRST_WORKOUT');
+        }
+        
+        async function checkStreaks(currentDate, todayData, allDbData) {
+            const allDayData = allDbData.filter(i => i.key.startsWith('day_')).map(i => i.value).sort((a,b) => b.date.localeCompare(a.date));
+
+            if (todayData.score >= 80) {
+                let scoreStreakCount = 0;
+                for (const day of allDayData) {
+                    if (new Date(day.date) > new Date(currentDate)) continue;
+                    if (day.score >= 80) scoreStreakCount++;
+                    else break;
+                }
+
+                let bonusPoints = 0;
+                let streakPopup = null;
+                if (scoreStreakCount === 14) { bonusPoints = 15; await unlockAchievement('ACH_STREAK_14'); } 
+                else if (scoreStreakCount === 7) { bonusPoints = 10; await unlockAchievement('ACH_STREAK_7'); } 
+                else if (scoreStreakCount === 3) { bonusPoints = 5; await unlockAchievement('ACH_STREAK_3'); } 
+                else if (scoreStreakCount > 1 && scoreStreakCount % 5 === 0) {
+                     streakPopup = { class: 'feedback-celebration', emoji: '🔥', title: `${scoreStreakCount}일 연속 달성!`, message: '멈추지 마세요! 이 불꽃을 계속 이어나가세요!' };
+                }
+
+                if (bonusPoints > 0) {
+                    todayData.bonusPoints = (todayData.bonusPoints || 0) + bonusPoints;
+                    streakPopup = { class: 'feedback-celebration', emoji: '💰', title: '스트릭 보너스!', message: `${scoreStreakCount}일 연속 달성을 축하합니다! 보너스 ${bonusPoints}점을 획득했습니다!` };
+                }
+                
+                if (streakPopup) setTimeout(() => showFeedbackPopup(100, streakPopup), 500);
+
+            } else {
+                let yesterdayStreakCount = 0;
+                const yesterday = new Date(currentDate);
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                for (const day of allDayData) {
+                    if (new Date(day.date) > yesterday) continue;
+                    if (day.score >= 80) yesterdayStreakCount++;
+                    else break;
+                }
+                
+                if (yesterdayStreakCount >= 3) {
+                    setTimeout(() => {
+                        showFeedbackPopup(0, { class: 'feedback-disaster', emoji: '💀', title: '연속 기록이 깨졌습니다', message: `${yesterdayStreakCount}일간의 노력이 물거품이 되었습니다. 100-1=0이라는 것을 기억하세요.` });
+                    }, 1000);
+                }
+            }
+        }
+
+        const MISSIONS_LIST = [
+            { id: 'NO_SUGAR_DRINK', desc: "오늘 하루, 모든 종류의 '설탕'이 들어간 음료 마시지 않기!", reward: 10, type: 'abstinence', keyword: '설탕' },
+            { id: 'WALK_15_MIN', desc: "오늘 점심 식사 후, 딱 15분만 산책하기!", reward: 5, type: 'action' },
+            { id: 'GRATITUDE_3', desc: "잠들기 전, 오늘 감사했던 일 3가지만 메모장에 적어보기!", reward: 5, type: 'action' },
+            { id: 'NO_SNACKS', desc: "저녁 식사 후, 어떤 종류의 '간식'도 먹지 않기!", reward: 10, type: 'abstinence', keyword: '간식' },
+            { id: 'READ_10_PAGES', desc: "분야에 상관없이, 책 10페이지 읽기!", reward: 5, type: 'action' },
+            { id: 'STRETCH_5_MIN', desc: "자리에서 일어나 5분간 스트레칭하기!", reward: 5, type: 'action' }
+        ];
+
+async function closeMissionModal(accepted) {
+    if (!accepted) {
+        const todayStr = formatDate(new Date());
+        await dbSet(`missionDeclined_${todayStr}`, true);
+    }
+    document.getElementById('missionModal').style.display = 'none';
+}
+
+        async function acceptMission() {
+            const missionId = document.getElementById('missionModal').dataset.missionId;
+            const todayData = await getDayData(new Date());
+            todayData.mission = { id: missionId, completed: false };
+            await saveDayData(new Date(), todayData);
+            alert("미션을 수락했습니다! 달성 후, 오늘 날짜를 다시 열어 완료 체크를 해주세요.");
+            closeMissionModal(true);
+        }
+
+async function triggerRandomMission() {
+    const todayStr = formatDate(new Date());
+    const todayData = await getDayData(new Date());
+    const missionDeclinedToday = await dbGet(`missionDeclined_${todayStr}`);
+    
+    if (todayData.mission || missionDeclinedToday) return;
+
+    if (Math.random() < 0.3) {
+        const mission = MISSIONS_LIST[Math.floor(Math.random() * MISSIONS_LIST.length)];
+        document.getElementById('missionDesc').textContent = mission.desc;
+        document.getElementById('missionReward').textContent = `(성공 시 +${mission.reward} 보너스 점수)`;
+        const missionModal = document.getElementById('missionModal');
+        missionModal.dataset.missionId = mission.id;
+        missionModal.style.display = 'flex';
+    }
+}
+
+        async function checkMonthlyPerformanceAndNotify() {
+            const today = new Date();
+            const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const prevMonthDates = getMonthDates(prevMonthDate);
+            const dataPromises = prevMonthDates.map(dateStr => dbGet(`day_${dateStr}`));
+            const monthlyData = (await Promise.all(dataPromises)).filter(d => d);
+
+            let totalScore = 0, validDays = 0;
+            for (const dayData of monthlyData) {
+                if (dayData && !dayData.isOffDay && dayData.wakeTime) {
+                    totalScore += dayData.score || 0;
+                    validDays++;
+                }
+            }
+            if (validDays === 0) return;
+            const avgScore = Math.round(totalScore / validDays);
+
+            if (avgScore < 0) {
+                const monthString = `${prevMonthDate.getFullYear()}년 ${prevMonthDate.getMonth() + 1}월`;
+                const messageText = `[루틴 트래커 보고] 안녕하세요. 제가 ${monthString} 동안 기록한 루틴 평균 점수가 ${avgScore}점(만점 120점 기준)으로, 목표에 미치지 못했습니다. 다음 달에는 더 노력할 수 있도록 옆에서 지켜봐 주세요!`;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title: '월간 루틴 보고', text: messageText });
+                        showFeedbackPopup(0, { class: 'feedback-encouragement', emoji: '🤝', title: '공유 완료!', message: '책임감 있는 모습, 멋집니다! 다음 달은 분명 더 나을 거예요.' });
+                        unlockAchievement('ACH_ACCOUNTABILITY');
+                    } catch (err) {
+                        if (err.name === 'AbortError') {
+                            showFeedbackPopup(0, { class: 'feedback-warning', emoji: '😠', title: '회피는 답이 아닙니다', message: '가장 어려운 것은 현실을 마주하는 용기입니다. 회피하지 마세요. 다시 시도해서 약속을 지키세요.' });
+                        } else {
+                            alert("메시지 공유 중 오류가 발생했습니다: " + err.message);
+                        }
+                    }
+                } else {
+                    alert("공유 기능을 사용할 수 없는 환경입니다.");
+                    const fallbackMessage = "아래 메시지를 복사하여 책임 파트너에게 직접 전송해주세요.\n\n" + messageText;
+                    prompt("메시지 복사하기 (Ctrl+C)", fallbackMessage);
+                }
+            }
+        }
+
+        async function checkExerciseAndDietBalance() {
+            const today = new Date();
+            const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const { start, end } = getMonthDateRange(prevMonthDate);
+            const allData = await dbGetAll();
+
+            const exerciseCount = allData.filter(item => item.key.startsWith('day_') && item.value.date >= start && item.value.date <= end && item.value.exercise?.done).length;
+            
+            const foodRecords = allData.filter(item => item.key.startsWith('food_') && item.value.date >= start && item.value.date <= end);
+            let keywordMatchCount = 0;
+            foodRecords.forEach(record => {
+                const hasKeyword = foodKeywords.some(keyword => record.value.foodName.toLowerCase().includes(keyword.toLowerCase()));
+                if (hasKeyword) keywordMatchCount++;
+            });
+
+            if (exerciseCount <= 5 && keywordMatchCount >= 30) {
+                const monthString = `${prevMonthDate.getFullYear()}년 ${prevMonthDate.getMonth() + 1}월`;
+                const messageText = `[건강 적신호 보고] 안녕하세요. 제가 ${monthString} 동안 운동은 ${exerciseCount}일 했지만, 간식/외식은 ${keywordMatchCount}회 기록되었습니다. 건강한 습관을 만들 수 있도록 따끔한 조언 부탁드립니다!`;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title: '월간 건강 습관 보고', text: messageText });
+                        showFeedbackPopup(0, { class: 'feedback-encouragement', emoji: '🤝', title: '공유 완료!', message: '자신의 상태를 직시하는 용기가 더 건강한 내일을 만듭니다.' });
+                    } catch (err) {
+                        if (err.name === 'AbortError') {
+                            showFeedbackPopup(0, { class: 'feedback-disaster', emoji: '☠️', title: '팩트폭행이 아픈가요?', message: '몸은 거짓말을 하지 않습니다. 외면하지 말고, 더 나은 선택을 하세요.' });
+                        }
+                    }
+                } else {
+                    alert("공유 기능을 사용할 수 없는 환경입니다.");
+                    const fallbackMessage = "아래 메시지를 복사하여 책임 파트너에게 직접 전송해주세요.\n\n" + messageText;
+                    prompt("메시지 복사하기 (Ctrl+C)", fallbackMessage);
+                }
+            }
+        }
+        
+        window.addEventListener('load', function () {
+    // 로그인/로그아웃 버튼에 이벤트 리스너를 한 번만 연결합니다.
+    document.getElementById('loginBtn').addEventListener('click', signIn);
+    document.getElementById('logoutBtn').addEventListener('click', signOut);
+
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfoDiv = document.getElementById('userInfo');
+    const allPages = document.querySelectorAll('.page');
+    const mainContainer = document.querySelector('.container');
+
+    auth.onAuthStateChanged(async (user) => {
+    await localDB.init();
+    
+    if (user) {
+        currentUser = user;
+        currentUserName = user.displayName || "사용자";
+        
+        // UI 업데이트
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        userInfoDiv.textContent = `${user.displayName}님`;
+        userInfoDiv.style.display = 'block';
+        
+        await initApp();
+        
+        // 자동 동기화 시작
+        startAutoSync();
+        updateSyncStatus('☁️ 자동 백업 활성화');
+        
+    } else {
+        currentUser = null;
+        
+        // 자동 동기화 중단
+        stopAutoSync();
+        
+        await initApp();
+        
+        // 로그인 안내 (부드럽게)
+        updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
+    }
+});
+
+    // ESC 키 등 이벤트 리스너
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') {
+        closeDayModal(); closeFeedbackPopup(); closeReasonModal(); 
+        closeFoodSuggestion(); closeManualFoodModal(); closeExcelModal();
+        closeMissionModal(false);
+        }
+        if (document.getElementById('dayModal').style.display === 'flex') {
+            if (e.key === 'ArrowLeft') navigateModalDate(-1);
+            else if (e.key === 'ArrowRight') navigateModalDate(1);
+        }
+        if (document.getElementById('calendarPage').classList.contains('active')) { 
+            if (e.key === 'ArrowLeft') changeMonth(-1); 
+            else if (e.key === 'ArrowRight') changeMonth(1); 
+        } 
+    });
+    
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+             if (e.target === this) {
+                const closeBtn = this.querySelector('.close-btn');
+                if(closeBtn) closeBtn.click();
+             }
+        });
+    });
+    
+    // 데이 모달 입력 필드에 자동 저장 및 점수 업데이트 연결
+    const inputsToUpdateScoreAndSave = [
+        'modalWakeTime', 'modalSeatTime', 'modalMorningPomodoro', 'modalAfternoonPomodoro', 
+        'modalEveningPomodoro', 'modalGameTime', 'modalExerciseMinutes', 'modalWriting', 
+        'modalSleepTime', 'modalOffDay', 'modalComment', 'modalMissionComplete'
+    ];
+    inputsToUpdateScoreAndSave.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            // input, textarea는 'input' 이벤트, checkbox는 'change' 이벤트 사용
+            const eventType = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
+            el.addEventListener(eventType, () => {
+                updateModalScore();
+                autoSaveModalData();
+            });
+        }
+    });
+});
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</body>
+</html>
