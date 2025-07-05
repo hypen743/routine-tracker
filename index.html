@@ -1273,9 +1273,9 @@ const SENTIMENT_DATA = {
     
     // 사용자별로 데이터를 저장하기 위한 경로 생성 함수
     function getUserDataRef() {
-        if (!currentUser) throw new Error("로그인한 사용자가 없습니다.");
-        return db.collection('users').doc(currentUser.uid).collection('data');
-    }
+    if (!currentUser) throw new Error("로그인한 사용자가 없습니다.");
+    return db.collection('users').doc(currentUser.uid).collection('data');
+}
 
     // 기존 dbSet, dbGet, dbGetAll, dbDelete 함수를 모두 이것으로 교체
 async function dbSet(key, value) {
