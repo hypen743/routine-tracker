@@ -199,28 +199,10 @@
     #customDateRange { display: flex; gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 20px; }
     #customDateRange input[type="date"] { padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex: 1; font-family: inherit; }
 
-    .number-input-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.number-input-group input {
-    border: none;
-    text-align: center;
-    flex: 1;
-    padding: 10px 5px;
-    background: white;
-}
-
-.number-input-group input:focus {
-    box-shadow: none;
-    border: none;
-}
-
-.number-btn {
+    .number-input-group { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+    .number-input-group input { border: none; text-align: center; flex: 1; padding: 10px 5px; background: white; }
+    .number-input-group input:focus { box-shadow: none; border: none; }
+    .number-btn {
     width: 32px;
     height: 42px;
     border: none;
@@ -235,14 +217,8 @@
     justify-content: center;
 }
 
-.number-btn:hover {
-    background: var(--primary-light);
-}
-
-.number-btn:active {
-    background: var(--primary-color);
-    color: white;
-}
+    .number-btn:hover { background: var(--primary-light); }
+    .number-btn:active { background: var(--primary-color);  color: white; }
 
     .food-page-actions { display: flex; gap: 10px; margin-bottom: 10px; }
     .food-page-actions .btn.secondary.danger { background-color: var(--danger-color); color: white; }
@@ -257,11 +233,7 @@
     .food-admin-actions button.delete { color: var(--danger-color); }
     .food-admin-actions button:hover { background-color: var(--bg-color); }
     
-#foodExportModal .modal-content {
-    max-width: 90vw;
-    background: white;
-    padding: 0;
-}
+#foodExportModal .modal-content { max-width: 90vw; background: white; padding: 0; }
 #foodExportPreview {
     background: white;
     border-radius: 8px;
@@ -270,27 +242,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     font-family: 'Courier New', monospace;
 }
-.food-receipt-header {
-    padding: 15px 20px 10px;
-    background: var(--primary-light);
-}
-.food-receipt-title {
-    display: block;
-    text-align: center;
-    margin-bottom: 5px;
-}
-.food-receipt-title h3 {
-    margin: 0;
-    font-size: 16px;
-    color: var(--primary-color);
-    font-weight: 700;
-}
-.food-receipt-header p {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text-color-light);
-    text-align: center;
-}
+.food-receipt-header { padding: 15px 20px 10px; background: var(--primary-light); }
+.food-receipt-title { display: block; text-align: center; margin-bottom: 5px; }
+.food-receipt-title h3 { margin: 0; font-size: 16px; color: var(--primary-color); font-weight: 700; }
+.food-receipt-header p { margin: 0; font-size: 12px; color: var(--text-color-light); text-align: center; }
 .food-receipt-divider {
     height: 1px;
     background: repeating-linear-gradient(
@@ -302,44 +257,12 @@
     );
     margin: 0 15px;
 }
-.food-receipt-items {
-    padding: 15px 20px 10px;
-}
-.food-receipt-date-header {
-    font-weight: 700;
-    color: var(--primary-color);
-    font-size: 13px;
-    margin: 15px 0 8px 0;
-    padding-bottom: 5px;
-    border-bottom: 1px dashed var(--border-color);
-}
-.food-receipt-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    font-size: 13px;
-    line-height: 1.3;
-}
-.food-receipt-time {
-    color: var(--text-color-light);
-    font-size: 11px;
-    min-width: 45px;
-    margin-right: 10px;
-}
-.food-receipt-desc {
-    flex: 1;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-right: 10px;
-}
-.food-receipt-quantity {
-    font-weight: 700;
-    color: var(--text-color);
-    font-size: 13px;
-    text-align: right;
-    min-width: 60px;
-}
+.food-receipt-items { padding: 15px 20px 10px; }
+.food-receipt-date-header { font-weight: 700; color: var(--primary-color); font-size: 13px; margin: 15px 0 8px 0; padding-bottom: 5px; border-bottom: 1px dashed var(--border-color); }
+.food-receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; line-height: 1.3; }
+.food-receipt-time { color: var(--text-color-light); font-size: 11px; min-width: 45px; margin-right: 10px; }
+.food-receipt-desc { flex: 1; font-weight: 600; color: var(--text-color); margin-right: 10px; }
+.food-receipt-quantity { font-weight: 700; color: var(--text-color); font-size: 13px; text-align: right; min-width: 60px; }
 #foodExportModal .close-btn {
     position: absolute;
     top: 15px;
@@ -363,23 +286,8 @@
 
 @media (max-width: 767px) { #foodExportModal.modal-overlay { background: white; backdrop-filter: none; }
     
-    #foodExportModal .modal-content {
-        max-width: 100vw;
-        width: 100vw;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none; 
-    }
-    
-    #foodExportPreview {
-        margin: 0; 
-        border-radius: 0;
-        box-shadow: none; 
-        height: calc(100vh - 50px); 
-        overflow-y: auto;
-    }
+    #foodExportModal .modal-content { max-width: 100vw; width: 100vw; height: 100vh; margin: 0; padding: 0; border-radius: 0; box-shadow: none; }
+    #foodExportPreview { margin: 0; border-radius: 0; box-shadow: none; height: calc(100vh - 50px); overflow-y: auto; }
     
     /* 닫기 버튼 */
     #foodExportModal .close-btn {
@@ -395,17 +303,7 @@
     }
     
     /* 안내 텍스트 */
-    #foodExportModal .modal-content > div:last-child {
-        position: fixed; 
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 15px;
-        border-top: 1px solid var(--border-color);
-    }
-}
-
+    #foodExportModal .modal-content > div:last-child { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; border-top: 1px solid var(--border-color); } }
     .food-modal { max-width: 420px; background-color: white; overflow: hidden; }
     .food-modal .modal-header { padding: 15px 20px; background-color: var(--bg-color); border-bottom: 1px solid var(--border-color); }
     .food-modal .modal-header h2 { font-size: 18px; }
@@ -435,32 +333,19 @@
     .comment-item-body { font-size: 15px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
     .empty-comments { text-align: center; color: var(--text-color-light); padding: 50px 20px; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color); }
     
-.receipt-container {
-    background: white;
-    border-radius: 8px;
-    padding: 0;
-    margin-top: 0; 
-    margin-bottom: 20px; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-family: 'Courier New', monospace;
-    max-width: 100%;
-    overflow: hidden;
-}
-.receipt-header { padding: 15px 20px 10px; background: var(--primary-light); }
-.receipt-title { display: block; text-align: center; margin-bottom: 5px; position: relative; }
-.receipt-title h3 { margin: 0; font-size: 16px; color: var(--primary-color); font-weight: 700; }
-.budget-info { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-color); font-weight: 600; text-align: right; position: absolute;
-    top: -5px;
-    right: -8px;
-}
-.receipt-header p { margin: 0; font-size: 12px; color: var(--text-color-light); text-align: center; }
-.receipt-divider { height: 1px; background: repeating-linear-gradient(to right, var(--border-color) 0px, var(--border-color) 3px, transparent 3px, transparent 6px); margin: 0 15px; }
-.receipt-items { padding: 15px 20px 10px; }
-.receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 13px; line-height: 1.3; }
-.receipt-date { color: var(--text-color-light); font-size: 11px; min-width: 60px; margin-right: 15px; }
-.receipt-desc { flex: 1; font-weight: 600; color: var(--text-color); margin-right: 15px; }
-.receipt-amount { font-weight: 700; color: var(--text-color); font-size: 13px; text-align: right; min-width: 70px; }
-.receipt-total { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-color); font-weight: 700; font-size: 16px; font-family: 'Courier New', monospace; color: var(--primary-color); }
+    .receipt-container { background: white; border-radius: 8px; padding: 0; margin-top: 0; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-family: 'Courier New', monospace; max-width: 100%; overflow: hidden; }
+    .receipt-header { padding: 15px 20px 10px; background: var(--primary-light); }
+    .receipt-title { display: block; text-align: center; margin-bottom: 5px; position: relative; }
+    .receipt-title h3 { margin: 0; font-size: 16px; color: var(--primary-color); font-weight: 700; }
+    .budget-info { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-color); font-weight: 600; text-align: right; position: absolute; top: -5px; right: -8px; }
+    .receipt-header p { margin: 0; font-size: 12px; color: var(--text-color-light); text-align: center; }
+    .receipt-divider { height: 1px; background: repeating-linear-gradient(to right, var(--border-color) 0px, var(--border-color) 3px, transparent 3px, transparent 6px); margin: 0 15px; }
+    .receipt-items { padding: 15px 20px 10px; }
+    .receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 13px; line-height: 1.3; }
+    .receipt-date { color: var(--text-color-light); font-size: 11px; min-width: 60px; margin-right: 15px; }
+    .receipt-desc { flex: 1; font-weight: 600; color: var(--text-color); margin-right: 15px; }
+    .receipt-amount { font-weight: 700; color: var(--text-color); font-size: 13px; text-align: right; min-width: 70px; }
+    .receipt-total { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-color); font-weight: 700; font-size: 16px; font-family: 'Courier New', monospace; color: var(--primary-color); }
 
 .calendar-cell.skeleton { background: #fafafa; border: 1px solid #f0f0f0; position: relative; overflow: hidden; }
 .calendar-cell.skeleton::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite; }
@@ -484,7 +369,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-#dailyQuestModal .modal-header { padding-top: 25px; padding-bottom: 15px; }
+    #dailyQuestModal .modal-header { padding-top: 25px; padding-bottom: 15px; }
     /* 퀘스트 페이지 스타일 */
     .quest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
     .quest-tab { padding: 8px 16px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; }
@@ -554,19 +439,8 @@
     .achievement-item.hidden .achievement-desc { color: #bdc3c7; font-style: italic; }
 
     @media (max-width: 767px) {
-        .modal-content {
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 0;
-            max-height: 100vh;
-        }
-        .food-modal {
-            width: 90%;
-            height: auto;
-            border-radius: 16px;
-            max-height: 90vh;
-        }
+        .modal-content { padding: 0; width: 100%; height: 100%; border-radius: 0; max-height: 100vh; }
+        .food-modal { width: 90%; height: auto; border-radius: 16px; max-height: 90vh; }
         .food-modal .modal-body { overflow-y: auto; max-height: calc(90vh - 120px); }
         #dayModal .modal-body { padding: 20px 15px; }
         .modal-input-group { padding: 15px; }
@@ -574,12 +448,7 @@
         #dayModal .form-group label { font-size: 13px; }
         #dayModal .modal-input-row { grid-template-columns: 1fr; gap: 15px; }
         .exercise-toggle-btns { max-width: 180px; }
-        .score-display-card, .personal-goals-section {
-            width: 100%;
-            max-width: none;
-            margin: 0;
-            padding: 15px;
-        }
+        .score-display-card, .personal-goals-section { width: 100%; max-width: none; margin: 0; padding: 15px; }
         .score-display-card .score { font-size: 36px; }
 
         #modalTotalExpense { text-align: left !important; }
@@ -587,23 +456,8 @@
         .expense-item span:first-child { flex-grow: 1; margin-right: 10px; }
         .expense-item > div { flex-shrink: 0; }
         
-        .modal-actions-container {
-            padding: 0 15px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .modal-actions-container .btn.delete {
-            order: 2;
-            background-color: transparent;
-            color: var(--text-color-light);
-            font-size: 14px;
-            font-weight: normal;
-            padding: 8px;
-            box-shadow: none;
-            margin-top: 10px;
-            max-width: 150px;
-        }
+        .modal-actions-container { padding: 0 15px 20px; display: flex; flex-direction: column; align-items: center; }
+        .modal-actions-container .btn.delete { order: 2; background-color: transparent; color: var(--text-color-light); font-size: 14px; font-weight: normal; padding: 8px; box-shadow: none; margin-top: 10px; max-width: 150px; }
         .modal-actions-container .btn.delete:hover { background-color: transparent; color: var(--danger-color); }
         .modal-actions-container .btn.save { order: 1; }
 
@@ -613,65 +467,27 @@
         #dayModal .expense-input-row { flex-direction: column; gap: 10px; }
         #dayModal .expense-input-row input,
         #dayModal .expense-input-row button { width: 100%; }
-        .dday-header-container {
-            top: 8px;
-            left: 3px;
-            right: 3px;
-        }
-        .container {
-            padding: 40px 20px 95px 20px;
-        }
+        .dday-header-container { top: 8px; left: 3px; right: 3px; }
+        .container { padding: 40px 20px 95px 20px; }
         .dday-chip { font-size: 10px; padding: 3px 8px; }
         .battery { width: 25px; height: 12px; }
         .receipt-item { font-size: 12px; }
-    
-        .receipt-date {
-            min-width: 50px;
-            margin-right: 10px;
-            font-size: 10px;
-        }
-    
+        .receipt-date { min-width: 50px; margin-right: 10px; font-size: 10px; }
         .receipt-desc { margin-right: 10px; }
         .receipt-amount { min-width: 60px; font-size: 12px; }
-    
-        .budget-info {
-            flex-direction: column;
-            gap: 2px;
-            font-size: 10px;
-            text-align: right;
-        }
+        .budget-info { flex-direction: column; gap: 2px; font-size: 10px; text-align: right; }
     }
     
     /* 영어 모드일 때 폰트 크기 조정 */
-body.lang-en {
-    font-size: 10px;
-}
-
-body.lang-en .header h1 {
-    font-size: 24px;
-}
-
-body.lang-en .header p {
-    font-size: 12px;
-}
-
-body.lang-en .btn {
-    font-size: 12px;
-}
-
-body.lang-en .modal-content {
-    font-size: 9px;
-}
-
-body.lang-en .form-group label {
-    font-size: 9px;
-}
-
+body.lang-en { font-size: 10px; }
+body.lang-en .header h1 { font-size: 24px; }
+body.lang-en .header p { font-size: 12px; }
+body.lang-en .btn { font-size: 12px; }
+body.lang-en .modal-content { font-size: 9px; }
+body.lang-en .form-group label { font-size: 9px; }
 body.lang-en .form-group input,
 body.lang-en .form-group textarea,
-body.lang-en .form-group select {
-    font-size: 10px;
-}
+body.lang-en .form-group select { font-size: 10px; }
 
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -1081,6 +897,7 @@ body.lang-en .form-group select {
                         <button onclick="changeTheme('excel')" style="background: #00ff41; color: black; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">엑셀</button>
                         <button onclick="changeTheme('retrogame')" style="background: #ec4899; color: white; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">레트로게임</button>
                         <button onclick="changeTheme('paperbook')" style="background: #2563eb; color: white; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">페이퍼북</button>
+                        <button onclick="changeTheme('pastelcafe')" style="background: #b06d15; color: white; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">카페</button>
                     </div>
                     <button onclick="toggleLanguage()" style="background: #6c757d; color: white; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🌐 언어 전환 (<span id="currentLangDisplay">한국어</span>)</button>
                 </div>
@@ -1089,6 +906,7 @@ body.lang-en .form-group select {
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
                     <button onclick="resetQuests()" style="background: #e74c3c; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🗑️ 퀘스트 리셋</button>
                     <button onclick="resetExperience()" style="background: #f39c12; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">⚡ 경험치 리셋</button>
+                    <button onclick="resetAchievements()" style="background: #e67e22; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🏅 업적 리셋</button>
                     <button onclick="resetAll()" style="background: #8e44ad; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">💀 전체 리셋</button>
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -2824,12 +2642,17 @@ async function checkFoodRecordAchievements() {
             await unlockAchievement('ACH_FOOD_DIARIST_7DAYS');
         }
     }
+}
+
+// 월말에만 체크하는 업적들 ===
+async function checkMonthEndAchievements(date) {
+    const unlocked = await dbGet('unlockedAchievements') || [];
+    const today = new Date(date);
+    const { start, end } = getMonthDateRange(today);
+    const allData = await dbGetAll();
     
     // 건강 식단의 달인 (한 달 간식/외식 5회 미만)
     if (!unlocked.includes('ACH_HEALTHY_EATER_MONTH')) {
-        const today = new Date();
-        const { start, end } = getMonthDateRange(today);
-        
         const junkFoodKeywords = ['맥도날드', '버거킹', 'kfc', '롯데리아', '햄버거', '버거', '치킨', '피자', 
                                   '과자', '초콜릿', '사탕', '아이스크림', '젤라또', '케이크', '도넛', '떡볶이'];
         
@@ -2844,6 +2667,295 @@ async function checkFoodRecordAchievements() {
         
         if (junkFoodCount < 5) {
             await unlockAchievement('ACH_HEALTHY_EATER_MONTH');
+        }
+    }
+    
+    // 무지출의 달 (한 달 총 지출 0원)
+    if (!unlocked.includes('ACH_ZERO_SPEND_MONTH')) {
+        const expenses = allData.filter(item => 
+            item.key.startsWith('expense_') && 
+            item.value.date >= start && 
+            item.value.date <= end
+        );
+        const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0);
+        
+        if (totalSpent === 0) {
+            await unlockAchievement('ACH_ZERO_SPEND_MONTH');
+        }
+    }
+    
+    // 저축의 왕 (한 달 예산의 50% 미만 지출)
+    if (!unlocked.includes('ACH_SAVING_KING')) {
+        const budget = await dbGet('monthlyBudget') || 0;
+        if (budget > 0) {
+            const expenses = allData.filter(item => 
+                item.key.startsWith('expense_') && 
+                item.value.date >= start && 
+                item.value.date <= end
+            );
+            const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0);
+            
+            if (totalSpent < budget * 0.5) {
+                await unlockAchievement('ACH_SAVING_KING');
+            }
+        }
+    }
+    
+    // 철의 위장 (한 달 동안 라면 없음)
+    if (!unlocked.includes('ACH_NO_RAMEN')) {
+        const ramenRecords = allData.filter(item => 
+            item.key.startsWith('food_') && 
+            item.value.date >= start && 
+            item.value.date <= end &&
+            item.value.foodName.toLowerCase().includes('라면')
+        );
+        
+        if (ramenRecords.length === 0) {
+            await unlockAchievement('ACH_NO_RAMEN');
+        }
+    }
+    
+    // 액상과당 안녕 (한 달 동안 라떼 없음)
+    if (!unlocked.includes('ACH_NO_LATTE')) {
+        const latteRecords = allData.filter(item => 
+            item.key.startsWith('food_') && 
+            item.value.date >= start && 
+            item.value.date <= end &&
+            item.value.foodName.toLowerCase().includes('라떼')
+        );
+        
+        if (latteRecords.length === 0) {
+            await unlockAchievement('ACH_NO_LATTE');
+        }
+    }
+    
+    // 강철 체력 (한 달 운동 20회 이상)
+    if (!unlocked.includes('ACH_IRON_BODY')) {
+        const exerciseCount = allData.filter(item => 
+            item.key.startsWith('day_') && 
+            item.value.date >= start && 
+            item.value.date <= end &&
+            item.value.exercise?.done
+        ).length;
+        
+        if (exerciseCount >= 20) {
+            await unlockAchievement('ACH_IRON_BODY');
+        }
+    }
+    
+    // 완벽한 한 달 (매일 기상시간 기록)
+    if (!unlocked.includes('ACH_PERFECT_MONTH')) {
+        const monthDates = getMonthDates(today);
+        const recordedDays = allData.filter(item => 
+            item.key.startsWith('day_') && 
+            monthDates.includes(item.value.date) &&
+            item.value.wakeTime
+        ).length;
+        
+        if (recordedDays === monthDates.length) {
+            await unlockAchievement('ACH_PERFECT_MONTH');
+        }
+    }
+    
+    // 연속 예산 관리 체크 (3개월, 6개월)
+    const budget = await dbGet('monthlyBudget') || 0;
+    if (budget > 0) {
+        const currentExpenses = allData.filter(item => 
+            item.key.startsWith('expense_') && 
+            item.value.date >= start && 
+            item.value.date <= end
+        );
+        const currentTotal = currentExpenses.reduce((sum, item) => sum + item.value.amount, 0);
+        
+        if (currentTotal < budget * 0.8) {
+            // 3개월 연속 체크
+            let consecutiveBudgetMonths = 1; // 이번 달 포함
+            
+            for (let i = 1; i < 6; i++) {
+                const checkDate = new Date(today);
+                checkDate.setMonth(checkDate.getMonth() - i);
+                const { start: checkStart, end: checkEnd } = getMonthDateRange(checkDate);
+                
+                const checkExpenses = allData.filter(item => 
+                    item.key.startsWith('expense_') && 
+                    item.value.date >= checkStart && 
+                    item.value.date <= checkEnd
+                );
+                const checkTotal = checkExpenses.reduce((sum, item) => sum + item.value.amount, 0);
+                
+                if (checkTotal < budget * 0.8) {
+                    consecutiveBudgetMonths++;
+                } else {
+                    break;
+                }
+            }
+            
+            if (!unlocked.includes('ACH_FINANCIAL_FREEDOM') && consecutiveBudgetMonths >= 6) {
+                await unlockAchievement('ACH_FINANCIAL_FREEDOM');
+            } else if (!unlocked.includes('ACH_BUDGET_MASTER_3MONTH') && consecutiveBudgetMonths >= 3) {
+                await unlockAchievement('ACH_BUDGET_MASTER_3MONTH');
+            }
+        }
+    }
+}
+
+// 주간 업적 중 특별한 체크가 필요한 것들
+async function checkWeekEndAchievements(date) {
+    const unlocked = await dbGet('unlockedAchievements') || [];
+    const allData = await dbGetAll();
+    
+    // 디지털 디톡스 (주말 이틀 동안 게임 0분)
+    if (!unlocked.includes('ACH_DIGITAL_DETOX')) {
+        const today = new Date(date);
+        const dayOfWeek = today.getDay();
+        
+        if (dayOfWeek === 0) { // 일요일인 경우만 체크
+            const saturday = new Date(today);
+            saturday.setDate(saturday.getDate() - 1);
+            
+            const saturdayData = await dbGet(`day_${formatDate(saturday)}`);
+            const sundayData = await dbGet(`day_${formatDate(today)}`);
+            
+            const saturdayGameTime = saturdayData?.gameTime || 0;
+            const sundayGameTime = sundayData?.gameTime || 0;
+            
+            if (saturdayGameTime === 0 && sundayGameTime === 0) {
+                await unlockAchievement('ACH_DIGITAL_DETOX');
+            }
+        }
+    }
+    
+    // 현자타임 (7일 연속 게임 0분)
+    if (!unlocked.includes('ACH_SAGE_MODE')) {
+        let consecutiveNoGameDays = 0;
+        
+        for (let i = 0; i < 7; i++) {
+            const checkDate = new Date(date);
+            checkDate.setDate(checkDate.getDate() - i);
+            const dayData = await dbGet(`day_${formatDate(checkDate)}`);
+            
+            if (dayData && (dayData.gameTime === 0 || !dayData.gameTime)) {
+                consecutiveNoGameDays++;
+            } else {
+                break;
+            }
+        }
+        
+        if (consecutiveNoGameDays >= 7) {
+            await unlockAchievement('ACH_SAGE_MODE');
+        }
+    }
+    
+    // 클린 이터 (일주일 간식/외식 3회 미만)
+    if (!unlocked.includes('ACH_CLEAN_EATER')) {
+        const weekDates = getWeekDates(new Date(date));
+        
+        const junkFoodKeywords = ['맥도날드', '버거킹', 'kfc', '롯데리아', '햄버거', '버거', '치킨', '피자', 
+                                  '과자', '초콜릿', '사탕', '아이스크림', '젤라또', '케이크', '도넛', '떡볶이'];
+        
+        const junkFoodCount = allData.filter(item => 
+            item.key.startsWith('food_') && 
+            weekDates.includes(item.value.date) &&
+            junkFoodKeywords.some(keyword => 
+                item.value.foodName.toLowerCase().includes(keyword.toLowerCase())
+            )
+        ).length;
+        
+        if (junkFoodCount < 3) {
+            await unlockAchievement('ACH_CLEAN_EATER');
+        }
+    }
+    
+    // 완벽한 통제 (부정적 습관 목표 7일 연속 100% 달성)
+    if (!unlocked.includes('ACH_PERFECT_CONTROL')) {
+        const weekDates = getWeekDates(new Date(date));
+        const allGoals = await getPersonalGoals();
+        const negativeGoals = allGoals.filter(goal => goal.type === 'negative' && !goal.isCompleted);
+        
+        if (negativeGoals.length > 0) {
+            let perfectWeek = true;
+            
+            for (const dateStr of weekDates) {
+                const dayData = await dbGet(`day_${dateStr}`);
+                if (!dayData) {
+                    perfectWeek = false;
+                    break;
+                }
+                
+                for (const goal of negativeGoals) {
+                    const achieved = dayData.personalGoals?.[goal.id] || 0;
+                    const usageRatio = achieved / goal.target;
+                    const percentage = Math.max(0, (1 - usageRatio) * 100);
+                    
+                    if (percentage < 100) {
+                        perfectWeek = false;
+                        break;
+                    }
+                }
+                
+                if (!perfectWeek) break;
+            }
+            
+            if (perfectWeek) {
+                await unlockAchievement('ACH_PERFECT_CONTROL');
+            }
+        }
+    }
+    
+    // 올빼미, 아니 독수리 (새벽 5시 이전 3일 연속 기상)
+    if (!unlocked.includes('ACH_EARLY_BIRD')) {
+        let consecutiveEarlyDays = 0;
+        
+        for (let i = 0; i < 3; i++) {
+            const checkDate = new Date(date);
+            checkDate.setDate(checkDate.getDate() - i);
+            const dayData = await dbGet(`day_${formatDate(checkDate)}`);
+            
+            if (dayData?.wakeTime) {
+                const wakeMinutes = timeToMinutes(dayData.wakeTime);
+                if (wakeMinutes < 300) { // 5시 이전
+                    consecutiveEarlyDays++;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        
+        if (consecutiveEarlyDays >= 3) {
+            await unlockAchievement('ACH_EARLY_BIRD');
+        }
+    }
+    
+    // 규칙적인 취침 (일주일 내내 목표 취침시간 ±15분)
+    if (!unlocked.includes('ACH_REGULAR_SLEEP')) {
+        const weekDates = getWeekDates(new Date(date));
+        let regularSleepWeek = true;
+        
+        // 목표 취침시간을 1시로 가정 (사용자 설정이 없으면)
+        const targetSleepMinutes = 60; // 1:00 AM = 60분
+        
+        for (const dateStr of weekDates) {
+            const dayData = await dbGet(`day_${dateStr}`);
+            
+            if (dayData?.sleepTime) {
+                const sleepMinutes = timeToMinutes(dayData.sleepTime);
+                const adjustedSleep = sleepMinutes < 360 ? sleepMinutes + 1440 : sleepMinutes;
+                const diff = Math.abs(adjustedSleep - (targetSleepMinutes + 1440));
+                
+                if (diff > 15) { // ±15분 벗어남
+                    regularSleepWeek = false;
+                    break;
+                }
+            } else {
+                regularSleepWeek = false;
+                break;
+            }
+        }
+        
+        if (regularSleepWeek) {
+            await unlockAchievement('ACH_REGULAR_SLEEP');
         }
     }
 }
@@ -4325,59 +4437,7 @@ async function renderCalendar() { updateMonthYearDisplay(); await renderBasicCal
             
             await checkMonthlyPerformanceAndNotify();
             await checkExerciseAndDietBalance();
-
-            // === 예산 관련 업적 체크 (월말에) ===
-    const unlocked = await dbGet('unlockedAchievements') || [];
-    const budget = await dbGet('monthlyBudget') || 0;
-    
-    if (budget > 0) {
-        const { start, end } = getMonthDateRange(prevMonthDate);
-        const allData = await dbGetAll();
-        const expenses = allData.filter(item => 
-            item.key.startsWith('expense_') && 
-            item.value.date >= start && 
-            item.value.date <= end
-        );
-        const totalSpent = expenses.reduce((sum, item) => sum + item.value.amount, 0);
-        
-        // 무지출의 달
-        if (!unlocked.includes('ACH_ZERO_SPEND_MONTH') && totalSpent === 0) {
-            await unlockAchievement('ACH_ZERO_SPEND_MONTH');
-        }
-        
-        // 연속 예산 관리 체크 (80% 미만 지출)
-        if (totalSpent < budget * 0.8) {
-            // 3개월 연속 체크
-            let consecutiveBudgetMonths = 1; // 이번 달 포함
-            
-            for (let i = 1; i < 6; i++) {
-                const checkDate = new Date(prevMonthDate);
-                checkDate.setMonth(checkDate.getMonth() - i);
-                const { start: checkStart, end: checkEnd } = getMonthDateRange(checkDate);
-                
-                const checkExpenses = allData.filter(item => 
-                    item.key.startsWith('expense_') && 
-                    item.value.date >= checkStart && 
-                    item.value.date <= checkEnd
-                );
-                const checkTotal = checkExpenses.reduce((sum, item) => sum + item.value.amount, 0);
-                
-                if (checkTotal < budget * 0.8) {
-                    consecutiveBudgetMonths++;
-                } else {
-                    break;
-                }
-            }
-            
-            if (!unlocked.includes('ACH_FINANCIAL_FREEDOM') && consecutiveBudgetMonths >= 6) {
-                await unlockAchievement('ACH_FINANCIAL_FREEDOM');
-            } else if (!unlocked.includes('ACH_BUDGET_MASTER_3MONTH') && consecutiveBudgetMonths >= 3) {
-                await unlockAchievement('ACH_BUDGET_MASTER_3MONTH');
-            }
-        }
-    }
-    
-    await dbSet(currentMonthKey, true);
+            await checkMonthEndAchievements(prevMonthDate);
 }
 
         async function checkExerciseAchievements(date) {
@@ -4651,6 +4711,7 @@ async function finalizeDay() {
     const dayOfWeek = selectedDate.getDay();
     if (dayOfWeek === 0) { // 일요일
         await checkEndOfWeekQuests(selectedDate);
+        await checkWeekEndAchievements(selectedDate);
     }
     
     // 월간 종료 체크 (월 마지막 날인 경우)
@@ -5215,6 +5276,11 @@ async function exportToExcel() {
             closeFoodSuggestion();
             alert('식단이 기록되었습니다! 🍽️');
             if (document.getElementById('foodPage').classList.contains('active')) await renderFoodRecords();
+        
+            const today = new Date();
+            if (today.getDay() === 0) { // 일요일
+            await checkWeekEndAchievements(today);
+            }
         }
 
         function getFoodEmoji(foodName) {
@@ -5312,6 +5378,11 @@ async function exportToExcel() {
             const unit = document.getElementById('manualFoodUnit').value;
             if (!date || !time || !foodName || !quantity) return alert('모든 필드를 입력해주세요!');
             
+            const today = new Date();
+            if (today.getDay() === 0) { // 일요일
+            await checkWeekEndAchievements(today);
+            }
+
             const recordId = editingFoodRecordId || `food_${Date.now()}`;
             const foodRecord = { id: recordId, date, time, foodName, quantity, unit, expenseId: null };
             
@@ -5825,9 +5896,12 @@ async function initEnhancedApp() { await loadUserSettings();
     }
     
     // 히든 업적: 이스터 에그 (뽀모도로 16개)
-    if (!unlocked.includes('ACH_HIDDEN_EASTER_EGG') && totalPomos === 16) {
+    if (!unlocked.includes('ACH_HIDDEN_EASTER_EGG')) {
+    const todayTotalPomos = (todayData.pomodoro?.morning || 0) + (todayData.pomodoro?.afternoon || 0) + (todayData.pomodoro?.evening || 0);
+    if (todayTotalPomos === 16) {
         await unlockAchievement('ACH_HIDDEN_EASTER_EGG');
     }
+}
     
     // 누적 루틴 점수 체크
     const totalScore = allDbData.filter(item => item.key.startsWith('day_')).reduce((sum, item) => sum + (item.value.score || 0), 0);
@@ -7749,108 +7823,18 @@ button, input, select, textarea {
     margin-bottom: 24px; 
 }
 
-.summary-card { 
-    flex-basis: 30%; 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-    padding: 16px; 
-    border: 1px solid var(--primary-color); 
-    border-radius: 4px; 
-    text-align: center; 
-}
-
-.summary-title { 
-    font-size: 11px; 
-    margin-bottom: 8px; 
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.summary-value { 
-    font-size: 20px; 
-    font-weight: 600; 
-}
-
-.week-card { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 16px; 
-    margin-bottom: 12px; 
-}
-
-.week-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 12px; 
-    font-weight: 500; 
-}
-
-.week-stats { 
-    display: flex; 
-    justify-content: space-around; 
-    align-items: center; 
-    text-align: center; 
-    font-size: 18px; 
-    font-weight: 500; 
-}
-
-.empty-expenses { 
-    text-align: center; 
-    color: var(--text-color-light); 
-    padding: 32px 16px; 
-}
-
-.feedback-popup { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.4); 
-    display: none; 
-    z-index: 2000; 
-    animation: fadeIn 0.3s ease; 
-    justify-content: center; 
-    align-items: center; 
-}
-
-.feedback-content { 
-    position: relative; 
-    background: var(--container-bg); 
-    padding: 24px; 
-    border-radius: 8px; 
-    width: 90%; 
-    max-width: 400px; 
-    text-align: center; 
-    box-shadow: 
-        0 25.6px 57.6px 0 rgba(0, 0, 0, 0.22), 
-        0 4.8px 14.4px 0 rgba(0, 0, 0, 0.18);
-    animation: popIn 0.5s ease; 
-}
-
-.feedback-emoji { 
-    font-size: 48px; 
-    margin-bottom: 16px; 
-    display: block; 
-}
-
-.feedback-title { 
-    font-size: 18px; 
-    font-weight: 600; 
-    margin-bottom: 12px; 
-    color: var(--text-color);
-}
-
-.feedback-message { 
-    font-size: 14px; 
-    color: var(--text-color-light); 
-    line-height: 1.5; 
-    margin-bottom: 20px; 
-}
-
+.summary-card { flex-basis: 30%; background: var(--primary-light); color: var(--primary-color); padding: 16px; border: 1px solid var(--primary-color); border-radius: 4px; text-align: center; }
+.summary-title { font-size: 11px; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.summary-value { font-size: 20px; font-weight: 600; }
+.week-card { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
+.week-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; }
+.week-stats { display: flex; justify-content: space-around; align-items: center; text-align: center; font-size: 18px; font-weight: 500; }
+.empty-expenses { text-align: center; color: var(--text-color-light); padding: 32px 16px; }
+.feedback-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 2000; animation: fadeIn 0.3s ease; justify-content: center; align-items: center; }
+.feedback-content { position: relative; background: var(--container-bg); padding: 24px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25.6px 57.6px 0 rgba(0, 0, 0, 0.22), 0 4.8px 14.4px 0 rgba(0, 0, 0, 0.18); animation: popIn 0.5s ease; }
+.feedback-emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+.feedback-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-color); }
+.feedback-message { font-size: 14px; color: var(--text-color-light); line-height: 1.5; margin-bottom: 20px; }
 .feedback-celebration .feedback-title, 
 .feedback-celebration .feedback-message, 
 .feedback-reflection .feedback-title, 
@@ -7860,3803 +7844,228 @@ button, input, select, textarea {
 .feedback-encouragement .feedback-title, 
 .feedback-encouragement .feedback-message, 
 .feedback-warning .feedback-title, 
-.feedback-warning .feedback-message { 
-    color: white; 
-}
-
-.feedback-celebration { 
-    background: linear-gradient(135deg, var(--success-color), #0e7b0e); 
-}
-
-.feedback-reflection { 
-    background: linear-gradient(135deg, var(--warning-color), #e67700); 
-}
-
-.feedback-disaster { 
-    background: linear-gradient(135deg, #605e5c, #484644); 
-}
-
-.feedback-encouragement { 
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
-}
-
-.feedback-warning { 
-    background: linear-gradient(135deg, var(--danger-color), #b92e32); 
-}
-
+.feedback-warning .feedback-message { color: white; }
+.feedback-celebration { background: linear-gradient(135deg, var(--success-color), #0e7b0e); }
+.feedback-reflection { background: linear-gradient(135deg, var(--warning-color), #e67700); }
+.feedback-disaster { background: linear-gradient(135deg, #605e5c, #484644); }
+.feedback-encouragement { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+.feedback-warning { background: linear-gradient(135deg, var(--danger-color), #b92e32); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-.feedback-btn { 
-    background: rgba(255,255,255,0.9); 
-    color: var(--text-color); 
-    border: 1px solid rgba(255,255,255,0.5); 
-    padding: 8px 20px; 
-    border-radius: 4px; 
-    font-size: 13px; 
-    font-weight: 500; 
-    cursor: pointer; 
-    transition: all 0.15s ease; 
-    margin: 0 4px;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.feedback-btn:hover { 
-    background: white; 
-    transform: translateY(-1px);
-}
-
-.feedback-budget-red { 
-    background: linear-gradient(135deg, var(--danger-color), #b92e32) !important; 
-}
-
-.feedback-budget-black { 
-    background: linear-gradient(135deg, #605e5c, #484644) !important; 
-}
-
-.expense-input-row { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-    margin-top: 8px; 
-}
-
-.expense-input-row input { 
-    flex: 1; 
-    padding: 6px 8px; 
-    font-size: 13px; 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.expense-input-row button { 
-    flex-shrink: 0; 
-    width: 32px; 
-    height: 32px; 
-    border-radius: 4px; 
-    background: var(--primary-color); 
-    border: 1px solid var(--primary-color); 
-    color: white; 
-    font-weight: 500; 
-    cursor: pointer; 
-    font-size: 16px; 
-    transition: all 0.15s ease;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.expense-input-row button:hover { 
-    background: var(--primary-dark); 
-    border-color: var(--primary-dark);
-}
-
-.expense-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 4px 0; 
-    font-size: 13px; 
-    border-bottom: 1px solid #f3f2f1;
-}
-
+.feedback-btn { background: rgba(255,255,255,0.9); color: var(--text-color); border: 1px solid rgba(255,255,255,0.5); padding: 8px 20px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; margin: 0 4px; font-family: 'Segoe UI', sans-serif; }
+.feedback-btn:hover { background: white; transform: translateY(-1px); }
+.feedback-budget-red { background: linear-gradient(135deg, var(--danger-color), #b92e32) !important; }
+.feedback-budget-black { background: linear-gradient(135deg, #605e5c, #484644) !important; }
+.expense-input-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.expense-input-row input { flex: 1; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--container-bg); color: var(--text-color); font-family: 'Segoe UI', sans-serif; }
+.expense-input-row button { flex-shrink: 0; width: 32px; height: 32px; border-radius: 4px; background: var(--primary-color); border: 1px solid var(--primary-color); color: white; font-weight: 500; cursor: pointer; font-size: 16px; transition: all 0.15s ease; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
+.expense-input-row button:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+.expense-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; border-bottom: 1px solid #f3f2f1; }
 .dday-settings h4 { margin-bottom: 12px; }
-
 .dday-item .dday-actions { display: flex; gap: 4px; }
-
-.dday-item .dday-actions button { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    width: 24px; 
-    height: 24px; 
-    border-radius: 4px; 
-    font-size: 12px; 
-    cursor: pointer; 
-    transition: all 0.15s ease; 
-    color: var(--text-color-light);
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dday-item .dday-actions button:hover { 
-    background: var(--primary-light); 
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.excel-option-item { 
-    display: flex; 
-    align-items: center; 
-    padding: 6px 0; 
-    cursor: pointer; 
-}
-
-.excel-option-item input[type="radio"] { 
-    width: 16px; 
-    height: 16px; 
-    margin-right: 8px; 
-}
-
-.excel-option-item label { 
-    font-size: 13px;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-#customDateRange { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-    margin-top: 8px; 
-    margin-bottom: 16px; 
-}
-
-#customDateRange input[type="date"] { 
-    padding: 6px 8px; 
-    border-radius: 4px; 
-    border: 1px solid var(--border-color); 
-    flex: 1; 
-    font-family: 'Segoe UI', sans-serif;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-size: 13px;
-}
-
-.number-input-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--container-bg);
-}
-
-.number-input-group input {
-    border: none;
-    text-align: center;
-    flex: 1;
-    padding: 6px 4px;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-size: 13px;
-}
-
-.number-input-group input:focus {
-    box-shadow: none;
-    border: none;
-}
-
-.number-btn {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: #f3f2f1;
-    color: var(--text-color);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.number-btn:hover {
-    background: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.number-btn:active {
-    background: var(--primary-color);
-    color: white;
-}
-
+.dday-item .dday-actions button { background: var(--container-bg); border: 1px solid var(--border-color); width: 24px; height: 24px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.15s ease; color: var(--text-color-light); font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
+.dday-item .dday-actions button:hover { background: var(--primary-light); border-color: var(--primary-color); color: var(--primary-color); }
+.excel-option-item { display: flex; align-items: center; padding: 6px 0; cursor: pointer; }
+.excel-option-item input[type="radio"] { width: 16px; height: 16px; margin-right: 8px; }
+.excel-option-item label { font-size: 13px; font-family: 'Segoe UI', sans-serif; }
+#customDateRange { display: flex; gap: 8px; align-items: center; margin-top: 8px; margin-bottom: 16px; }
+#customDateRange input[type="date"] { padding: 6px 8px; border-radius: 4px; border: 1px solid var(--border-color); flex: 1; font-family: 'Segoe UI', sans-serif; background: var(--container-bg); color: var(--text-color); font-size: 13px; }
+.number-input-group { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; background: var(--container-bg); }
+.number-input-group input { border: none; text-align: center; flex: 1; padding: 6px 4px; background: var(--container-bg); color: var(--text-color); font-size: 13px; }
+.number-input-group input:focus { box-shadow: none; border: none; }
+.number-btn { width: 28px; height: 28px; border: none; background: #f3f2f1; color: var(--text-color); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
+.number-btn:hover { background: var(--primary-light); color: var(--primary-color); }
+.number-btn:active { background: var(--primary-color); color: white; }
 .food-page-actions { display: flex; gap: 8px; margin-bottom: 8px; }
-
-.food-page-actions .btn.secondary.danger { 
-    background-color: var(--danger-color); 
-    color: white;
-    border-color: var(--danger-color);
-}
-
-.food-date-header { 
-    display: flex; 
-    align-items: center; 
-    text-align: center; 
-    margin: 24px 0 8px; 
-    color: var(--text-color-light); 
-}
-
-.food-date-header::before, .food-date-header::after { 
-    content: ''; 
-    flex: 1; 
-    border-bottom: 1px solid var(--border-color); 
-}
-
-.food-date-header span { 
-    padding: 0 12px; 
-    font-size: 12px; 
-    font-weight: 500;
-}
-
-.food-record-item { 
-    display: grid; 
-    grid-template-columns: 50px 30px 1fr auto; 
-    gap: 12px; 
-    align-items: center; 
-    padding: 12px 4px; 
-    border-bottom: 1px solid #f3f2f1; 
-    position: relative; 
-}
-
-.food-record-item .food-admin-actions { 
-    position: absolute; 
-    right: 0px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    display: flex; 
-    gap: 4px; 
-    opacity: 0; 
-    transition: opacity 0.2s; 
-    pointer-events: none; 
-}
-
-.food-records.admin-mode .food-record-item .food-admin-actions { 
-    opacity: 1; 
-    pointer-events: auto; 
-}
-
-.food-admin-actions button { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    width: 24px; 
-    height: 24px; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    font-size: 11px; 
-    transition: all 0.15s ease;
-    font-family: 'Segoe UI', sans-serif;
-}
-
+.food-page-actions .btn.secondary.danger { background-color: var(--danger-color); color: white; border-color: var(--danger-color); }
+.food-date-header { display: flex; align-items: center; text-align: center; margin: 24px 0 8px; color: var(--text-color-light); }
+.food-date-header::before, .food-date-header::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+.food-date-header span { padding: 0 12px; font-size: 12px; font-weight: 500; }
+.food-record-item { display: grid; grid-template-columns: 50px 30px 1fr auto; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid #f3f2f1; position: relative; }
+.food-record-item .food-admin-actions { position: absolute; right: 0px; top: 50%; transform: translateY(-50%); display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.food-records.admin-mode .food-record-item .food-admin-actions { opacity: 1; pointer-events: auto; }
+.food-admin-actions button { background: var(--container-bg); border: 1px solid var(--border-color); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 11px; transition: all 0.15s ease; font-family: 'Segoe UI', sans-serif; }
 .food-admin-actions button.edit { color: var(--warning-color); }
 .food-admin-actions button.delete { color: var(--danger-color); }
-
-.food-admin-actions button:hover { 
-    background-color: var(--primary-light); 
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-#foodExportModal .modal-content {
-    max-width: 90vw;
-    background: var(--container-bg);
-    padding: 0;
-}
-
-#foodExportPreview {
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0;
-    margin: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.food-receipt-header {
-    padding: 12px 16px 8px;
-    background: #f3f2f1;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.food-receipt-title {
-    display: block;
-    text-align: center;
-    margin-bottom: 4px;
-}
-
-.food-receipt-title h3 {
-    margin: 0;
-    font-size: 14px;
-    color: var(--text-color);
-    font-weight: 600;
-}
-
-.food-receipt-header p {
-    margin: 0;
-    font-size: 11px;
-    color: var(--text-color-light);
-    text-align: center;
-}
-
-.food-receipt-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 0 12px;
-}
-
-.food-receipt-items {
-    padding: 12px 16px 8px;
-}
-
-.food-receipt-date-header {
-    font-weight: 600;
-    color: var(--text-color);
-    font-size: 12px;
-    margin: 12px 0 6px 0;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #f3f2f1;
-}
-
-.food-receipt-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 3px 0;
-    font-size: 11px;
-    line-height: 1.3;
-}
-
-.food-receipt-time {
-    color: var(--text-color-light);
-    font-size: 10px;
-    min-width: 40px;
-    margin-right: 8px;
-}
-
-.food-receipt-desc {
-    flex: 1;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-right: 8px;
-}
-
-.food-receipt-quantity {
-    font-weight: 500;
-    color: var(--text-color);
-    font-size: 11px;
-    text-align: right;
-    min-width: 50px;
-}
-
-#foodExportModal .close-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    font-size: 14px;
-    color: var(--text-color);
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-#foodExportModal .close-btn:hover {
-    background: #fdebee;
-    border-color: var(--danger-color);
-    color: var(--danger-color);
-}
-
-.food-modal { 
-    max-width: 420px; 
-    background-color: var(--container-bg); 
-    overflow: hidden; 
-}
-
-.food-modal .modal-header { 
-    padding: 12px 16px; 
-    background-color: #f3f2f1; 
-    border-bottom: 1px solid var(--border-color); 
-}
-
-.food-modal .modal-header h2 { 
-    font-size: 16px;
-    font-weight: 600;
-}
-
+.food-admin-actions button:hover { background-color: var(--primary-light); border-color: var(--primary-color); color: var(--primary-color); }
+#foodExportModal .modal-content { max-width: 90vw; background: var(--container-bg); padding: 0; }
+#foodExportPreview { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 0; margin: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: 'Segoe UI', sans-serif; }
+.food-receipt-header { padding: 12px 16px 8px; background: #f3f2f1; border-bottom: 1px solid var(--border-color); }
+.food-receipt-title { display: block; text-align: center; margin-bottom: 4px; }
+.food-receipt-title h3 { margin: 0; font-size: 14px; color: var(--text-color); font-weight: 600; }
+.food-receipt-header p { margin: 0; font-size: 11px; color: var(--text-color-light); text-align: center; }
+.food-receipt-divider { height: 1px; background: var(--border-color); margin: 0 12px; }
+.food-receipt-items { padding: 12px 16px 8px; }
+.food-receipt-date-header { font-weight: 600; color: var(--text-color); font-size: 12px; margin: 12px 0 6px 0; padding-bottom: 4px; border-bottom: 1px solid #f3f2f1; }
+.food-receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 11px; line-height: 1.3; }
+.food-receipt-time { color: var(--text-color-light); font-size: 10px; min-width: 40px; margin-right: 8px; }
+.food-receipt-desc { flex: 1; font-weight: 500; color: var(--text-color); margin-right: 8px; }
+.food-receipt-quantity { font-weight: 500; color: var(--text-color); font-size: 11px; text-align: right; min-width: 50px; }
+#foodExportModal .close-btn { position: absolute; top: 12px; right: 12px; background: var(--container-bg); border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 4px; font-size: 14px; color: var(--text-color); cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; font-family: 'Segoe UI', sans-serif; }
+#foodExportModal .close-btn:hover { background: #fdebee; border-color: var(--danger-color); color: var(--danger-color); }
+.food-modal { max-width: 420px; background-color: var(--container-bg); overflow: hidden; }
+.food-modal .modal-header { padding: 12px 16px; background-color: #f3f2f1; border-bottom: 1px solid var(--border-color); }
+.food-modal .modal-header h2 { font-size: 16px; font-weight: 600; }
 .food-modal .modal-body { padding: 16px; }
-
 .food-modal .form-group { margin-bottom: 12px; }
-
-.food-modal .form-group label { 
-    font-size: 12px; 
-    margin-bottom: 4px; 
-}
-
-.food-modal .form-group input, .food-modal .form-group select { 
-    padding: 6px 8px; 
-    font-size: 13px; 
-}
-
+.food-modal .form-group label { font-size: 12px; margin-bottom: 4px; }
+.food-modal .form-group input, .food-modal .form-group select { padding: 6px 8px; font-size: 13px; }
 .food-modal .quantity-input { display: flex; gap: 6px; }
-
 .food-modal .quantity-input select { width: 90px; }
-
-.food-modal .food-modal-actions { 
-    margin-top: 16px; 
-    display: flex; 
-    gap: 8px; 
-}
-
-.food-modal .food-modal-actions .btn { 
-    flex: 1; 
-    padding: 8px 12px; 
-}
-
-.fame-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
-    gap: 8px; 
-}
-
-.fame-card { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 12px; 
-    text-align: center; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.fame-card-title { 
-    font-size: 16px; 
-    margin-bottom: 6px; 
-}
-
-.fame-card-value { 
-    font-size: 16px; 
-    font-weight: 600; 
-    color: var(--primary-color); 
-}
-
-.fame-card-date { 
-    font-size: 10px; 
-    color: var(--text-color-light); 
-    margin-top: 3px;
-}
-
-#wallOfShame .fame-card-value { 
-    color: var(--danger-color); 
-}
-
+.food-modal .food-modal-actions { margin-top: 16px; display: flex; gap: 8px; }
+.food-modal .food-modal-actions .btn { flex: 1; padding: 8px 12px; }
+.fame-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+.fame-card { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.fame-card-title { font-size: 16px; margin-bottom: 6px; }
+.fame-card-value { font-size: 16px; font-weight: 600; color: var(--primary-color); }
+.fame-card-date { font-size: 10px; color: var(--text-color-light); margin-top: 3px; }
+#wallOfShame .fame-card-value { color: var(--danger-color); }
 #modalCommentSection { margin-top: 16px; }
-
-#modalComment { 
-    width: 100%; 
-    margin-top: 12px; 
-    height: 70px; 
-    resize: vertical; 
-    font-size: 13px; 
-}
-
-#modalPersonalGoalsList input[type="number"] { 
-    font-size: 13px; 
-}
-
-.comment-history-list { 
-    max-height: 450px; 
-    overflow-y: auto; 
-    padding-right: 4px; 
-}
-
-.comment-item { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 12px 16px; 
-    margin-bottom: 8px; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.comment-item-header { 
-    font-size: 11px; 
-    color: var(--text-color-light); 
-    font-weight: 500; 
-    margin-bottom: 8px;
-}
-
-.comment-item-body { 
-    font-size: 13px; 
-    line-height: 1.5; 
-    white-space: pre-wrap; 
-    word-break: break-word; 
-}
-
-.empty-comments { 
-    text-align: center; 
-    color: var(--text-color-light); 
-    padding: 40px 16px; 
-    background: #fafbfc; 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-}
-
-.receipt-container {
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', sans-serif;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-.receipt-header { 
-    padding: 12px 16px 8px; 
-    background: #f3f2f1;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.receipt-title { 
-    display: block; 
-    text-align: center; 
-    margin-bottom: 4px; 
-    position: relative; 
-}
-
-.receipt-title h3 { 
-    margin: 0; 
-    font-size: 14px; 
-    color: var(--text-color); 
-    font-weight: 600;
-}
-
-.budget-info { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 2px; 
-    font-size: 9px; 
-    color: var(--text-color-light); 
-    font-weight: 500; 
-    text-align: right; 
-    position: absolute;
-    top: -4px;
-    right: -6px;
-}
-
-.receipt-header p { 
-    margin: 0; 
-    font-size: 11px; 
-    color: var(--text-color-light); 
-    text-align: center;
-}
-
-.receipt-divider { 
-    height: 1px; 
-    background: var(--border-color); 
-    margin: 0 12px; 
-}
-
+#modalComment { width: 100%; margin-top: 12px; height: 70px; resize: vertical; font-size: 13px; }
+#modalPersonalGoalsList input[type="number"] { font-size: 13px; }
+.comment-history-list { max-height: 450px; overflow-y: auto; padding-right: 4px; }
+.comment-item { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 12px 16px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.comment-item-header { font-size: 11px; color: var(--text-color-light); font-weight: 500; margin-bottom: 8px; }
+.comment-item-body { font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.empty-comments { text-align: center; color: var(--text-color-light); padding: 40px 16px; background: #fafbfc; border: 1px solid var(--border-color); border-radius: 4px; }
+.receipt-container { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 0; margin-top: 0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: 'Segoe UI', sans-serif; max-width: 100%; overflow: hidden; }
+.receipt-header { padding: 12px 16px 8px; background: #f3f2f1; border-bottom: 1px solid var(--border-color); }
+.receipt-title { display: block; text-align: center; margin-bottom: 4px; position: relative; }
+.receipt-title h3 { margin: 0; font-size: 14px; color: var(--text-color); font-weight: 600; }
+.budget-info { display: flex; flex-direction: column; gap: 2px; font-size: 9px; color: var(--text-color-light); font-weight: 500; text-align: right; position: absolute; top: -4px; right: -6px; }
+.receipt-header p { margin: 0; font-size: 11px; color: var(--text-color-light); text-align: center; }
+.receipt-divider { height: 1px; background: var(--border-color); margin: 0 12px; }
 .receipt-items { padding: 12px 16px 8px; }
-
-.receipt-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 3px 6px; 
-    font-size: 11px; 
-    line-height: 1.3; 
-}
-
-.receipt-date { 
-    color: var(--text-color-light); 
-    font-size: 10px; 
-    min-width: 55px; 
-    margin-right: 12px; 
-}
-
-.receipt-desc { 
-    flex: 1; 
-    font-weight: 500; 
-    color: var(--text-color); 
-    margin-right: 12px; 
-}
-
-.receipt-amount { 
-    font-weight: 600; 
-    color: var(--text-color); 
-    font-size: 11px; 
-    text-align: right; 
-    min-width: 60px; 
-}
-
-.receipt-total { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 12px 16px; 
-    background: #f3f2f1; 
-    font-weight: 600; 
-    font-size: 13px; 
-    font-family: 'Segoe UI', sans-serif; 
-    color: var(--text-color);
-    border-top: 1px solid var(--border-color);
-}
-
-.calendar-cell.skeleton {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    position: relative;
-    overflow: hidden;
-}
-
-.calendar-cell.skeleton::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-    animation: shimmer 1.5s infinite;
-}
-
-.calendar-cell.skeleton .cell-day-number {
-    color: #ced4da;
-    background: transparent;
-}
-
+.receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; font-size: 11px; line-height: 1.3; }
+.receipt-date { color: var(--text-color-light); font-size: 10px; min-width: 55px; margin-right: 12px; }
+.receipt-desc { flex: 1; font-weight: 500; color: var(--text-color); margin-right: 12px; }
+.receipt-amount { font-weight: 600; color: var(--text-color); font-size: 11px; text-align: right; min-width: 60px; }
+.receipt-total { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f3f2f1; font-weight: 600; font-size: 13px; font-family: 'Segoe UI', sans-serif; color: var(--text-color); border-top: 1px solid var(--border-color); }
+.calendar-cell.skeleton { background: #f8f9fa; border: 1px solid #e9ecef; position: relative; overflow: hidden; }
+.calendar-cell.skeleton::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: shimmer 1.5s infinite; }
+.calendar-cell.skeleton .cell-day-number { color: #ced4da; background: transparent; }
 .calendar-cell.skeleton .cell-top-icons,
-.calendar-cell.skeleton .cell-bottom-info {
-    background: transparent;
-}
-
-@keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-.loading-indicator {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--text-color-light);
-    font-size: 11px;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 4px 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#dailyQuestModal .modal-header {
-    padding-top: 20px;
-    padding-bottom: 12px;
-}
-
+.calendar-cell.skeleton .cell-bottom-info { background: transparent; }
+@keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+.loading-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-color-light); font-size: 11px; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+#dailyQuestModal .modal-header { padding-top: 20px; padding-bottom: 12px; }
 .quest-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
-
-.quest-tab { 
-    padding: 6px 12px; 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    cursor: pointer; 
-    font-size: 12px; 
-    font-weight: 500; 
-    transition: all 0.15s ease;
-    color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.quest-tab.active { 
-    background: var(--primary-color); 
-    color: white; 
-    border-color: var(--primary-color); 
-}
-
+.quest-tab { padding: 6px 12px; background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.15s ease; color: var(--text-color); font-family: 'Segoe UI', sans-serif; }
+.quest-tab.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 .quest-list { display: flex; flex-direction: column; gap: 8px; }
-
-.quest-item { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 12px; 
-    transition: all 0.15s ease; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.quest-item:hover { 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-color: var(--primary-color);
-}
-
-.quest-item.completed { 
-    background: var(--success-color); 
-    color: white; 
-    border-color: var(--success-color); 
-}
-
-.quest-item.completed .quest-reward { 
-    color: rgba(255, 255, 255, 0.9); 
-}
-
-.quest-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 6px; 
-}
-
-.quest-title { 
-    font-weight: 500; 
-    font-size: 13px;
-}
-
-.quest-reward { 
-    font-size: 11px; 
-    color: var(--primary-color); 
-    font-weight: 500;
-}
-
-.quest-desc { 
-    font-size: 12px; 
-    color: var(--text-color-light); 
-    margin-bottom: 8px; 
-    line-height: 1.4;
-}
-
-.quest-progress { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.quest-progress-bar { 
-    flex: 1; 
-    height: 6px; 
-    background: #f3f2f1; 
-    border: 1px solid var(--border-color); 
-    border-radius: 3px; 
-    margin-right: 8px; 
-    overflow: hidden; 
-}
-
-.quest-progress-fill { 
-    height: 100%; 
-    background: var(--primary-color); 
-    transition: width 0.3s ease;
-    border-radius: 2px;
-}
-
-.quest-progress-text { 
-    font-size: 10px; 
-    color: var(--text-color-light); 
-    min-width: 35px; 
-    text-align: right; 
-}
-
-.quest-item.completed .quest-progress-bar { 
-    background: rgba(255, 255, 255, 0.3); 
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.quest-item.completed .quest-progress-fill { 
-    background: rgba(255, 255, 255, 0.8); 
-}
-
-.quest-item.completed .quest-progress-text { 
-    color: rgba(255, 255, 255, 0.9); 
-}
-
-#rewardsModal .modal-header { 
-    padding: 20px 20px 16px 20px; 
-    border-bottom: 1px solid var(--border-color); 
-    background: var(--container-bg); 
-}
-
-.rewards-list { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    max-height: 400px; 
-    overflow-y: auto; 
-}
-
-.reward-item { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 12px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    transition: all 0.15s ease; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.reward-item:hover { 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-color: var(--primary-color);
-}
-
-.reward-item.bronze { 
-    border-color: #CD7F32; 
-    background: #fef9f3;
-}
-
-.reward-item.silver { 
-    border-color: #C0C0C0; 
-    background: #f8f9fa;
-}
-
-.reward-item.gold { 
-    border-color: #FFD700; 
-    background: #fffdf0;
-}
-
-.reward-item.legend { 
-    border-color: #9400D3; 
-    background: #faf5ff;
-}
-
-.reward-item.used { 
-    opacity: 0.6; 
-    filter: grayscale(30%); 
-}
-
+.quest-item { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.quest-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-color: var(--primary-color); }
+.quest-item.completed { background: var(--success-color); color: white; border-color: var(--success-color); }
+.quest-item.completed .quest-reward { color: rgba(255, 255, 255, 0.9); }
+.quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.quest-title { font-weight: 500; font-size: 13px; }
+.quest-reward { font-size: 11px; color: var(--primary-color); font-weight: 500; }
+.quest-desc { font-size: 12px; color: var(--text-color-light); margin-bottom: 8px; line-height: 1.4; }
+.quest-progress { display: flex; justify-content: space-between; align-items: center; }
+.quest-progress-bar { flex: 1; height: 6px; background: #f3f2f1; border: 1px solid var(--border-color); border-radius: 3px; margin-right: 8px; overflow: hidden; }
+.quest-progress-fill { height: 100%; background: var(--primary-color); transition: width 0.3s ease; border-radius: 2px; }
+.quest-progress-text { font-size: 10px; color: var(--text-color-light); min-width: 35px; text-align: right; }
+.quest-item.completed .quest-progress-bar { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.3); }
+.quest-item.completed .quest-progress-fill { background: rgba(255, 255, 255, 0.8); }
+.quest-item.completed .quest-progress-text { color: rgba(255, 255, 255, 0.9); }
+#rewardsModal .modal-header { padding: 20px 20px 16px 20px; border-bottom: 1px solid var(--border-color); background: var(--container-bg); }
+.rewards-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
+.reward-item { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.reward-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-color: var(--primary-color); }
+.reward-item.bronze { border-color: #CD7F32; background: #fef9f3; }
+.reward-item.silver { border-color: #C0C0C0; background: #f8f9fa; }
+.reward-item.gold { border-color: #FFD700; background: #fffdf0; }
+.reward-item.legend { border-color: #9400D3; background: #faf5ff; }
+.reward-item.used { opacity: 0.6; filter: grayscale(30%); }
 .reward-info { flex: 1; }
-
-.reward-name { 
-    font-weight: 500; 
-    font-size: 13px; 
-    margin-bottom: 3px;
-}
-
-.reward-desc { 
-    font-size: 11px; 
-    color: var(--text-color-light);
-    line-height: 1.4;
-}
-
-.reward-tier { 
-    font-size: 9px; 
-    font-weight: 500; 
-    padding: 2px 6px; 
-    border-radius: 2px; 
-    margin-bottom: 3px; 
-    display: inline-block;
-    border: 1px solid;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.reward-tier.bronze { 
-    background: #CD7F32; 
-    color: white;
-    border-color: #A0522D;
-}
-
-.reward-tier.silver { 
-    background: #C0C0C0; 
-    color: var(--text-color);
-    border-color: #808080;
-}
-
-.reward-tier.gold { 
-    background: #FFD700; 
-    color: var(--text-color);
-    border-color: #FFA500;
-}
-
-.reward-tier.legend { 
-    background: #9400D3; 
-    color: white;
-    border-color: #4B0082;
-}
-
+.reward-name { font-weight: 500; font-size: 13px; margin-bottom: 3px; }
+.reward-desc { font-size: 11px; color: var(--text-color-light); line-height: 1.4; }
+.reward-tier { font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 2px; margin-bottom: 3px; display: inline-block; border: 1px solid; text-transform: uppercase; letter-spacing: 0.5px; }
+.reward-tier.bronze { background: #CD7F32; color: white; border-color: #A0522D; }
+.reward-tier.silver { background: #C0C0C0; color: var(--text-color); border-color: #808080; }
+.reward-tier.gold { background: #FFD700; color: var(--text-color); border-color: #FFA500; }
+.reward-tier.legend { background: #9400D3; color: white; border-color: #4B0082; }
 .reward-actions { display: flex; gap: 6px; }
-
-.reward-btn { 
-    padding: 4px 10px; 
-    border: 1px solid; 
-    border-radius: 4px; 
-    font-size: 10px; 
-    font-weight: 500; 
-    cursor: pointer; 
-    transition: all 0.15s ease;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.reward-btn.use { 
-    background: var(--success-color); 
-    color: white;
-    border-color: var(--success-color);
-}
-
-.reward-btn.use:hover { 
-    background: #0e7b0e; 
-    border-color: #0e7b0e;
-}
-
-.reward-btn.delete { 
-    background: var(--danger-color); 
-    color: white;
-    border-color: var(--danger-color);
-}
-
-.reward-btn.delete:hover { 
-    background: #b92e32; 
-    border-color: #b92e32;
-}
-
-.reward-btn:disabled { 
-    opacity: 0.5; 
-    cursor: not-allowed; 
-}
-
-.empty-rewards { 
-    text-align: center; 
-    padding: 32px 16px; 
-    color: var(--text-color-light); 
-}
-
-.profile-menu-item:hover { 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-}
-
-#profileWidget:hover { 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-#profileWidget { 
-    transition: all 0.15s ease;
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 6px 8px; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    min-width: 120px;
-}
-
-#expBar { 
-    background: linear-gradient(90deg, var(--primary-color), var(--success-color)); 
-    height: 4px;
-    border-radius: 2px;
-}
-
-.achievements-list { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    max-height: 400px; 
-    overflow-y: auto; 
-}
-
-.achievement-item { 
-    background: var(--container-bg); 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 12px; 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    transition: all 0.15s ease; 
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.achievement-item.unlocked { 
-    border-color: var(--success-color); 
-    background: #f1f8e9;
-}
-
+.reward-btn { padding: 4px 10px; border: 1px solid; border-radius: 4px; font-size: 10px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; font-family: 'Segoe UI', sans-serif; }
+.reward-btn.use { background: var(--success-color); color: white; border-color: var(--success-color); }
+.reward-btn.use:hover { background: #0e7b0e; border-color: #0e7b0e; }
+.reward-btn.delete { background: var(--danger-color); color: white; border-color: var(--danger-color); }
+.reward-btn.delete:hover { background: #b92e32; border-color: #b92e32; }
+.reward-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.empty-rewards { text-align: center; padding: 32px 16px; color: var(--text-color-light); }
+.profile-menu-item:hover { background: var(--primary-light); color: var(--primary-color); }
+#profileWidget:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+#profileWidget { transition: all 0.15s ease; background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); min-width: 120px; }
+#expBar { background: linear-gradient(90deg, var(--primary-color), var(--success-color)); height: 4px; border-radius: 2px; }
+.achievements-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
+.achievement-item { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: 12px; display: flex; align-items: center; gap: 12px; transition: all 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.achievement-item.unlocked { border-color: var(--success-color); background: #f1f8e9; }
 .achievement-item.locked { opacity: 0.6; }
-
-.achievement-emoji { 
-    font-size: 20px; 
-    min-width: 40px; 
-    text-align: center; 
-}
-
+.achievement-emoji { font-size: 20px; min-width: 40px; text-align: center; }
 .achievement-info { flex: 1; }
-
-.achievement-name { 
-    font-weight: 500; 
-    font-size: 13px; 
-    margin-bottom: 3px;
-}
-
-.achievement-desc { 
-    font-size: 11px; 
-    color: var(--text-color-light);
-    line-height: 1.4;
-}
-
-.achievement-status { 
-    font-size: 10px; 
-    font-weight: 500; 
-    padding: 3px 6px; 
-    border-radius: 2px;
-    border: 1px solid;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.achievement-status.unlocked { 
-    background: var(--success-color); 
-    color: white;
-    border-color: var(--success-color);
-}
-
-.achievement-status.locked { 
-    background: #f3f2f1; 
-    color: var(--text-color-light);
-    border-color: var(--border-color);
-}
-
-.achievement-item.hidden { 
-    background: #f8f9fa;
-    color: var(--text-color-light); 
-    border-color: var(--border-color); 
-}
-
-.achievement-item.hidden .achievement-desc { 
-    color: var(--text-color-light); 
-    font-style: italic; 
-}
+.achievement-name { font-weight: 500; font-size: 13px; margin-bottom: 3px; }
+.achievement-desc { font-size: 11px; color: var(--text-color-light); line-height: 1.4; }
+.achievement-status { font-size: 10px; font-weight: 500; padding: 3px 6px; border-radius: 2px; border: 1px solid; text-transform: uppercase; letter-spacing: 0.5px; }
+.achievement-status.unlocked { background: var(--success-color); color: white; border-color: var(--success-color); }
+.achievement-status.locked { background: #f3f2f1; color: var(--text-color-light); border-color: var(--border-color); }
+.achievement-item.hidden { background: #f8f9fa; color: var(--text-color-light); border-color: var(--border-color); }
+.achievement-item.hidden .achievement-desc { color: var(--text-color-light); font-style: italic; }
 
 @media (max-width: 767px) {
-    body {
-        font-size: 12px;
-        padding: 12px;
-    }
-    
-    .container {
-        padding: 24px 12px 80px 12px;
-    }
-    
-    .header h1 {
-        font-size: 18px;
-    }
-    
-    .header p {
-        font-size: 12px;
-    }
-    
-    .btn {
-        font-size: 13px;
-        padding: 8px 12px;
-    }
-    
-    .form-group label {
-        font-size: 12px;
-    }
-    
-    .form-group input, .form-group textarea, .form-group select {
-        font-size: 13px;
-        padding: 6px 8px;
-    }
-    
-    .modal-content {
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        max-height: 100vh;
-    }
-    
-    .food-modal {
-        width: 90%;
-        height: auto;
-        border-radius: 4px;
-        max-height: 90vh;
-    }
-    
-    .food-modal .modal-body {
-        overflow-y: auto;
-        max-height: calc(90vh - 120px);
-    }
-    
-    #dayModal .modal-body {
-        padding: 16px 12px;
-    }
-    
-    .modal-input-group {
-        padding: 12px;
-    }
-    
-    .modal-input-group h4 {
-        font-size: 13px;
-    }
-    
-    #dayModal .form-group label {
-        font-size: 11px;
-    }
-
-    #dayModal .modal-input-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .exercise-toggle-btns {
-        max-width: 200px;
-    }
-    
-    .score-display-card, .personal-goals-section {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 12px;
-    }
-    
-    .score-display-card .score {
-        font-size: 28px;
-    }
-
-    #modalTotalExpense {
-        text-align: left !important;
-    }
-    
-    .expense-item {
-        font-size: 12px;
-        word-break: break-all;
-    }
-    
-    .expense-item span:first-child {
-        flex-grow: 1;
-        margin-right: 8px;
-    }
-    
-    .expense-item > div {
-        flex-shrink: 0;
-    }
-    
-    .modal-actions-container {
-        padding: 0 12px 16px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .modal-actions-container .btn.delete {
-        order: 2;
-        background-color: transparent;
-        color: var(--text-color-light);
-        font-size: 11px;
-        font-weight: 500;
-        padding: 6px;
-        box-shadow: none;
-        margin-top: 8px;
-        max-width: 150px;
-        border: none;
-    }
-    
-    .modal-actions-container .btn.delete:hover {
-        background-color: transparent;
-        color: var(--danger-color);
-    }
-    
-    .modal-actions-container .btn.save {
-        order: 1;
-    }
-
-    #budgetPage .budget-summary {
-        flex-wrap: wrap;
-    }
-    
-    #budgetPage .budget-summary .budget-card:first-child {
-        flex-basis: 100%;
-    }
-    
-    #budgetPage .budget-card-value {
-        font-size: 16px;
-    }
-    
-    #dayModal .expense-input-row {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
+    body { font-size: 12px; padding: 12px; }
+    .container { padding: 24px 12px 80px 12px; }
+    .header h1 { font-size: 18px; }
+    .header p { font-size: 12px; }
+    .btn { font-size: 13px; padding: 8px 12px; }
+    .form-group label { font-size: 12px; }
+    .form-group input, .form-group textarea, .form-group select { font-size: 13px; padding: 6px 8px; }
+    .modal-content { padding: 0; width: 100%; height: 100%; border-radius: 0; max-height: 100vh; }
+    .food-modal { width: 90%; height: auto; border-radius: 4px; max-height: 90vh; }
+    .food-modal .modal-body { overflow-y: auto; max-height: calc(90vh - 120px); }
+    #dayModal .modal-body { padding: 16px 12px; }
+    .modal-input-group { padding: 12px; }
+    .modal-input-group h4 { font-size: 13px; }
+    #dayModal .form-group label { font-size: 11px; }
+    #dayModal .modal-input-row { grid-template-columns: 1fr; gap: 12px; }
+    .exercise-toggle-btns { max-width: 200px; }
+    .score-display-card, .personal-goals-section { width: 100%; max-width: none; margin: 0; padding: 12px; }
+    .score-display-card .score { font-size: 28px; }
+    #modalTotalExpense { text-align: left !important; }
+    .expense-item { font-size: 12px; word-break: break-all; }
+    .expense-item span:first-child { flex-grow: 1; margin-right: 8px; }
+    .expense-item > div { flex-shrink: 0; }
+    .modal-actions-container { padding: 0 12px 16px; display: flex; flex-direction: column; align-items: center; }
+    .modal-actions-container .btn.delete { order: 2; background-color: transparent; color: var(--text-color-light); font-size: 11px; font-weight: 500; padding: 6px; box-shadow: none; margin-top: 8px; max-width: 150px; border: none; }
+    .modal-actions-container .btn.delete:hover { background-color: transparent; color: var(--danger-color); }
+    .modal-actions-container .btn.save { order: 1; }
+    #budgetPage .budget-summary { flex-wrap: wrap; }
+    #budgetPage .budget-summary .budget-card:first-child { flex-basis: 100%; }
+    #budgetPage .budget-card-value { font-size: 16px; }
+    #dayModal .expense-input-row { flex-direction: column; gap: 8px; }
     #dayModal .expense-input-row input,
-    #dayModal .expense-input-row button {
-        width: 100%;
-    }
-    
-    .dday-header-container {
-        top: 6px;
-        left: 2px;
-        right: 2px;
-    }
-    
-    .dday-chip {
-        font-size: 9px;
-        padding: 3px 6px;
-    }
-    
-    .battery {
-        width: 24px;
-        height: 10px;
-    }
-    
-    .receipt-item {
-        font-size: 10px;
-    }
-
-    .receipt-date {
-        min-width: 40px;
-        margin-right: 6px;
-        font-size: 9px;
-    }
-
-    .receipt-desc {
-        margin-right: 6px;
-    }
-
-    .receipt-amount {
-        min-width: 45px;
-        font-size: 10px;
-    }
-
-    .budget-info {
-        flex-direction: column;
-        gap: 1px;
-        font-size: 8px;
-        text-align: right;
-    }
-    
-    .modal-title {
-        font-size: 14px;
-    }
-    
-    .quest-title {
-        font-size: 12px;
-    }
-    
-    .quest-desc {
-        font-size: 11px;
-    }
-    
-    .quest-reward {
-        font-size: 10px;
-    }
-    
-    .quest-progress-text {
-        font-size: 9px;
-    }
-    
-    .reward-name {
-        font-size: 12px;
-    }
-    
-    .reward-desc {
-        font-size: 10px;
-    }
-    
-    .achievement-name {
-        font-size: 12px;
-    }
-    
-    .achievement-desc {
-        font-size: 10px;
-    }
+    #dayModal .expense-input-row button { width: 100%; }
+    .dday-header-container { top: 6px; left: 2px; right: 2px; }
+    .dday-chip { font-size: 9px; padding: 3px 6px; }
+    .battery { width: 24px; height: 10px; }
+    .receipt-item { font-size: 10px; }
+    .receipt-date { min-width: 40px; margin-right: 6px; font-size: 9px; }
+    .receipt-desc { margin-right: 6px; }
+    .receipt-amount { min-width: 45px; font-size: 10px; }
+    .budget-info { flex-direction: column; gap: 1px; font-size: 8px; text-align: right; }
+    .modal-title { font-size: 14px; }
+    .quest-title { font-size: 12px; }
+    .quest-desc { font-size: 11px; }
+    .quest-reward { font-size: 10px; }
+    .quest-progress-text { font-size: 9px; }
+    .reward-name { font-size: 12px; }
+    .reward-desc { font-size: 10px; }
+    .achievement-name { font-size: 12px; }
+    .achievement-desc { font-size: 10px; }
 }
     `,
     
-    retrogame: `
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    zelda: `
 
-@font-face {
-    font-family: 'KBIZHanmaumMyungjo';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/KBIZHanmaumMyungjo.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-:root {
-    --bg-color: #0f0f23;
-    --primary-color: #ffd700;
-    --primary-dark: #ffb347;
-    --primary-light: #4d3300;
-    --text-color: #ffffff;
-    --text-color-light: #cccccc;
-    --border-color: #555555;
-    --container-bg: #1a1a2e;
-    --danger-color: #ff073a;
-    --warning-color: #ffa500;
-    --success-color: #00ff41;
-    --neutral-color: #888888;
-}
-
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-}
-
-body { 
-    font-family: 'Press Start 2P', monospace; 
-    background: 
-        radial-gradient(circle at 20% 50%, transparent 20%, rgba(0, 255, 65, 0.05) 21%, rgba(0, 255, 65, 0.05) 34%, transparent 35%, transparent),
-        linear-gradient(0deg, transparent 24%, rgba(0, 255, 65, 0.03) 25%, rgba(0, 255, 65, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 65, 0.03) 75%, rgba(0, 255, 65, 0.03) 76%, transparent 77%, transparent),
-        var(--bg-color);
-    background-size: 50px 50px;
-    min-height: 100vh; 
-    padding: 20px; 
-    color: var(--text-color); 
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-}
-
-button, input, select, textarea { 
-    font-family: 'Press Start 2P', monospace; 
-    image-rendering: pixelated;
-}
-
-.container { 
-    background: var(--container-bg);
-    border: 4px solid var(--primary-color); 
-    border-radius: 0; 
-    padding: 50px 30px 100px 30px; 
-    width: 100%; 
-    max-width: 500px; 
-    margin: 0 auto; 
-    box-shadow: 
-        0 0 0 2px var(--container-bg),
-        0 0 0 6px var(--primary-color),
-        0 8px 0 6px var(--primary-dark),
-        inset 0 4px 0 rgba(0, 255, 65, 0.2);
-    position: relative;
-}
-
-.header { 
-    text-align: center; 
-    margin-bottom: 25px; 
-    position: relative;
-    padding: 15px;
-    border: 2px solid var(--primary-color);
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 255, 65, 0.1) 2px,
-            rgba(0, 255, 65, 0.1) 4px
-        );
-}
-
-.header h1 { 
-    color: var(--primary-color); 
-    font-size: 14px; 
-    font-weight: normal; 
-    margin-bottom: 8px; 
-    text-shadow: 2px 2px 0 var(--primary-dark);
-    letter-spacing: 1px;
-}
-
-.header p { 
-    color: var(--text-color-light); 
-    font-size: 7px; 
-    line-height: 1.6;
-}
-
-#gameWarning { 
-    background: #332800; 
-    color: var(--warning-color); 
-    border: 2px solid var(--warning-color); 
-    border-radius: 0; 
-    padding: 10px; 
-    font-size: 7px; 
-    font-weight: normal; 
-    margin-bottom: 20px; 
-    display: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.page { display: none; }
-.page.active { display: block; }
-
-.calendar-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 20px; 
-}
-
-.month-nav { 
-    background: var(--primary-color); 
-    border: 2px solid var(--primary-dark); 
-    font-size: 16px; 
-    color: var(--bg-color); 
-    cursor: pointer; 
-    padding: 8px 12px; 
-    border-radius: 0; 
-    transition: all 0.1s ease;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.month-nav:hover { 
-    background: var(--primary-dark); 
-    transform: translate(1px, 1px);
-}
-
-.month-year { 
-    font-size: 12px; 
-    font-weight: normal;
-    color: var(--primary-color);
-    text-shadow: 1px 1px 0 var(--primary-dark);
-}
-
-.calendar-grid { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    gap: 2px; 
-    margin-bottom: 20px; 
-    border: 2px solid var(--primary-color);
-    background: var(--bg-color);
-    padding: 4px;
-}
-
-.calendar-header-cell { 
-    text-align: center; 
-    padding: 8px 2px; 
-    font-weight: normal; 
-    color: var(--primary-color); 
-    font-size: 7px; 
-    background: var(--primary-light);
-    border: 1px solid var(--primary-color);
-    text-transform: uppercase;
-}
-
-.calendar-cell { 
-    aspect-ratio: 1; 
-    display: grid; 
-    grid-template-rows: 1fr auto 1fr; 
-    padding: 2px; 
-    align-items: center; 
-    justify-items: center;
-    border: 1px solid var(--border-color);
-    background: var(--container-bg);
-    transition: all 0.1s ease;
-    cursor: pointer;
-}
-
-.cell-top-icons { 
-    grid-row: 1; 
-    display: flex; 
-    justify-content: center; 
-    gap: 1px; 
-    font-size: 6px; 
-    width: 100%; 
-    height: 100%; 
-    align-items: center; 
-}
-
-.cell-day-number { 
-    grid-row: 2; 
-    font-weight: normal;
-    font-size: 8px;
-}
-
-.calendar-cell.today .cell-day-number { 
-    font-weight: normal;
-    color: var(--warning-color);
-}
-
-.cell-bottom-info { 
-    grid-row: 3; 
-    font-size: 5px; 
-    font-weight: normal; 
-    color: var(--text-color-light); 
-    width: 100%; 
-    text-align: left; 
-    padding-right: 2px; 
-    align-self: end; 
-    padding-bottom: 1px; 
-}
-
-.calendar-cell.has-data .cell-bottom-info { 
-    color: rgba(255, 255, 255, 0.8); 
-}
-
-.calendar-cell.off-day { 
-    background: 
-        repeating-linear-gradient(
-            0deg,
-            #666666,
-            #666666 2px,
-            #555555 2px,
-            #555555 4px
-        );
-    color: var(--neutral-color); 
-    border-color: var(--neutral-color);
-}
-
-.off-day-indicator { 
-    position: absolute; 
-    top: 2px; 
-    right: 2px; 
-    font-size: 6px; 
-}
-
-.calendar-cell:hover { 
-    transform: translate(-1px, -1px);
-    box-shadow: 1px 1px 0 var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.calendar-cell.other-month { 
-    color: #444; 
-    background: var(--bg-color); 
-    border-color: transparent; 
-    pointer-events: none; 
-}
-
-.calendar-cell.today { 
-    border: 2px solid var(--warning-color);
-    box-shadow: 
-        0 0 0 1px var(--container-bg),
-        0 0 0 3px var(--warning-color);
-    animation: pixelBlink 2s infinite;
-}
-
-@keyframes pixelBlink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.8; }
-}
-
-.calendar-cell.has-data { 
-    color: var(--bg-color); 
-    border: 2px solid;
-    font-weight: normal; 
-}
-
-.calendar-cell.score-high { 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            var(--success-color),
-            var(--success-color) 3px,
-            #00dd37 3px,
-            #00dd37 6px
-        );
-    border-color: #66ff88;
-}
-
-.calendar-cell.score-medium { 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            var(--warning-color),
-            var(--warning-color) 3px,
-            #cc8800 3px,
-            #cc8800 6px
-        );
-    border-color: #ffcc44;
-}
-
-.calendar-cell.score-low { 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            var(--danger-color),
-            var(--danger-color) 3px,
-            #cc0022 3px,
-            #cc0022 6px
-        );
-    border-color: #ff6666;
-}
-
-.calendar-cell.score-negative { 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #444444,
-            #444444 3px,
-            #222222 3px,
-            #222222 6px
-        );
-    border-color: #666666;
-}
-
-.score-indicator { 
-    position: absolute; 
-    bottom: 2px; 
-    right: 2px; 
-    font-size: 5px; 
-    background: rgba(0,0,0,0.7); 
-    color: var(--text-color); 
-    padding: 1px 2px; 
-    border-radius: 0; 
-    font-weight: normal; 
-    border: 1px solid var(--primary-color);
-}
-
-.form-group { margin-bottom: 20px; }
-
-.form-group label { 
-    display: block; 
-    color: var(--primary-color); 
-    font-weight: normal; 
-    margin-bottom: 8px; 
-    font-size: 8px; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.form-group input, .form-group textarea, .form-group select { 
-    width: 100%; 
-    padding: 8px; 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    font-size: 8px; 
-    transition: all 0.1s ease; 
-    font-family: 'Press Start 2P', monospace;
-    background: var(--container-bg);
-    color: var(--text-color);
-    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
-}
-
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
-    outline: none; 
-    border-color: var(--primary-color); 
-    box-shadow: 
-        inset 2px 2px 0 rgba(0, 0, 0, 0.3),
-        0 0 0 2px var(--primary-light);
-}
-
-.main-actions { display: flex; gap: 10px; margin-bottom: 10px; }
-
-.btn { 
-    width: 100%; 
-    padding: 12px; 
-    background: 
-        linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    color: var(--bg-color); 
-    border: 3px solid;
-    border-color: #66ff88 #003d11 #003d11 #66ff88;
-    border-radius: 0; 
-    font-size: 8px; 
-    font-weight: normal; 
-    cursor: pointer; 
-    transition: all 0.1s ease; 
-    box-shadow: 
-        inset 2px 2px 0 rgba(255, 255, 255, 0.3),
-        inset -2px -2px 0 rgba(0, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.btn:hover { 
-    background: 
-        linear-gradient(180deg, #66ff88 0%, var(--primary-color) 100%);
-    transform: translate(1px, 1px);
-    box-shadow: 
-        inset 1px 1px 0 rgba(255, 255, 255, 0.5),
-        inset -1px -1px 0 rgba(0, 0, 0, 0.5);
-}
-
-.btn:active { 
-    transform: translate(2px, 2px); 
-    box-shadow: 
-        inset 3px 3px 0 rgba(0, 0, 0, 0.3);
-}
-
-.main-actions .btn { flex: 1; }
-
-.btn.secondary { 
-    background: 
-        linear-gradient(180deg, var(--neutral-color) 0%, #666666 100%);
-    border-color: #aaaaaa #333333 #333333 #aaaaaa;
-    color: var(--text-color);
-}
-
-.btn.secondary:hover { 
-    background: 
-        linear-gradient(180deg, #aaaaaa 0%, var(--neutral-color) 100%);
-}
-
-.modal-overlay { 
-    display: none; 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0, 0, 0, 0.8); 
-    backdrop-filter: none;
-    z-index: 1000; 
-    align-items: center; 
-    justify-content: center; 
-}
-
-.modal-content { 
-    background: var(--container-bg); 
-    padding: 0; 
-    border: 4px solid var(--primary-color); 
-    border-radius: 0; 
-    width: 90%; 
-    max-width: 800px; 
-    max-height: 95vh; 
-    overflow-y: auto; 
-    box-shadow: 
-        0 0 0 2px var(--container-bg),
-        0 0 0 6px var(--primary-color),
-        0 8px 0 6px var(--primary-dark);
-}
-
-#dayModal .modal-header, #excelExportModal .modal-header, .food-modal-content .modal-header { 
-    padding: 20px 25px; 
-    border-bottom: 2px solid var(--primary-color); 
-    background: 
-        repeating-linear-gradient(
-            90deg,
-            var(--primary-light),
-            var(--primary-light) 4px,
-            rgba(0, 255, 65, 0.2) 4px,
-            rgba(0, 255, 65, 0.2) 8px
-        );
-}
-
-#dayModal .modal-body { padding: 25px; }
-
-.modal-layout { display: block; }
-
-@media (min-width: 768px) { .modal-layout { display: block; } }
-
-.modal-side-column { display: flex; flex-direction: column; }
-
-.modal-input-group { 
-    background: var(--container-bg); 
-    padding: 20px; 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    margin-bottom: 5px;
-}
-
-.modal-input-group h4 { 
-    font-size: 8px; 
-    margin-bottom: 15px; 
-    padding-bottom: 8px; 
-    border-bottom: 1px solid var(--primary-color); 
-    color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: normal;
-}
-
-.modal-input-row { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-    gap: 15px; 
-}
-
-#commentDetails summary { 
-    font-weight: normal; 
-    color: var(--primary-color); 
-    cursor: pointer; 
-    padding: 10px; 
-    border-radius: 0; 
-    background-color: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    list-style: none; 
-    position: relative; 
-    padding-left: 30px;
-    font-size: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-#commentDetails summary::-webkit-details-marker { display: none; }
-
-#commentDetails summary::before { 
-    content: '▶'; 
-    position: absolute; 
-    left: 12px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    font-size: 6px; 
-    transition: transform 0.2s; 
-}
-
-#commentDetails[open] > summary::before { 
-    transform: translateY(-50%) rotate(90deg); 
-}
-
-#dayModal .form-group { margin-bottom: 0; }
-
-#dayModal .form-group label { 
-    font-size: 7px; 
-    margin-bottom: 6px; 
-}
-
-#dayModal .form-group input { 
-    padding: 8px; 
-    font-size: 8px; 
-}
-
-#dayModal .modal-input-group,
-#dayModal .score-display-card { margin-bottom: 5px; }
-
-#dayModal .modal-layout > div:last-child { margin-bottom: 0; }
-
-.modal-header { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    position: relative; 
-    gap: 20px; 
-}
-
-.modal-title { 
-    flex: none; 
-    text-align: center; 
-    margin: 0;
-    font-size: 10px;
-    color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: normal;
-}
-
-.date-nav-btn { 
-    background: var(--primary-color); 
-    border: 2px solid var(--primary-dark); 
-    font-size: 16px; 
-    color: var(--bg-color); 
-    cursor: pointer; 
-    padding: 8px; 
-    border-radius: 0; 
-    transition: all 0.1s ease; 
-    width: 32px; 
-    height: 32px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.date-nav-btn:hover { 
-    background: var(--primary-dark); 
-    transform: translate(1px, 1px);
-}
-
-.close-btn { 
-    background: var(--danger-color); 
-    border: 2px solid #cc0022; 
-    font-size: 16px; 
-    cursor: pointer; 
-    color: var(--text-color); 
-    line-height: 1; 
-    position: absolute; 
-    right: 0; 
-    top: 50%; 
-    transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.close-btn:hover {
-    background: #cc0022;
-    transform: translateY(-50%) translate(1px, 1px);
-}
-
-.score-display-card { 
-    background: var(--container-bg); 
-    border: 3px solid var(--primary-color); 
-    border-radius: 0; 
-    padding: 20px; 
-    text-align: center; 
-    box-shadow: 
-        inset 2px 2px 0 rgba(0, 255, 65, 0.3),
-        inset -2px -2px 0 rgba(0, 0, 0, 0.3);
-}
-
-.score-display-card .score { 
-    font-size: 32px; 
-    font-weight: normal; 
-    color: var(--primary-color); 
-    line-height: 1;
-    text-shadow: 2px 2px 0 var(--primary-dark);
-}
-
-.score-display-card .score.is-off { 
-    color: var(--neutral-color); 
-}
-
-.score-display-card div:last-child { 
-    font-size: 8px; 
-    color: var(--text-color-light); 
-    margin-top: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.exercise-toggle-group { margin-bottom: 15px; }
-
-.exercise-toggle-group label { 
-    display: block; 
-    color: var(--primary-color); 
-    font-weight: normal; 
-    margin-bottom: 8px; 
-    font-size: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.exercise-toggle-btns { 
-    display: flex; 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    overflow: hidden; 
-}
-
-.exercise-toggle-btn { 
-    flex: 1; 
-    padding: 10px; 
-    border: none; 
-    background: var(--container-bg); 
-    cursor: pointer; 
-    font-weight: normal; 
-    transition: all 0.1s ease; 
-    font-size: 7px;
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-}
-
-.exercise-toggle-btn.active { 
-    background: var(--success-color); 
-    color: var(--bg-color); 
-}
-
-.legend { 
-    display: flex; 
-    justify-content: center; 
-    flex-wrap: wrap; 
-    margin: 20px 0 0; 
-    font-size: 6px; 
-    gap: 10px; 
-}
-
-.legend-item { 
-    display: flex; 
-    align-items: center; 
-    gap: 4px; 
-}
-
-.legend-color { 
-    width: 8px; 
-    height: 8px; 
-    border: 1px solid var(--text-color);
-}
-
-.goal-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-
-.goal-tab { 
-    padding: 8px 16px; 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    cursor: pointer; 
-    font-size: 7px; 
-    font-weight: normal; 
-    transition: all 0.1s ease;
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-}
-
-.goal-tab.active { 
-    background: var(--primary-color); 
-    color: var(--bg-color); 
-    border-color: var(--primary-color); 
-}
-
-.goal-type-toggle { display: flex; gap: 5px; margin-bottom: 15px; }
-
-.goal-type-toggle button { 
-    flex: 1; 
-    padding: 8px; 
-    font-size: 7px; 
-    border: 2px solid var(--border-color); 
-    background: var(--bg-color); 
-    border-radius: 0; 
-    cursor: pointer; 
-    font-weight: normal; 
-    transition: all 0.1s ease;
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-}
-
-.goal-type-toggle button.active { 
-    background: var(--primary-color); 
-    color: var(--bg-color); 
-    border-color: var(--primary-color); 
-}
-
-#personalGoalsPage .header { text-align: left; }
-
-.dday-header-container { 
-    height: auto; 
-    margin-bottom: 5px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start; 
-    position: absolute; 
-    top: 10px; 
-    left: 10px; 
-    right: 10px; 
-    z-index: 10; 
-    pointer-events: none; 
-}
-
-.dday-chip { 
-    background: var(--primary-color); 
-    backdrop-filter: none;
-    color: var(--bg-color); 
-    padding: 4px 8px; 
-    border: 2px solid var(--primary-dark); 
-    border-radius: 0; 
-    font-weight: normal; 
-    font-size: 6px; 
-    display: none; 
-    box-shadow: 2px 2px 0 var(--primary-dark);
-    pointer-events: all; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.battery { 
-    display: none; 
-    width: 24px; 
-    height: 10px; 
-    border: 2px solid var(--text-color-light); 
-    border-radius: 0; 
-    position: relative; 
-    padding: 1px;
-    background: var(--container-bg);
-}
-
-.battery::after { 
-    content: ''; 
-    position: absolute; 
-    top: 50%; 
-    right: -3px; 
-    transform: translateY(-50%); 
-    width: 2px; 
-    height: 4px; 
-    background: var(--text-color-light); 
-    border-radius: 0;
-}
-
-.battery-level { 
-    height: 100%; 
-    border-radius: 0; 
-    transition: width 0.3s ease;
-    image-rendering: pixelated;
-}
-
-.battery-level.green { background: var(--success-color); } 
-.battery-level.yellow { background: var(--warning-color); } 
-.battery-level.red { background: var(--danger-color); } 
-.battery-level.black { background: var(--text-color); }
-
-.budget-summary { display: flex; gap: 10px; margin-bottom: 20px; }
-
-.budget-card { 
-    flex: 1; 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-    padding: 15px; 
-    border: 2px solid var(--primary-color); 
-    border-radius: 0; 
-    text-align: center; 
-}
-
-.budget-card-title { 
-    font-size: 7px; 
-    opacity: 0.9; 
-    margin-bottom: 8px; 
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.budget-card-value { 
-    font-size: 14px; 
-    font-weight: normal; 
-}
-
-#budgetPage .header p { 
-    font-size: 8px; 
-    font-weight: normal; 
-    color: var(--text-color); 
-}
-
-.personal-goals-section { 
-    background: var(--container-bg); 
-    padding: 15px; 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-}
-
-#modalPersonalGoalsList { max-height: 150px; overflow-y: auto; }
-
-.personal-goal-checkbox { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    padding: 10px; 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    margin-bottom: 10px; 
-}
-
-.personal-goal-item { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px; 
-    margin-bottom: 10px; 
-}
-
-.personal-goal-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 5px; 
-}
-
-.personal-goal-name { font-weight: normal; }
-
-.personal-goal-actions button { 
-    padding: 5px 10px; 
-    border-radius: 0; 
-    font-size: 6px; 
-    border: 2px solid; 
-    cursor: pointer; 
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-    font-weight: normal;
-}
-
-.edit-btn { 
-    background: var(--warning-color); 
-    border-color: #cc8800;
-}
-
-.delete-btn { 
-    background: var(--danger-color); 
-    border-color: #cc0022;
-}
-
-.complete-btn { 
-    background: var(--success-color); 
-    border-color: var(--primary-dark);
-}
-
-.reopen-btn { 
-    background: var(--primary-color); 
-    border-color: var(--primary-dark);
-}
-
-.empty-goals { 
-    text-align: center; 
-    color: var(--text-color-light); 
-    padding: 40px 20px; 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    margin-top: 20px; 
-}
-
-.budget-settings, .dday-settings { margin-bottom: 30px; }
-
-.budget-input, .dday-actions { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-}
-
-.dday-item { 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 12px 15px; 
-    margin-bottom: 10px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.budget-input button { 
-    padding: 12px 20px; 
-    background: var(--success-color); 
-    color: var(--bg-color); 
-    border: 2px solid var(--primary-dark); 
-    border-radius: 0; 
-    font-weight: normal; 
-    cursor: pointer;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    text-transform: uppercase;
-}
-
-.wakeup-prompt { 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-    padding: 20px; 
-    border: 2px solid var(--primary-color); 
-    border-radius: 0; 
-    text-align: center; 
-    margin-bottom: 20px; 
-}
-
-.monthly-summary { 
-    display: flex; 
-    justify-content: space-around; 
-    gap: 15px; 
-    margin-bottom: 30px; 
-}
-
-.summary-card { 
-    flex-basis: 30%; 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-    padding: 20px; 
-    border: 2px solid var(--primary-color); 
-    border-radius: 0; 
-    text-align: center; 
-}
-
-.summary-title { 
-    font-size: 7px; 
-    opacity: 0.9; 
-    margin-bottom: 10px; 
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.summary-value { 
-    font-size: 16px; 
-    font-weight: normal; 
-}
-
-.week-card { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 20px; 
-    margin-bottom: 15px; 
-}
-
-.week-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 15px; 
-    font-weight: normal; 
-}
-
-.week-stats { 
-    display: flex; 
-    justify-content: space-around; 
-    align-items: center; 
-    text-align: center; 
-    font-size: 14px; 
-    font-weight: normal; 
-}
-
-.empty-expenses { 
-    text-align: center; 
-    color: var(--text-color-light); 
-    padding: 40px 20px; 
-}
-
-.feedback-popup { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.8); 
-    display: none; 
-    z-index: 2000; 
-    animation: fadeIn 0.3s ease; 
-    justify-content: center; 
-    align-items: center; 
-}
-
-.feedback-content { 
-    position: relative; 
-    background: var(--container-bg); 
-    padding: 30px; 
-    border: 4px solid var(--primary-color); 
-    border-radius: 0; 
-    width: 90%; 
-    max-width: 400px; 
-    text-align: center; 
-    box-shadow: 
-        0 0 0 2px var(--container-bg),
-        0 0 0 6px var(--primary-color),
-        0 8px 0 6px var(--primary-dark);
-    animation: popIn 0.5s ease; 
-}
-
-.feedback-emoji { 
-    font-size: 40px; 
-    margin-bottom: 20px; 
-    display: block; 
-}
-
-.feedback-title { 
-    font-size: 12px; 
-    font-weight: normal; 
-    margin-bottom: 15px; 
-    color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.feedback-message { 
-    font-size: 8px; 
-    color: var(--text-color); 
-    line-height: 1.8; 
-    margin-bottom: 20px; 
-}
-
-.feedback-celebration .feedback-title, 
-.feedback-celebration .feedback-message, 
-.feedback-reflection .feedback-title, 
-.feedback-reflection .feedback-message, 
-.feedback-disaster .feedback-title, 
-.feedback-disaster .feedback-message, 
-.feedback-encouragement .feedback-title, 
-.feedback-encouragement .feedback-message, 
-.feedback-warning .feedback-title, 
-.feedback-warning .feedback-message { 
-    color: rgba(255,255,255,0.95); 
-}
-
-.feedback-celebration { 
-    background: linear-gradient(135deg, var(--success-color), var(--primary-dark)); 
-    border-color: var(--success-color);
-} 
-
-.feedback-reflection { 
-    background: linear-gradient(135deg, var(--warning-color), #cc8800); 
-    border-color: var(--warning-color);
-} 
-
-.feedback-disaster { 
-    background: linear-gradient(135deg, #444444, #222222); 
-    border-color: #666666;
-} 
-
-.feedback-encouragement { 
-    background: linear-gradient(135deg, #3498db, #2980b9); 
-    border-color: #3498db;
-} 
-
-.feedback-warning { 
-    background: linear-gradient(135deg, var(--danger-color), #cc0022); 
-    border-color: var(--danger-color);
-}
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
-.feedback-btn { 
-    background: var(--primary-color); 
-    color: var(--bg-color); 
-    border: 2px solid var(--primary-dark); 
-    padding: 8px 20px; 
-    border-radius: 0; 
-    font-size: 8px; 
-    font-weight: normal; 
-    cursor: pointer; 
-    transition: all 0.1s ease; 
-    margin: 0 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.feedback-btn:hover { 
-    background: var(--primary-dark); 
-    transform: translate(1px, 1px);
-}
-
-.feedback-budget-red { 
-    background: linear-gradient(135deg, var(--danger-color), #cc0022) !important; 
-    border-color: var(--danger-color) !important;
-}
-
-.feedback-budget-black { 
-    background: linear-gradient(135deg, #444444, #222222) !important; 
-    border-color: #666666 !important;
-}
-
-.expense-input-row { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-    margin-top: 10px; 
-}
-
-.expense-input-row input { 
-    flex: 1; 
-    padding: 8px; 
-    font-size: 8px; 
-    border: 2px solid var(--border-color); 
-    border-radius: 0;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-}
-
-.expense-input-row button { 
-    flex-shrink: 0; 
-    width: 32px; 
-    height: 32px; 
-    border-radius: 0; 
-    background: var(--primary-color); 
-    border: 2px solid var(--primary-dark); 
-    color: var(--bg-color); 
-    font-weight: normal; 
-    cursor: pointer; 
-    font-size: 12px; 
-    line-height: 32px; 
-    transition: all 0.1s ease;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.expense-input-row button:hover { 
-    background: var(--primary-dark); 
-    transform: translate(1px, 1px);
-}
-
-.expense-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 6px 0; 
-    font-size: 7px; 
-}
-
-.dday-settings h4 { margin-bottom: 15px; }
-
-.dday-item .dday-actions { display: flex; gap: 5px; }
-
-.dday-item .dday-actions button { 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    width: 24px; 
-    height: 24px; 
-    border-radius: 0; 
-    font-size: 8px; 
-    cursor: pointer; 
-    transition: all 0.1s ease; 
-    color: var(--text-color-light);
-    font-family: 'Press Start 2P', monospace;
-}
-
-.dday-item .dday-actions button:hover { 
-    background: var(--primary-color); 
-    color: var(--bg-color); 
-    transform: translate(1px, 1px);
-}
-
-.excel-option-item { 
-    display: flex; 
-    align-items: center; 
-    padding: 8px 0; 
-    cursor: pointer; 
-}
-
-.excel-option-item input[type="radio"] { 
-    width: 12px; 
-    height: 12px; 
-    margin-right: 12px; 
-}
-
-.excel-option-item label { 
-    font-size: 8px;
-    font-family: 'Press Start 2P', monospace;
-}
-
-#customDateRange { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-    margin-top: 10px; 
-    margin-bottom: 20px; 
-}
-
-#customDateRange input[type="date"] { 
-    padding: 8px; 
-    border-radius: 0; 
-    border: 2px solid var(--border-color); 
-    flex: 1; 
-    font-family: 'Press Start 2P', monospace;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-size: 8px;
-}
-
-.number-input-group {
-    display: flex;
-    align-items: center;
-    border: 2px solid var(--border-color);
-    border-radius: 0;
-    overflow: hidden;
-    background: var(--container-bg);
-}
-
-.number-input-group input {
-    border: none;
-    text-align: center;
-    flex: 1;
-    padding: 8px 5px;
-    background: var(--container-bg);
-    color: var(--text-color);
-    font-size: 8px;
-}
-
-.number-input-group input:focus {
-    box-shadow: none;
-    border: none;
-}
-
-.number-btn {
-    width: 24px;
-    height: 32px;
-    border: none;
-    background: var(--neutral-color);
-    color: var(--text-color);
-    font-size: 10px;
-    font-weight: normal;
-    cursor: pointer;
-    transition: all 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-    font-family: 'Press Start 2P', monospace;
-}
-
-.number-btn:hover {
-    background: var(--primary-color);
-    color: var(--bg-color);
-}
-
-.number-btn:active {
-    background: var(--primary-dark);
-    transform: translate(1px, 1px);
-}
-
-.food-page-actions { display: flex; gap: 10px; margin-bottom: 10px; }
-
-.food-page-actions .btn.secondary.danger { 
-    background-color: var(--danger-color); 
-    color: var(--text-color);
-    border-color: #cc0022;
-}
-
-.food-date-header { 
-    display: flex; 
-    align-items: center; 
-    text-align: center; 
-    margin: 30px 0 10px; 
-    color: var(--text-color-light); 
-}
-
-.food-date-header::before, .food-date-header::after { 
-    content: ''; 
-    flex: 1; 
-    border-bottom: 1px solid var(--border-color); 
-}
-
-.food-date-header span { 
-    padding: 0 15px; 
-    font-size: 7px; 
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.food-record-item { 
-    display: grid; 
-    grid-template-columns: 50px 30px 1fr auto; 
-    gap: 15px; 
-    align-items: center; 
-    padding: 14px 5px; 
-    border-bottom: 1px solid var(--bg-color); 
-    position: relative; 
-}
-
-.food-record-item .food-admin-actions { 
-    position: absolute; 
-    right: 0px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    display: flex; 
-    gap: 5px; 
-    opacity: 0; 
-    transition: opacity 0.2s; 
-    pointer-events: none; 
-}
-
-.food-records.admin-mode .food-record-item .food-admin-actions { 
-    opacity: 1; 
-    pointer-events: auto; 
-}
-
-.food-admin-actions button { 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    width: 20px; 
-    height: 20px; 
-    border-radius: 0; 
-    cursor: pointer; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    font-size: 6px; 
-    transition: all 0.1s ease;
-    font-family: 'Press Start 2P', monospace;
-}
-
-.food-admin-actions button.edit { color: var(--warning-color); }
-.food-admin-actions button.delete { color: var(--danger-color); }
-
-.food-admin-actions button:hover { 
-    background-color: var(--primary-color); 
-    color: var(--bg-color);
-    transform: translate(1px, 1px);
-}
-
-#foodExportModal .modal-content {
-    max-width: 90vw;
-    background: var(--container-bg);
-    padding: 0;
-}
-
-#foodExportPreview {
-    background: var(--container-bg);
-    border: 2px solid var(--primary-color);
-    border-radius: 0;
-    padding: 0;
-    margin: 20px;
-    box-shadow: 
-        0 0 0 2px var(--container-bg),
-        0 0 0 4px var(--primary-color);
-    font-family: 'Press Start 2P', monospace;
-}
-
-.food-receipt-header {
-    padding: 15px 20px 10px;
-    background: var(--primary-light);
-    border-bottom: 2px solid var(--primary-color);
-}
-
-.food-receipt-title {
-    display: block;
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-.food-receipt-title h3 {
-    margin: 0;
-    font-size: 10px;
-    color: var(--primary-color);
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.food-receipt-header p {
-    margin: 0;
-    font-size: 6px;
-    color: var(--text-color-light);
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.food-receipt-divider {
-    height: 2px;
-    background: 
-        repeating-linear-gradient(
-            to right,
-            var(--border-color) 0px,
-            var(--border-color) 3px,
-            transparent 3px,
-            transparent 6px
-        );
-    margin: 0 15px;
-}
-
-.food-receipt-items {
-    padding: 15px 20px 10px;
-}
-
-.food-receipt-date-header {
-    font-weight: normal;
-    color: var(--primary-color);
-    font-size: 7px;
-    margin: 15px 0 8px 0;
-    padding-bottom: 5px;
-    border-bottom: 1px dashed var(--border-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.food-receipt-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    font-size: 6px;
-    line-height: 1.3;
-}
-
-.food-receipt-time {
-    color: var(--text-color-light);
-    font-size: 5px;
-    min-width: 45px;
-    margin-right: 10px;
-}
-
-.food-receipt-desc {
-    flex: 1;
-    font-weight: normal;
-    color: var(--text-color);
-    margin-right: 10px;
-}
-
-.food-receipt-quantity {
-    font-weight: normal;
-    color: var(--text-color);
-    font-size: 6px;
-    text-align: right;
-    min-width: 60px;
-}
-
-#foodExportModal .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: var(--danger-color);
-    border: 2px solid #cc0022;
-    width: 28px;
-    height: 28px;
-    border-radius: 0;
-    font-size: 12px;
-    color: var(--text-color);
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.1s ease;
-    font-family: 'Press Start 2P', monospace;
-}
-
-#foodExportModal .close-btn:hover {
-    background: #cc0022;
-    transform: translate(1px, 1px);
-}
-
-.food-modal { 
-    max-width: 420px; 
-    background-color: var(--container-bg); 
-    overflow: hidden; 
-}
-
-.food-modal .modal-header { 
-    padding: 15px 20px; 
-    background-color: var(--bg-color); 
-    border-bottom: 2px solid var(--border-color); 
-}
-
-.food-modal .modal-header h2 { 
-    font-size: 10px;
-    font-weight: normal;
-}
-
-.food-modal .modal-body { padding: 20px; }
-
-.food-modal .form-group { margin-bottom: 15px; }
-
-.food-modal .form-group label { 
-    font-size: 7px; 
-    margin-bottom: 6px; 
-}
-
-.food-modal .form-group input, .food-modal .form-group select { 
-    padding: 8px; 
-    font-size: 8px; 
-}
-
-.food-modal .quantity-input { display: flex; gap: 8px; }
-
-.food-modal .quantity-input select { width: 90px; }
-
-.food-modal .food-modal-actions { 
-    margin-top: 20px; 
-    display: flex; 
-    gap: 10px; 
-}
-
-.food-modal .food-modal-actions .btn { 
-    flex: 1; 
-    padding: 12px; 
-}
-
-.fame-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
-    gap: 10px; 
-}
-
-.fame-card { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px; 
-    text-align: center; 
-}
-
-.fame-card-title { 
-    font-size: 12px; 
-    margin-bottom: 8px; 
-}
-
-.fame-card-value { 
-    font-size: 14px; 
-    font-weight: normal; 
-    color: var(--primary-color); 
-}
-
-.fame-card-date { 
-    font-size: 6px; 
-    color: var(--text-color-light); 
-    margin-top: 4px;
-    text-transform: uppercase;
-}
-
-#wallOfShame .fame-card-value { 
-    color: var(--danger-color); 
-}
-
-#modalCommentSection { margin-top: 20px; }
-
-#modalComment { 
-    width: 100%; 
-    margin-top: 15px; 
-    height: 80px; 
-    resize: vertical; 
-    font-size: 8px; 
-}
-
-#modalPersonalGoalsList input[type="number"] { 
-    font-size: 8px; 
-}
-
-.comment-history-list { 
-    max-height: 450px; 
-    overflow-y: auto; 
-    padding-right: 5px; 
-}
-
-.comment-item { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px 20px; 
-    margin-bottom: 12px; 
-}
-
-.comment-item-header { 
-    font-size: 7px; 
-    color: var(--text-color-light); 
-    font-weight: normal; 
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.comment-item-body { 
-    font-size: 8px; 
-    line-height: 1.7; 
-    white-space: pre-wrap; 
-    word-break: break-word; 
-}
-
-.empty-comments { 
-    text-align: center; 
-    color: var(--text-color-light); 
-    padding: 50px 20px; 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-}
-
-.receipt-container {
-    background: var(--container-bg);
-    border: 2px solid var(--primary-color);
-    border-radius: 0;
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 20px;
-    box-shadow: 
-        0 0 0 2px var(--container-bg),
-        0 0 0 4px var(--primary-color);
-    font-family: 'Press Start 2P', monospace;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-.receipt-header { 
-    padding: 15px 20px 10px; 
-    background: var(--primary-light);
-    border-bottom: 2px solid var(--primary-color);
-}
-
-.receipt-title { 
-    display: block; 
-    text-align: center; 
-    margin-bottom: 5px; 
-    position: relative; 
-}
-
-.receipt-title h3 { 
-    margin: 0; 
-    font-size: 10px; 
-    color: var(--primary-color); 
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.budget-info { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 3px; 
-    font-size: 5px; 
-    color: var(--text-color); 
-    font-weight: normal; 
-    text-align: right; 
-    position: absolute;
-    top: -5px;
-    right: -8px;
-    text-transform: uppercase;
-}
-
-.receipt-header p { 
-    margin: 0; 
-    font-size: 6px; 
-    color: var(--text-color-light); 
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.receipt-divider { 
-    height: 2px; 
-    background: 
-        repeating-linear-gradient(
-            to right, 
-            var(--border-color) 0px, 
-            var(--border-color) 3px, 
-            transparent 3px, 
-            transparent 6px
-        ); 
-    margin: 0 15px; 
-}
-
-.receipt-items { padding: 15px 20px 10px; }
-
-.receipt-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 4px 8px; 
-    font-size: 6px; 
-    line-height: 1.3; 
-}
-
-.receipt-date { 
-    color: var(--text-color-light); 
-    font-size: 5px; 
-    min-width: 60px; 
-    margin-right: 15px; 
-}
-
-.receipt-desc { 
-    flex: 1; 
-    font-weight: normal; 
-    color: var(--text-color); 
-    margin-right: 15px; 
-}
-
-.receipt-amount { 
-    font-weight: normal; 
-    color: var(--text-color); 
-    font-size: 6px; 
-    text-align: right; 
-    min-width: 70px; 
-}
-
-.receipt-total { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 15px 20px; 
-    background: var(--bg-color); 
-    font-weight: normal; 
-    font-size: 10px; 
-    font-family: 'Press Start 2P', monospace; 
-    color: var(--primary-color);
-    border-top: 2px solid var(--primary-color);
-    text-transform: uppercase;
-}
-
-.calendar-cell.skeleton {
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #333333,
-            #333333 2px,
-            #444444 2px,
-            #444444 4px
-        );
-    border: 1px solid #555555;
-    position: relative;
-    overflow: hidden;
-    animation: pixelShimmer 1.5s infinite;
-}
-
-@keyframes pixelShimmer {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-}
-
-.loading-indicator {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--primary-color);
-    font-size: 6px;
-    z-index: 10;
-    background: var(--container-bg);
-    padding: 5px 10px;
-    border: 2px solid var(--primary-color);
-    border-radius: 0;
-    box-shadow: 
-        0 0 0 1px var(--container-bg),
-        0 0 0 3px var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-#dailyQuestModal .modal-header {
-    padding-top: 25px;
-    padding-bottom: 15px;
-}
-
-.quest-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-
-.quest-tab { 
-    padding: 8px 16px; 
-    background: var(--bg-color); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    cursor: pointer; 
-    font-size: 7px; 
-    font-weight: normal; 
-    transition: all 0.1s ease;
-    color: var(--text-color);
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-}
-
-.quest-tab.active { 
-    background: var(--primary-color); 
-    color: var(--bg-color); 
-    border-color: var(--primary-color); 
-}
-
-.quest-list { display: flex; flex-direction: column; gap: 10px; }
-
-.quest-item { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px; 
-    transition: all 0.1s ease; 
-}
-
-.quest-item:hover { 
-    transform: translate(-1px, -1px); 
-    box-shadow: 1px 1px 0 var(--primary-color);
-}
-
-.quest-item.completed { 
-    background: var(--success-color); 
-    color: var(--bg-color); 
-    border-color: var(--success-color); 
-}
-
-.quest-item.completed .quest-reward { 
-    color: rgba(0, 0, 0, 0.8); 
-}
-
-.quest-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 8px; 
-}
-
-.quest-title { 
-    font-weight: normal; 
-    font-size: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.quest-reward { 
-    font-size: 6px; 
-    color: var(--primary-color); 
-    font-weight: normal;
-    text-transform: uppercase;
-}
-
-.quest-desc { 
-    font-size: 7px; 
-    color: var(--text-color-light); 
-    margin-bottom: 10px; 
-    line-height: 1.4;
-}
-
-.quest-progress { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.quest-progress-bar { 
-    flex: 1; 
-    height: 4px; 
-    background: var(--bg-color); 
-    border: 1px solid var(--border-color); 
-    border-radius: 0; 
-    margin-right: 10px; 
-    overflow: hidden; 
-}
-
-.quest-progress-fill { 
-    height: 100%; 
-    background: var(--primary-color); 
-    transition: width 0.3s ease;
-    image-rendering: pixelated;
-}
-
-.quest-progress-text { 
-    font-size: 6px; 
-    color: var(--text-color-light); 
-    min-width: 40px; 
-    text-align: right; 
-}
-
-.quest-item.completed .quest-progress-bar { 
-    background: rgba(0, 0, 0, 0.3); 
-}
-
-.quest-item.completed .quest-progress-fill { 
-    background: rgba(0, 0, 0, 0.8); 
-}
-
-.quest-item.completed .quest-progress-text { 
-    color: rgba(0, 0, 0, 0.8); 
-}
-
-#rewardsModal .modal-header { 
-    padding: 30px 25px 20px 25px; 
-    border-bottom: 2px solid var(--border-color); 
-    background: var(--container-bg); 
-    border-top-left-radius: 0; 
-    border-top-right-radius: 0; 
-}
-
-.rewards-list { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    max-height: 400px; 
-    overflow-y: auto; 
-}
-
-.reward-item { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    transition: all 0.1s ease; 
-}
-
-.reward-item:hover { 
-    transform: translate(-1px, -1px); 
-    box-shadow: 1px 1px 0 var(--primary-color);
-}
-
-.reward-item.bronze { 
-    border-color: #CD7F32; 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #2a1f0f,
-            #2a1f0f 2px,
-            #3d2c16 2px,
-            #3d2c16 4px
-        );
-}
-
-.reward-item.silver { 
-    border-color: #C0C0C0; 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #1f1f2a,
-            #1f1f2a 2px,
-            #2c2c3d 2px,
-            #2c2c3d 4px
-        );
-}
-
-.reward-item.gold { 
-    border-color: #FFD700; 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #2a250f,
-            #2a250f 2px,
-            #3d3616 3px,
-            #3d3616 4px
-        );
-}
-
-.reward-item.legend { 
-    border-color: #9400D3; 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #1f0f2a,
-            #1f0f2a 2px,
-            #2c163d 2px,
-            #2c163d 4px
-        );
-}
-
-.reward-item.used { 
-    opacity: 0.5; 
-    filter: grayscale(50%); 
-}
-
-.reward-info { flex: 1; }
-
-.reward-name { 
-    font-weight: normal; 
-    font-size: 8px; 
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.reward-desc { 
-    font-size: 6px; 
-    color: var(--text-color-light);
-    line-height: 1.4;
-}
-
-.reward-tier { 
-    font-size: 5px; 
-    font-weight: normal; 
-    padding: 2px 6px; 
-    border-radius: 0; 
-    margin-bottom: 4px; 
-    display: inline-block;
-    border: 1px solid;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.reward-tier.bronze { 
-    background: #CD7F32; 
-    color: var(--bg-color);
-    border-color: #A0522D;
-}
-
-.reward-tier.silver { 
-    background: #C0C0C0; 
-    color: var(--bg-color);
-    border-color: #808080;
-}
-
-.reward-tier.gold { 
-    background: #FFD700; 
-    color: var(--bg-color);
-    border-color: #FFA500;
-}
-
-.reward-tier.legend { 
-    background: #9400D3; 
-    color: var(--text-color);
-    border-color: #4B0082;
-}
-
-.reward-actions { display: flex; gap: 8px; }
-
-.reward-btn { 
-    padding: 6px 12px; 
-    border: 2px solid; 
-    border-radius: 0; 
-    font-size: 6px; 
-    font-weight: normal; 
-    cursor: pointer; 
-    transition: all 0.1s ease;
-    font-family: 'Press Start 2P', monospace;
-    text-transform: uppercase;
-}
-
-.reward-btn.use { 
-    background: var(--success-color); 
-    color: var(--bg-color);
-    border-color: var(--primary-dark);
-}
-
-.reward-btn.use:hover { 
-    background: var(--primary-dark); 
-    transform: translate(1px, 1px);
-}
-
-.reward-btn.delete { 
-    background: var(--danger-color); 
-    color: var(--text-color);
-    border-color: #cc0022;
-}
-
-.reward-btn.delete:hover { 
-    background: #cc0022; 
-    transform: translate(1px, 1px);
-}
-
-.reward-btn:disabled { 
-    opacity: 0.5; 
-    cursor: not-allowed; 
-}
-
-.empty-rewards { 
-    text-align: center; 
-    padding: 40px 20px; 
-    color: var(--text-color-light); 
-}
-
-.profile-menu-item:hover { 
-    background: var(--primary-light); 
-    color: var(--primary-color); 
-}
-
-#profileWidget:hover { 
-    transform: translate(-1px, -1px);
-}
-
-#profileWidget { 
-    transition: transform 0.1s ease;
-    background: var(--container-bg); 
-    border: 3px solid var(--primary-color); 
-    border-radius: 0; 
-    padding: 8px 10px; 
-    box-shadow: 
-        0 0 0 1px var(--container-bg),
-        0 0 0 4px var(--primary-color);
-    min-width: 120px;
-}
-
-#profileWidget:hover { 
-    box-shadow: 
-        1px 1px 0 var(--primary-color),
-        0 0 0 1px var(--container-bg),
-        0 0 0 4px var(--primary-color);
-}
-
-#expBar { 
-    background: linear-gradient(90deg, var(--primary-color), var(--success-color)); 
-    height: 4px;
-    image-rendering: pixelated;
-    border-radius: 0;
-}
-
-.achievements-list { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    max-height: 400px; 
-    overflow-y: auto; 
-}
-
-.achievement-item { 
-    background: var(--container-bg); 
-    border: 2px solid var(--border-color); 
-    border-radius: 0; 
-    padding: 15px; 
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    transition: all 0.1s ease; 
-}
-
-.achievement-item.unlocked { 
-    border-color: var(--success-color); 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            var(--container-bg),
-            var(--container-bg) 2px,
-            var(--primary-light) 2px,
-            var(--primary-light) 4px
-        );
-}
-
-.achievement-item.locked { opacity: 0.6; }
-
-.achievement-emoji { 
-    font-size: 16px; 
-    min-width: 40px; 
-    text-align: center; 
-}
-
-.achievement-info { flex: 1; }
-
-.achievement-name { 
-    font-weight: normal; 
-    font-size: 8px; 
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.achievement-desc { 
-    font-size: 6px; 
-    color: var(--text-color-light);
-    line-height: 1.4;
-}
-
-.achievement-status { 
-    font-size: 6px; 
-    font-weight: normal; 
-    padding: 4px 8px; 
-    border-radius: 0;
-    border: 1px solid;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.achievement-status.unlocked { 
-    background: var(--success-color); 
-    color: var(--bg-color);
-    border-color: var(--primary-dark);
-}
-
-.achievement-status.locked { 
-    background: var(--border-color); 
-    color: var(--text-color-light);
-    border-color: var(--neutral-color);
-}
-
-.achievement-item.hidden { 
-    background: 
-        repeating-linear-gradient(
-            45deg,
-            #2c3e50,
-            #2c3e50 2px,
-            #34495e 2px,
-            #34495e 4px
-        );
-    color: #ecf0f1; 
-    border-color: #34495e; 
-}
-
-.achievement-item.hidden .achievement-desc { 
-    color: #bdc3c7; 
-    font-style: italic; 
-}
-
-@media (max-width: 767px) {
-    body {
-        font-size: 6px;
-        padding: 15px;
-    }
-    
-    .container {
-        padding: 30px 15px 80px 15px;
-    }
-    
-    .header h1 {
-        font-size: 10px;
-    }
-    
-    .header p {
-        font-size: 5px;
-    }
-    
-    .btn {
-        font-size: 6px;
-        padding: 10px;
-    }
-    
-    .form-group label {
-        font-size: 6px;
-    }
-    
-    .form-group input, .form-group textarea, .form-group select {
-        font-size: 6px;
-        padding: 6px;
-    }
-    
-    .modal-content {
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        max-height: 100vh;
-    }
-    
-    .food-modal {
-        width: 90%;
-        height: auto;
-        border-radius: 0;
-        max-height: 90vh;
-    }
-    
-    .food-modal .modal-body {
-        overflow-y: auto;
-        max-height: calc(90vh - 120px);
-    }
-    
-    #dayModal .modal-body {
-        padding: 20px 15px;
-    }
-    
-    .modal-input-group {
-        padding: 15px;
-    }
-    
-    .modal-input-group h4 {
-        font-size: 7px;
-    }
-    
-    #dayModal .form-group label {
-        font-size: 6px;
-    }
-
-    #dayModal .modal-input-row {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .exercise-toggle-btns {
-        max-width: 180px;
-    }
-    
-    .score-display-card, .personal-goals-section {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 15px;
-    }
-    
-    .score-display-card .score {
-        font-size: 24px;
-    }
-
-    #modalTotalExpense {
-        text-align: left !important;
-    }
-    
-    .expense-item {
-        font-size: 6px;
-        word-break: break-all;
-    }
-    
-    .expense-item span:first-child {
-        flex-grow: 1;
-        margin-right: 10px;
-    }
-    
-    .expense-item > div {
-        flex-shrink: 0;
-    }
-    
-    .modal-actions-container {
-        padding: 0 15px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .modal-actions-container .btn.delete {
-        order: 2;
-        background-color: transparent;
-        color: var(--text-color-light);
-        font-size: 6px;
-        font-weight: normal;
-        padding: 8px;
-        box-shadow: none;
-        margin-top: 10px;
-        max-width: 150px;
-        border: none;
-    }
-    
-    .modal-actions-container .btn.delete:hover {
-        background-color: transparent;
-        color: var(--danger-color);
-    }
-    
-    .modal-actions-container .btn.save {
-        order: 1;
-    }
-
-    #budgetPage .budget-summary {
-        flex-wrap: wrap;
-    }
-    
-    #budgetPage .budget-summary .budget-card:first-child {
-        flex-basis: 100%;
-    }
-    
-    #budgetPage .budget-card-value {
-        font-size: 12px;
-    }
-    
-    #dayModal .expense-input-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    #dayModal .expense-input-row input,
-    #dayModal .expense-input-row button {
-        width: 100%;
-    }
-    
-    .dday-header-container {
-        top: 8px;
-        left: 3px;
-        right: 3px;
-    }
-    
-    .dday-chip {
-        font-size: 5px;
-        padding: 3px 6px;
-    }
-    
-    .battery {
-        width: 20px;
-        height: 8px;
-    }
-    
-    .receipt-item {
-        font-size: 5px;
-    }
-
-    .receipt-date {
-        min-width: 45px;
-        margin-right: 8px;
-        font-size: 4px;
-    }
-
-    .receipt-desc {
-        margin-right: 8px;
-    }
-
-    .receipt-amount {
-        min-width: 50px;
-        font-size: 5px;
-    }
-
-    .budget-info {
-        flex-direction: column;
-        gap: 2px;
-        font-size: 4px;
-        text-align: right;
-    }
-    
-    .modal-title {
-        font-size: 8px;
-    }
-    
-    .quest-title {
-        font-size: 6px;
-    }
-    
-    .quest-desc {
-        font-size: 5px;
-    }
-    
-    .quest-reward {
-        font-size: 5px;
-    }
-    
-    .quest-progress-text {
-        font-size: 5px;
-    }
-    
-    .reward-name {
-        font-size: 6px;
-    }
-    
-    .reward-desc {
-        font-size: 5px;
-    }
-    
-    .achievement-name {
-        font-size: 6px;
-    }
-    
-    .achievement-desc {
-        font-size: 5px;
-    }
-}
     `,
     
     paperbook: `
@@ -14007,6 +10416,10 @@ button, input, select, textarea {
             padding: 14px 18px;
         }
     }
+    `,
+
+    pastelcafe: `
+
     `
 };
 
@@ -15028,9 +11441,25 @@ async function resetExperience() {
     alert('레벨과 경험치가 초기화되었습니다!');
 }
 
-// 둘 다 리셋
+// 업적만 리셋
+async function resetAchievements() {
+    if (!confirm('정말로 모든 업적을 리셋하시겠습니까?\n\n달성한 업적들이 모두 사라집니다!')) return;
+    
+    // 업적 리셋
+    await dbDelete('unlockedAchievements');
+    
+    // 업적 모달이 열려있으면 새로고침
+    if (document.getElementById('achievementsModal').style.display === 'flex') {
+        await renderAchievementsList();
+    }
+    
+    alert('모든 업적이 초기화되었습니다!');
+    console.log('🏅 업적 리셋 완료');
+}
+
+// 전체 리셋 함수에 업적 리셋도 추가
 async function resetAll() {
-    if (!confirm('정말로 퀘스트와 경험치를 모두 리셋하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다!')) return;
+    if (!confirm('정말로 퀘스트, 경험치, 업적을 모두 리셋하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다!')) return;
     
     // 퀘스트 리셋
     const allData = await dbGetAll();
@@ -15056,9 +11485,13 @@ async function resetAll() {
     };
     
     await dbSet('userLevelData', defaultLevelData);
+    
+    // 업적 리셋 추가
+    await dbDelete('unlockedAchievements');
+    
     await updateProfileWidget();
     
-    alert(`전체 리셋 완료!\n퀘스트: ${questCount}개 삭제\n레벨: 1로 초기화`);
+    alert(`전체 리셋 완료!\n퀘스트: ${questCount}개 삭제\n레벨: 1로 초기화\n업적: 모두 초기화`);
 }
 
 
