@@ -1632,7 +1632,7 @@ async function getDailyQuests(date) {
             ...allDailyQuests[randomIndex],
             completed: false,
             progress: 0,
-            maxProgress: 1
+            maxProgress: getQuestMaxProgress(quest.id)
         });
         allDailyQuests.splice(randomIndex, 1);
     }
@@ -3052,17 +3052,19 @@ async function checkAndUpdateAllQuests(dayData, date = new Date()) {
         promises.push(updateQuestProgress('daily', 'writing_300', dayData.writing, date));
     }
     
-    if (dayData.exercise?.done && dayData.exercise?.minutes >= 10) {
-        promises.push(updateQuestProgress('daily', 'exercise_10min', dayData.exercise.minutes, date));
+    // 운동 시간 입력 즉시 체크 (10분 이상 조건 제거하고 입력만으로 체크)
+    if (dayData.exercise?.done || (dayData.exercise?.minutes > 0)) {
+        const minutes = dayData.exercise?.minutes || 0;
+        promises.push(updateQuestProgress('daily', 'exercise_10min', minutes, date));
     }
     
     if (dayData.comment) {
         promises.push(updateQuestProgress('daily', 'daily_comment', 1, date));
     }
     
-    // 개인목표 달성률 체크
+    // 개인목표 입력 즉시 체크 (50% 조건 제거하고 입력만으로 체크)
     const goalAverage = await calculatePersonalGoalAverage(dayData, formatDate(date));
-    if (goalAverage >= 50) { 
+    if (goalAverage > 0) { 
         promises.push(updateQuestProgress('daily', 'personal_goal_50', goalAverage, date));
     }
     
@@ -4725,7 +4727,10 @@ const autoSaveModalData = debounce(async () => {
     const data = getModalDataForSave();
     
     data.score = await calculateScoreEnhanced(data);
-    await dbSet(`day_${formatDate(selectedDate)}`, data); // Firestore에 직접 저장
+    await dbSet(`day_${formatDate(selectedDate)}`, data);
+    
+    // 퀘스트 업데이트 추가!
+    await checkAndUpdateAllQuests(data, selectedDate);
     
     // 현재 모달 데이터 업데이트
     currentModalData = { ...data };
@@ -4733,10 +4738,9 @@ const autoSaveModalData = debounce(async () => {
     if (saveStatus) {
         setTimeout(() => {
             saveStatus.textContent = '모든 변경사항이 저장되었습니다.';
-        }, 300); // "저장 중..."을 잠시 보여준 후 변경
+        }, 300);
     }
-}, 500); // 대기 시간을 1000ms -> 500ms로 수정
-
+}, 500);
 
 // 기존 saveModalData를 대체하는 finalizeDay 함수
 async function finalizeDay() {
@@ -4883,30 +4887,61 @@ async function analyzeSentimentAndShowQuote(date, currentComment) {
         const achieved = personalGoalsData[goal.id] || 0;
         let percentage = 0;
         if (goal.type === 'negative') {
-            const usageRatio = achieved / goal.dailyTarget; // 하루 목표 기준
+            const usageRatio = achieved / goal.dailyTarget;
             percentage = Math.max(0, (1 - usageRatio) * 100);
         } else {
-            percentage = Math.min(100, (achieved / goal.dailyTarget) * 100); // 하루 목표 기준
+            percentage = Math.min(100, (achieved / goal.dailyTarget) * 100);
         }
         const emoji = getEmojiForAchievement(percentage);
         
         return `<div class="personal-goal-checkbox">
             <div style="flex: 1;">
                 <div style="font-weight: 600; font-size:13px; margin-bottom: 5px;">
-                    ${goal.name} ${goal.type === 'negative' ? '👎' : '👍'} 
-                    (하루 목표: ${goal.dailyTarget}${goal.unit})
+                    ${goal.name} ${goal.type === 'negative' ? '(줄이기)' : '(늘리기)'}
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="number" id="goal_${goal.id}" value="${achieved}" min="0" 
-                           onchange="updatePersonalGoalProgress('${goal.id}', this.value)" 
-                           style="width: 70px; padding: 5px; border: 1px solid #ddd; border-radius: 5px; font-size:12px;">
-                    <span>/ ${goal.dailyTarget}${goal.unit}</span>
-                    <span style="color: #666; font-size: 12px;">(${Math.round(percentage)}%)</span>
+                <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+                    ${goal.type === 'negative' ? '목표: ' + goal.dailyTarget + goal.unit + ' 이하' : '목표: ' + goal.dailyTarget + goal.unit}
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="goal-adjust-btn" onclick="adjustPersonalGoal('${goal.id}', -1)" style="width: 28px; height: 28px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: bold; color: #666;">−</button>
+                    <input type="number" 
+                           id="personalGoal_${goal.id}" 
+                           value="${achieved}" 
+                           min="0" 
+                           style="width: 60px; height: 28px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;" 
+                           onchange="updatePersonalGoalValue('${goal.id}', this.value)">
+                    <button type="button" class="goal-adjust-btn" onclick="adjustPersonalGoal('${goal.id}', 1)" style="width: 28px; height: 28px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: bold; color: #666;">+</button>
+                    <span style="font-size: 11px; color: #666;">${goal.unit}</span>
                 </div>
             </div>
-            <div class="goal-emoji">${emoji}</div>
+            <div style="font-size: 16px; margin-left: 8px;">${emoji}</div>
         </div>`;
     }).join('');
+}
+
+// 개인 목표 +/- 버튼 조정 함수
+function adjustPersonalGoal(goalId, change) {
+    const input = document.getElementById(`personalGoal_${goalId}`);
+    if (!input) return;
+    
+    const currentValue = parseInt(input.value) || 0;
+    const newValue = Math.max(0, currentValue + change);
+    input.value = newValue;
+    
+    // 값 업데이트 및 자동 저장
+    updatePersonalGoalValue(goalId, newValue);
+}
+
+// 개인 목표 값 업데이트 함수
+function updatePersonalGoalValue(goalId, value) {
+    if (!currentModalData.personalGoals) {
+        currentModalData.personalGoals = {};
+    }
+    currentModalData.personalGoals[goalId] = parseInt(value) || 0;
+    
+    // 점수 업데이트 및 자동 저장
+    updateModalScore();
+    autoSaveModalData();
 }
 
 async function updatePersonalGoalProgress(goalId, value) { 
@@ -16749,8 +16784,6 @@ window.addEventListener('load', function () {
         document.getElementById('userInfo').textContent = `${user.displayName}님`;
         document.getElementById('userInfo').style.display = 'block';
         
-        await initEnhancedApp(); 
-        
         startAutoSync();
         updateSyncStatus('☁️ 자동 백업 활성화');
         
@@ -16758,9 +16791,6 @@ window.addEventListener('load', function () {
         currentUser = null;
         
         stopAutoSync();
-        
-        await initEnhancedApp(); 
-        
         updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
     }
 });
@@ -16805,6 +16835,13 @@ window.addEventListener('load', function () {
                 updateModalScore();
                 autoSaveModalData();
             });
+        }
+    });
+    // 개인 목표 입력칸들에 이벤트 리스너 동적 추가
+    document.addEventListener('input', function(e) {
+        if (e.target.id && e.target.id.startsWith('personalGoal_')) {
+            const goalId = e.target.id.replace('personalGoal_', '');
+            updatePersonalGoalValue(goalId, e.target.value);
         }
     });
 });
