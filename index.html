@@ -4049,7 +4049,7 @@ function showPage(pageId) {
         await openDayModal(newDate);
         }
 
-    async function initApp() {
+        async function initApp() {
     // 1. 목표 기상 시간 설정 여부부터 확인
     const targetWakeTime = await dbGet('targetWakeTime');
     if (!targetWakeTime) { 
@@ -4066,14 +4066,16 @@ function showPage(pageId) {
         return;
     }
     
-    // 3. 캘린더 즉시 표시 (기본 구조만)
+    // 3. 캘린더 페이지로 이동 후 즉시 렌더링
     showPage('calendarPage');
-    await renderBasicCalendar(); // 새로 만들 함수
     
-    // 4. 백그라운드에서 나머지 처리 (사용자가 못 느끼게)
-    setTimeout(() => enhanceCalendarWithData(), 100);
-    setTimeout(() => runBackgroundTasks(), 200);
-    setTimeout(() => updateProfileWidget(), 300); // 프로필 위젯 업데이트 추가
+    // 4. 전체 캘린더 렌더링 (데이터 포함)
+    await renderCalendar();
+    
+    // 5. 백그라운드 작업들은 별도로 실행
+    setTimeout(async () => {
+        await triggerDailyQuests();
+    }, 100);
 }
 
 // 주간 성과 분석 및 리포트 발송 로직
@@ -4168,54 +4170,50 @@ async function sendAccountabilityReport(partnerEmail, avgScore, analysisHtml, we
 }
 
 async function renderBasicCalendar() {
-    const year = currentDate.getFullYear(), month = currentDate.getMonth();
-    document.getElementById('monthYear').textContent = `${year}년 ${month + 1}월`;
-    const grid = document.getElementById('calendarGrid'); 
+    updateMonthYearDisplay();
+    
+    const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
     
+    // 요일 헤더 추가
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-    weekdays.forEach(day => { 
-        const cell = document.createElement('div'); 
-        cell.className = 'calendar-header-cell'; 
-        cell.textContent = day; 
-        grid.appendChild(cell); 
+    weekdays.forEach(day => {
+        const headerCell = document.createElement('div');
+        headerCell.className = 'calendar-header-cell';
+        headerCell.textContent = day;
+        grid.appendChild(headerCell);
     });
     
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDayOfMonth);
-    startDate.setDate(startDate.getDate() - firstDayOfMonth.getDay());
-    const endDate = new Date(lastDayOfMonth);
-    endDate.setDate(endDate.getDate() + (6 - lastDayOfMonth.getDay()));
-
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const cellDate = new Date(d);
+    // 달력 셀 생성 (스켈레톤 상태)
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // 이전 달의 빈 셀들
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-cell empty';
+        grid.appendChild(emptyCell);
+    }
+    
+    // 현재 달의 셀들 (스켈레톤으로 시작)
+    for (let day = 1; day <= daysInMonth; day++) {
+        const cellDate = new Date(year, month, day);
         const cell = document.createElement('div');
-        
-        if (cellDate.getMonth() !== month) {
-            cell.className = 'calendar-cell other-month';
-        } else {
-            // 이번 달 셀들은 스켈레톤으로 시작
-            cell.className = 'calendar-cell skeleton';
-            
-            if (cellDate.toDateString() === new Date().toDateString()) {
-                cell.classList.add('today');
-            }
-        }
+        cell.className = 'calendar-cell skeleton';
+        cell.dataset.date = formatDate(cellDate);
         
         cell.innerHTML = `
             <div class="cell-top-icons"></div>
-            <div class="cell-day-number">${cellDate.getDate()}</div>
+            <div class="cell-day-number">${day}</div>
             <div class="cell-bottom-info"></div>
         `;
-
-        // 클릭 이벤트는 나중에 추가될 예정
-        cell.dataset.date = formatDate(cellDate);
         
         grid.appendChild(cell);
     }
     
-    // 로딩 표시 추가
+    // 로딩 표시
     showLoadingIndicator();
 }
 
@@ -4351,7 +4349,18 @@ async function runBackgroundTasks() {
     }
 }
 
-async function renderCalendar() { updateMonthYearDisplay(); await renderBasicCalendar(); await enhanceCalendarWithData(); await runBackgroundTasks(); }
+async function renderCalendar() {
+    // 기본 구조가 없으면 생성
+    if (document.querySelectorAll('.calendar-cell').length === 0) {
+        await renderBasicCalendar();
+    }
+    
+    // 데이터로 캘린더 향상
+    await enhanceCalendarWithData();
+    
+    // 백그라운드 작업들
+    await runBackgroundTasks();
+}
 
         async function renderMonthlyStats() {
             const monthDates = getMonthDates(currentDate);
@@ -16752,54 +16761,59 @@ async function testPersonalGoalAchievements() {
     console.log('🎯 개인 목표 업적 체크 완료');
 }
 
-window.addEventListener('load', function () {
+window.addEventListener('load', async function () {
+    // 기존 이벤트 리스너들 설정
     document.getElementById('loginBtn').addEventListener('click', signIn);
     document.getElementById('logoutBtn').addEventListener('click', signOut);
 
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const userInfoDiv = document.getElementById('userInfo');
-    const allPages = document.querySelectorAll('.page');
-    const mainContainer = document.querySelector('.container');
-
-    auth.onAuthStateChanged(async (user) => {
-    try {
-        const result = await auth.getRedirectResult();
-        if (result.user) {
-            console.log('리디렉션 로그인 성공:', result.user.displayName);
-        }
-    } catch (error) {
-        console.error('리디렉션 로그인 에러:', error);
-    }
-
+    // DB 먼저 초기화
     await localDB.init();
     
-    if (user) {
-        currentUser = user;
-        currentUserName = user.displayName || "사용자";
+    // 앱 바로 초기화 (인증 상태와 무관하게)
+    await initApp();
+    
+    // 인증 상태 변경은 백그라운드에서 처리
+    auth.onAuthStateChanged(async (user) => {
+        try {
+            const result = await auth.getRedirectResult();
+            if (result.user) {
+                console.log('리디렉션 로그인 성공:', result.user.displayName);
+            }
+        } catch (error) {
+            console.error('리디렉션 로그인 에러:', error);
+        }
         
-        // UI 업데이트
-        document.getElementById('loginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-        document.getElementById('userInfo').textContent = `${user.displayName}님`;
-        document.getElementById('userInfo').style.display = 'block';
-        
-        startAutoSync();
-        updateSyncStatus('☁️ 자동 백업 활성화');
-        
-    } else {
-        currentUser = null;
-        
-        stopAutoSync();
-        updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
-    }
-});
+        if (user) {
+            currentUser = user;
+            currentUserName = user.displayName || "사용자";
+            
+            // UI 업데이트만 실행 (캘린더 리렌더링 없음)
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('userInfo').textContent = `${user.displayName}님`;
+            document.getElementById('userInfo').style.display = 'block';
+            
+            startAutoSync();
+            updateSyncStatus('☁️ 자동 백업 활성화');
+            
+        } else {
+            currentUser = null;
+            
+            // UI 업데이트만 실행
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            
+            stopAutoSync();
+            updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
+        }
+    });
 
     // ESC 키 등 이벤트 리스너
     document.addEventListener('keydown', (e) => { 
         if (e.key === 'Escape') {
-        closeDayModal(); closeFeedbackPopup(); closeReasonModal(); 
-        closeFoodSuggestion(); closeManualFoodModal(); closeExcelModal();
+            closeDayModal(); closeFeedbackPopup(); closeReasonModal(); 
+            closeFoodSuggestion(); closeManualFoodModal(); closeExcelModal();
         }
         if (document.getElementById('dayModal').style.display === 'flex') {
             if (e.key === 'ArrowLeft') navigateModalDate(-1);
@@ -16837,6 +16851,7 @@ window.addEventListener('load', function () {
             });
         }
     });
+    
     // 개인 목표 입력칸들에 이벤트 리스너 동적 추가
     document.addEventListener('input', function(e) {
         if (e.target.id && e.target.id.startsWith('personalGoal_')) {
