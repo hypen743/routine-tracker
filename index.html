@@ -1626,14 +1626,25 @@ async function getDailyQuests(date) {
     const allDailyQuests = [...QUEST_DEFINITIONS.daily];
     const selectedQuests = [];
     
-    for (let i = 0; i < 5; i++) {
+    // 혹시 모를 오류를 방지하기 위해 정의된 퀘스트 수와 5개 중 작은 값을 선택
+    const numQuestsToSelect = Math.min(5, allDailyQuests.length);
+
+    for (let i = 0; i < numQuestsToSelect; i++) {
         const randomIndex = Math.floor(Math.random() * allDailyQuests.length);
+        
+        // 1. 선택된 퀘스트를 변수에 할당합니다.
+        const selectedQuestObject = allDailyQuests[randomIndex]; 
+        
         selectedQuests.push({
-            ...allDailyQuests[randomIndex],
+            // 2. 할당된 변수를 사용하여 객체를 복사합니다.
+            ...selectedQuestObject,
             completed: false,
             progress: 0,
-            maxProgress: getQuestMaxProgress(quest.id)
+            // 3. 할당된 변수에서 id를 가져와 함수에 전달합니다.
+            maxProgress: getQuestMaxProgress(selectedQuestObject.id)
         });
+        
+        // 중복 선택을 방지하기 위해 배열에서 제거
         allDailyQuests.splice(randomIndex, 1);
     }
     
@@ -3982,6 +3993,7 @@ function showPage(pageId) {
         if (pageId === 'goalSetup' || pageId === 'wakeUpPrompt') {
             profileWidget.style.display = 'none';
         } else {
+            updateProfileWidget(); 
             profileWidget.style.display = 'block';
         }
     }
@@ -4735,13 +4747,14 @@ const autoSaveModalData = debounce(async () => {
 
     const data = getModalDataForSave();
     
+    // 1. 점수 계산 및 데이터 저장
     data.score = await calculateScoreEnhanced(data);
     await dbSet(`day_${formatDate(selectedDate)}`, data);
     
-    // 퀘스트 업데이트 추가!
+    // 2. 퀘스트 업데이트 로직을 이곳으로 통합합니다.
     await checkAndUpdateAllQuests(data, selectedDate);
     
-    // 현재 모달 데이터 업데이트
+    // 3. 현재 모달 데이터 업데이트
     currentModalData = { ...data };
 
     if (saveStatus) {
@@ -5503,6 +5516,8 @@ async function exportToExcel() {
             };
             await dbSet(foodRecord.id, foodRecord);
             await checkFoodRecordAchievements();
+            const todayData = await getDayData(new Date());
+            await checkAndUpdateAllQuests(todayData, new Date());
             closeFoodSuggestion();
             alert('식단이 기록되었습니다! 🍽️');
             if (document.getElementById('foodPage').classList.contains('active')) await renderFoodRecords();
@@ -5608,16 +5623,17 @@ async function exportToExcel() {
             const unit = document.getElementById('manualFoodUnit').value;
             if (!date || !time || !foodName || !quantity) return alert('모든 필드를 입력해주세요!');
             
-            const today = new Date();
-            if (today.getDay() === 0) { // 일요일
-            await checkWeekEndAchievements(today);
-            }
+            const dateObject = new Date(date);
+            if (dateObject.getDay() === 0) { 
+            await checkWeekEndAchievements(dateObject); }
 
             const recordId = editingFoodRecordId || `food_${Date.now()}`;
             const foodRecord = { id: recordId, date, time, foodName, quantity, unit, expenseId: null };
             
             await dbSet(recordId, foodRecord);
             await checkFoodRecordAchievements();
+            const dayDataForQuest = await getDayData(dateObject);
+            await checkAndUpdateAllQuests(dayDataForQuest, dateObject);
             closeManualFoodModal();
             alert(`식단이 ${editingFoodRecordId ? '수정' : '기록'}되었습니다! 🍽️`);
             await renderFoodRecords();
@@ -16761,18 +16777,14 @@ async function testPersonalGoalAchievements() {
     console.log('🎯 개인 목표 업적 체크 완료');
 }
 
-window.addEventListener('load', async function () {
-    // 기존 이벤트 리스너들 설정
-    document.getElementById('loginBtn').addEventListener('click', signIn);
-    document.getElementById('logoutBtn').addEventListener('click', signOut);
+// 기존 window.addEventListener('load', ...) 부분을 아래 코드로 통째로 교체해주세요.
 
-    // DB 먼저 초기화
+window.addEventListener('load', async function () {
+    // 1. IndexedDB 초기화가 가장 먼저 실행되도록 보장합니다.
     await localDB.init();
-    
-    // 앱 바로 초기화 (인증 상태와 무관하게)
-    await initApp();
-    
-    // 인증 상태 변경은 백그라운드에서 처리
+    await loadUserSettings(); // 테마 및 언어 설정 로드
+
+    // 2. 인증 상태 변경을 감지하고 그에 맞게 UI를 설정합니다.
     auth.onAuthStateChanged(async (user) => {
         try {
             const result = await auth.getRedirectResult();
@@ -16787,7 +16799,6 @@ window.addEventListener('load', async function () {
             currentUser = user;
             currentUserName = user.displayName || "사용자";
             
-            // UI 업데이트만 실행 (캘린더 리렌더링 없음)
             document.getElementById('loginBtn').style.display = 'none';
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('userInfo').textContent = `${user.displayName}님`;
@@ -16799,7 +16810,6 @@ window.addEventListener('load', async function () {
         } else {
             currentUser = null;
             
-            // UI 업데이트만 실행
             document.getElementById('loginBtn').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('userInfo').style.display = 'none';
@@ -16807,9 +16817,19 @@ window.addEventListener('load', async function () {
             stopAutoSync();
             updateSyncStatus('💾 로컬 저장 중 (로그인하여 데이터 보호)');
         }
+
+        // 3. 인증 상태가 결정된 후에 앱의 메인 로직을 시작합니다.
+        //    (initApp은 이제 로그인 여부와 관계없이 실행됩니다)
+        if (!document.body.dataset.appInitialized) {
+             await initApp();
+             document.body.dataset.appInitialized = 'true'; // 중복 실행 방지
+        }
     });
 
-    // ESC 키 등 이벤트 리스너
+    // 기타 이벤트 리스너 설정
+    document.getElementById('loginBtn').addEventListener('click', signIn);
+    document.getElementById('logoutBtn').addEventListener('click', signOut);
+
     document.addEventListener('keydown', (e) => { 
         if (e.key === 'Escape') {
             closeDayModal(); closeFeedbackPopup(); closeReasonModal(); 
@@ -16834,16 +16854,14 @@ window.addEventListener('load', async function () {
         });
     });
     
-    // 데이 모달 입력 필드에 자동 저장 및 점수 업데이트 연결
     const inputsToUpdateScoreAndSave = [
         'modalWakeTime', 'modalSeatTime', 'modalMorningPomodoro', 'modalAfternoonPomodoro', 
         'modalEveningPomodoro', 'modalGameTime', 'modalExerciseMinutes', 'modalWriting', 
-        'modalSleepTime', 'modalOffDay', 'modalComment', 'modalMissionComplete'
+        'modalSleepTime', 'modalOffDay', 'modalComment'
     ];
     inputsToUpdateScoreAndSave.forEach(id => {
         const el = document.getElementById(id);
         if(el) {
-            // input, textarea는 'input' 이벤트, checkbox는 'change' 이벤트 사용
             const eventType = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
             el.addEventListener(eventType, () => {
                 updateModalScore();
@@ -16852,7 +16870,6 @@ window.addEventListener('load', async function () {
         }
     });
     
-    // 개인 목표 입력칸들에 이벤트 리스너 동적 추가
     document.addEventListener('input', function(e) {
         if (e.target.id && e.target.id.startsWith('personalGoal_')) {
             const goalId = e.target.id.replace('personalGoal_', '');
