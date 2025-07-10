@@ -42,7 +42,7 @@
         border-radius: 20px; 
         padding: 50px 30px 100px 30px; /* 첫 번째 값(50px)이 상단 패딩 */
         width: 100%; 
-        max-width: 500px; 
+        max-width: 520px; 
         margin: 0 auto; 
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         position: relative;
@@ -281,8 +281,8 @@
 
 #foodExportModal .close-btn:hover { background: rgba(0, 0, 0, 0.2); }
 
-@media (max-width: 767px) { #foodExportModal.modal-overlay { background: white; backdrop-filter: none; }
-    
+@media (max-width: 767px) { 
+    #foodExportModal.modal-overlay { background: white; backdrop-filter: none; }
     #foodExportModal .modal-content { max-width: 100vw; width: 100vw; height: 100vh; margin: 0; padding: 0; border-radius: 0; box-shadow: none; }
     #foodExportPreview { margin: 0; border-radius: 0; box-shadow: none; height: calc(100vh - 50px); overflow-y: auto; }
     
@@ -436,6 +436,9 @@
     .achievement-item.hidden .achievement-desc { color: #bdc3c7; font-style: italic; }
 
     @media (max-width: 767px) {
+        body {
+        padding: 15px; /* 20px에서 15px로 줄임 */
+    }
         .modal-content { padding: 0; width: 100%; height: 100%; border-radius: 0; max-height: 100vh; }
         .food-modal { width: 90%; height: auto; border-radius: 16px; max-height: 90vh; }
         .food-modal .modal-body { overflow-y: auto; max-height: calc(90vh - 120px); }
@@ -465,7 +468,68 @@
         #dayModal .expense-input-row input,
         #dayModal .expense-input-row button { width: 100%; }
         .dday-header-container { top: 8px; left: 3px; right: 3px; }
-        .container { padding: 40px 20px 95px 20px; }
+        .container { padding: 40px 12px 95px 12px; /* 좌우 패딩을 12px로 더 줄임 */
+        max-width: 100%; 
+        margin: 0 5px; /* 좌우 마진을 5px로 줄임 */
+        width: calc(100% - 10px); /* 전체 너비에서 10px만 빼기 */
+    }
+    .calendar-grid { 
+        gap: 3px; /* 5px에서 3px로 줄임 */
+    }
+    
+    /* 캘린더 셀 조정 */
+    .calendar-cell {
+        min-height: 38px; /* 최소 높이 설정 */
+        padding: 1px; /* 패딩 줄임 */
+    }
+    
+    /* 캘린더 헤더 셀 조정 */
+    .calendar-header-cell { 
+        padding: 8px 3px; /* 좌우 패딩 줄임 */
+        font-size: 11px; /* 폰트 크기 조정 */
+    }
+    
+    /* 월 네비게이션 버튼 조정 */
+    .month-nav { 
+        padding: 8px; /* 패딩 줄임 */
+        font-size: 20px; /* 폰트 크기 조정 */
+    }
+    
+    /* 범례 조정 */
+    .legend { 
+        margin: 15px 0 0; /* 마진 줄임 */
+        gap: 10px; /* 간격 줄임 */
+        font-size: 11px; /* 폰트 크기 조정 */
+    }
+    
+    .legend-item { 
+        gap: 4px; /* 간격 줄임 */
+    }
+    
+    .legend-color { 
+        width: 10px; 
+        height: 10px; 
+    }
+    
+    /* 버튼들 조정 */
+    .btn {
+        padding: 12px; /* 패딩 줄임 */
+        font-size: 14px; /* 폰트 크기 조정 */
+    }
+    
+    /* 헤더 조정 */
+    .header {
+        margin-bottom: 20px; /* 마진 줄임 */
+        padding: 15px; /* 패딩 줄임 */
+    }
+    
+    .header h1 {
+        font-size: 22px; /* 폰트 크기 조정 */
+    }
+    
+    .header p {
+        font-size: 13px; /* 폰트 크기 조정 */
+    }
         .dday-chip { font-size: 10px; padding: 3px 8px; }
         .battery { width: 25px; height: 12px; }
         .receipt-item { font-size: 12px; }
@@ -4014,13 +4078,11 @@ function showPage(pageId) {
             sessionStorage.setItem('promptSkipped', 'true'); 
             showPage('calendarPage'); 
             await renderCalendar(); 
-            await triggerDailyQuests();
         }
         async function skipToCalendar() { 
             sessionStorage.setItem('promptSkipped', 'true'); 
             showPage('calendarPage'); 
             await renderCalendar();
-            await triggerDailyQuests();
         }
         async function changeMonth(direction) { currentDate.setMonth(currentDate.getMonth() + direction); updateMonthYearDisplay(); await renderCalendar(); }
         async function backToCalendar() { showPage('calendarPage'); await renderCalendar(); }
@@ -5927,19 +5989,22 @@ async function updateProfileWidget() {
         }
 
         // 기존 미션 관련 함수들을 퀘스트로 대체
-        async function triggerDailyQuests() {
-            const todayStr = formatDate(new Date());
-            const questDeclinedToday = await dbGet(`questDeclined_${todayStr}`);
-            
-            if (questDeclinedToday) return;
+    async function triggerDailyQuests() {
+    const todayStr = formatDate(new Date());
+    const questDeclinedToday = await dbGet(`questDeclined_${todayStr}`);
+    
+    // 이미 오늘 퀘스트를 거부했거나, 이미 이번 세션에서 보여줬으면 리턴
+    if (questDeclinedToday || sessionStorage.getItem(`questShown_${todayStr}`)) return;
 
-            // 30% 확률로 일간 퀘스트 모달 표시
-            if (Math.random() < 0.3) {
-                setTimeout(() => {
-                    showDailyQuestModal();
-                }, 2000); // 2초 후에 표시
-            }
-        }
+    // 30% 확률로 일간 퀘스트 모달 표시
+    if (Math.random() < 0.3) {
+        // 세션에 표시 기록
+        sessionStorage.setItem(`questShown_${todayStr}`, 'true');
+        setTimeout(() => {
+            showDailyQuestModal();
+        }, 2000); // 2초 후에 표시
+    }
+}
 
         // 월말 보너스 예산 초기화
 async function resetMonthlyBonusBudget() {
@@ -12246,10 +12311,11 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
     .container { 
     background: var(--container-bg); 
+    border: 2px solid var(--moss-green); 
     border-radius: 20px; 
     padding: 50px 30px 100px 30px;
     width: 100%; 
-    max-width: 500px; 
+    max-width: 520px; 
     margin: 0 auto; 
     box-shadow: 0 8px 32px rgba(45, 61, 45, 0.2);
     position: relative;
@@ -13199,14 +13265,42 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
         #dayModal .expense-input-row button { width: 100%; }
         
         .dday-header-container { top: 10px; left: 5px; right: 5px; }
-        .container { padding: 40px 16px 100px 16px; max-width: 100%; margin: 0 10px; animation-duration: 12s; }
-        .calendar-grid { gap: 1px; padding: 8px; }
-        .calendar-cell { border: 1px solid var(--moss-green); padding: 1px; min-height: 40px; }
+        .container { padding: 40px 12px 100px 12px; max-width: 100%; margin: 0 5px; width: calc(100% - 10px); animation-duration: 12s; }
+        body {
+        padding: 15px; /* 20px에서 15px로 줄임 */
+    }
+        .calendar-grid { gap: 1px; padding: 6px; }
+        .calendar-cell { border: 1px solid var(--moss-green); padding: 1px; min-height: 38px; }
+        .calendar-header-cell {
+        padding: 10px 2px; /* 좌우 패딩 더 줄임 */
+        font-size: 10px; /* 폰트 크기 조정 */
+    }
         .cell-day-number { font-size: 13px; }
         .cell-top-icons { font-size: 8px; }
         .cell-bottom-info { font-size: 7px; }
         .dday-chip { font-size: 10px; padding: 4px 10px; }
         .battery { width: 28px; height: 14px; }
+
+        .month-nav {
+        padding: 6px 10px; /* 패딩 줄임 */
+        font-size: 18px; /* 폰트 크기 조정 */
+    }
+    
+    /* 범례도 조정 */
+    .legend {
+        padding: 10px; /* 패딩 줄임 */
+        gap: 8px; /* 간격 줄임 */
+        font-size: 10px; /* 폰트 크기 조정 */
+    }
+    
+    .legend-item {
+        gap: 4px;
+    }
+    
+    .legend-color {
+        width: 10px; 
+        height: 10px;
+    }
         
         .receipt-item { font-size: 12px; }
         .receipt-date { min-width: 55px; margin-right: 12px; font-size: 10px; }
@@ -13312,7 +13406,7 @@ button, input, select, textarea { font-family: inherit; }
     border-radius: 15px; 
     padding: 50px 30px 100px 30px;
     width: 100%; 
-    max-width: 500px; 
+    max-width: 520px; 
     margin: 0 auto; 
     box-shadow: 
         0 0 0 1px rgba(74, 103, 65, 0.2),
@@ -15799,10 +15893,11 @@ input[type="number"]::-webkit-inner-spin-button {
     }
     
     .container { 
-        padding: 40px 16px 100px 16px; 
+        padding: 40px 12px 100px 12px; 
         border-width: 2px; 
         max-width: 100%; 
-        margin: 0 10px; 
+        margin: 0 5px; 
+        width: calc(100% - 10px); 
     }
     
     .dday-chip { 
@@ -15829,13 +15924,17 @@ input[type="number"]::-webkit-inner-spin-button {
     .calendar-cell {
         border: 1px solid var(--border-color);
         padding: 2px; /* 패딩 더 줄임 */
-        min-height: 40px; /* 최소 높이 설정 */
+        min-height: 38px; /* 최소 높이 설정 */
         clip-path: polygon(0 0, calc(100% - 2px) 0, 100% 2px, 100% 100%, 2px 100%, 0 calc(100% - 2px)); /* 클립패스 줄임 */
+    }
+        .calendar-grid {
+        gap: 1px; 
+        padding: 6px; /* 패딩 더 줄임 */
     }
     .cell-day-number {font-size: 13px; }
     .cell-top-icons { font-size: 8px; }
     .cell-bottom-info { font-size: 7px; }
-    .calendar-header-cell { padding: 8px 3px; font-size: 11px; }
+    .calendar-header-cell { padding: 10x 2px; font-size: 10px; }
     
     .date-nav-btn, .close-btn {
         min-width: 44px;
@@ -15843,10 +15942,23 @@ input[type="number"]::-webkit-inner-spin-button {
     }
     
     .month-nav {
-        min-width: 44px;
-        min-height: 44px;
+        padding: 6px 10px; /* 패딩 줄임 */
+        font-size: 18px; 
+    }
+    .legend {
+        padding: 10px; /* 패딩 줄임 */
+        gap: 8px; /* 간격 줄임 */
+        font-size: 10px; /* 폰트 크기 조정 */
     }
     
+    .legend-item {
+        gap: 4px;
+    }
+    
+    .legend-color {
+        width: 10px; 
+        height: 10px;
+    }
     #foodExportModal.modal-overlay { 
         background: var(--bg-color); 
         backdrop-filter: none; 
