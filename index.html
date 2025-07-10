@@ -3921,7 +3921,7 @@ function updateSyncStatus(message) {
         async function getPersonalGoals() { return await dbGet('personalGoals') || []; }
         function getEmojiForAchievement(percentage) { if (percentage <= 20) return '😡'; if (percentage <= 40) return '😢'; if (percentage <= 60) return '😐'; if (percentage <= 80) return '😊'; return '🎉'; }
         async function getDayData(date) { return await dbGet(`day_${formatDate(date)}`) || { date: formatDate(date), wakeTime: null, seatTime: null, pomodoro: { morning: 0, afternoon: 0, evening: 0 }, exercise: { done: false, minutes: 0 }, gameTime: 0, writing: 0, sleepTime: null, personalGoals: {}, score: 0, isOffDay: false, comment: "" }; }
-        async function saveDayData(date, data) { const dateString = formatDate(date); data.date = dateString; data.score = data.isOffDay ? 0 : await calculateScoreEnhanced(data); await dbSet(`day_${dateString}`, data); 
+        async function saveDayData(date, data) { const dateString = formatDate(date); data.date = dateString; data.score = data.isOffDay ? 0 : await calculateScoreEnhanced(data); await dbSet(`day_${dateString}`, data); await updateSingleCalendarCell(dateString, data); 
             await checkAndUpdateAllQuests(data, date); }
         
 function adjustPomodoro(inputId, change) {
