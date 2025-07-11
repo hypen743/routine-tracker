@@ -5084,7 +5084,7 @@ async function analyzeSentimentAndShowQuote(date, currentComment) {
         }
 
         async function deleteModalData() { if (!confirm("정말로 이 날의 데이터를 삭제하시겠습니까?")) return; await dbDelete(`day_${formatDate(selectedDate)}`); closeDayModal(); await renderCalendar(); }
-    async function renderModalPersonalGoals(data) {
+        async function renderModalPersonalGoals(data) {
     const allGoals = await getPersonalGoals();
     const goals = allGoals.filter(goal => {
         if (goal.isCompleted) return false;
@@ -5100,16 +5100,35 @@ async function analyzeSentimentAndShowQuote(date, currentComment) {
     }
     
     const personalGoalsData = data.personalGoals || {};
-    container.innerHTML = goals.map(goal => {
+    const goalElements = await Promise.all(goals.map(async (goal) => {
         const achieved = personalGoalsData[goal.id] || 0;
+        
+        // 동적 목표량 계산
+        const {
+            remainingDays,
+            remainingAmount,
+            totalAchieved,
+            currentDailyTarget
+        } = await calculateCurrentDailyTarget(goal);
+        
         let percentage = 0;
+        let displayTarget = currentDailyTarget; // 동적으로 계산된 목표량 사용
+        
         if (goal.type === 'negative') {
-            const usageRatio = achieved / goal.dailyTarget;
+            const usageRatio = achieved / displayTarget;
             percentage = Math.max(0, (1 - usageRatio) * 100);
         } else {
-            percentage = Math.min(100, (achieved / goal.dailyTarget) * 100);
+            percentage = Math.min(100, (achieved / displayTarget) * 100);
         }
+        
         const emoji = getEmojiForAchievement(percentage);
+        
+        // 목표량 변경 알림 (원래 목표량과 현재 목표량이 다른 경우)
+        const targetChangeInfo = goal.dailyTarget !== currentDailyTarget 
+            ? `<div style="font-size: 10px; color: #e74c3c; margin-top: 2px;">
+                 ⚠️ 자동조정: ${goal.dailyTarget} → ${currentDailyTarget}${goal.unit}/일
+               </div>` 
+            : '';
         
         return `<div class="personal-goal-checkbox">
             <div style="flex: 1;">
@@ -5117,7 +5136,11 @@ async function analyzeSentimentAndShowQuote(date, currentComment) {
                     ${goal.name} ${goal.type === 'negative' ? '(줄이기)' : '(늘리기)'}
                 </div>
                 <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
-                    ${goal.type === 'negative' ? '목표: ' + goal.dailyTarget + goal.unit + ' 이하' : '목표: ' + goal.dailyTarget + goal.unit}
+                    ${goal.type === 'negative' ? '목표: ' + displayTarget + goal.unit + ' 이하' : '목표: ' + displayTarget + goal.unit}
+                    ${targetChangeInfo}
+                </div>
+                <div style="font-size: 10px; color: #888; margin-bottom: 6px;">
+                    남은 기간: ${remainingDays}일 | 남은 양: ${remainingAmount}${goal.unit}
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <button type="button" class="goal-adjust-btn" onclick="adjustPersonalGoal('${goal.id}', -1)" style="width: 28px; height: 28px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: bold; color: #666;">−</button>
@@ -5131,9 +5154,11 @@ async function analyzeSentimentAndShowQuote(date, currentComment) {
                     <span style="font-size: 11px; color: #666;">${goal.unit}</span>
                 </div>
             </div>
-            <div style="font-size: 16px; margin-left: 8px;">${emoji}</div>
+            <div style="font-size: 16px; margin-left: 8px;" class="goal-emoji">${emoji}</div>
         </div>`;
-    }).join('');
+    }));
+    
+    container.innerHTML = goalElements.join('');
 }
 
 // 개인 목표 +/- 버튼 조정 함수
@@ -5150,11 +5175,36 @@ function adjustPersonalGoal(goalId, change) {
 }
 
 // 개인 목표 값 업데이트 함수
-function updatePersonalGoalValue(goalId, value) {
+async function updatePersonalGoalValue(goalId, value) {
     if (!currentModalData.personalGoals) {
         currentModalData.personalGoals = {};
     }
     currentModalData.personalGoals[goalId] = parseInt(value) || 0;
+    
+    // 동적 목표량으로 퍼센티지 재계산
+    const goals = await getPersonalGoals();
+    const goal = goals.find(g => g.id === goalId);
+    if (goal) {
+        const achieved = parseInt(value) || 0;
+        const { currentDailyTarget } = await calculateCurrentDailyTarget(goal);
+        
+        let percentage = 0;
+        if (goal.type === 'negative') {
+            const usageRatio = achieved / currentDailyTarget;
+            percentage = Math.max(0, (1 - usageRatio) * 100);
+        } else {
+            percentage = Math.min(100, (achieved / currentDailyTarget) * 100);
+        }
+        
+        const emoji = getEmojiForAchievement(percentage);
+        const container = document.querySelector(`#personalGoal_${goal.id}`).closest('.personal-goal-checkbox');
+        if (container) {
+            const emojiElement = container.querySelector('.goal-emoji');
+            if (emojiElement) {
+                emojiElement.textContent = emoji;
+            }
+        }
+    }
     
     // 점수 업데이트 및 자동 저장
     updateModalScore();
@@ -5284,7 +5334,9 @@ function toggleGoalType(type) {
 
         async function deletePersonalGoal(goalId) { if (!confirm('이 목표를 삭제하시겠습니까?')) return; const goals = (await getPersonalGoals()).filter(goal => goal.id !== goalId); await dbSet('personalGoals', goals); await renderPersonalGoalsList(); }
         function switchGoalTab(tabName) { currentGoalTab = tabName; document.querySelectorAll('.goal-tab').forEach(tab => tab.classList.remove('active')); document.querySelector(`.goal-tab[onclick="switchGoalTab('${tabName}')"]`).classList.add('active'); renderPersonalGoalsList(); }
-    async function renderPersonalGoalsList() { 
+
+// 집중목표 페이지의 renderPersonalGoalsList 함수 - 예쁜 UI 버전
+async function renderPersonalGoalsList() { 
     const allGoals = await getPersonalGoals(); 
     
     // 마감일 체크 및 자동 완료 처리
@@ -5318,14 +5370,23 @@ function toggleGoalType(type) {
     const container = document.getElementById('personalGoalsList'); 
     
     if (goals.length === 0) { 
-        const emptyMessage = currentGoalTab === 'active' ? '<p>아직 진행 중인 목표가 없습니다.</p><p>아래에서 새 목표를 추가해보세요!</p>' : '<p>완료된 목표가 없습니다.</p><p>목표를 달성하고 완료 표시를 해보세요!</p>'; 
-        container.innerHTML = `<div class="empty-goals"><div style="font-size: 48px; margin-bottom: 15px;">🎯</div>${emptyMessage}</div>`; 
+        const emptyMessage = currentGoalTab === 'active' ? 
+            '<p style="color: #8e8e93; margin-bottom: 8px;">아직 진행 중인 목표가 없습니다</p><p style="color: #8e8e93; font-size: 14px;">아래에서 새 목표를 추가해보세요! 🎯</p>' : 
+            '<p style="color: #8e8e93; margin-bottom: 8px;">완료된 목표가 없습니다</p><p style="color: #8e8e93; font-size: 14px;">목표를 달성하고 완료 표시를 해보세요! 🏆</p>'; 
+        
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 16px; margin: 20px 0;">
+                <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.8;">🎯</div>
+                ${emptyMessage}
+            </div>
+        `; 
+        
         const addGoalSection = document.querySelector('#personalGoalsPage .modal-input-group');
         if (addGoalSection) { addGoalSection.style.display = currentGoalTab === 'completed' ? 'none' : 'block'; }
         return; 
     } 
     
-    container.innerHTML = await Promise.all(goals.map(async goal => {
+    const goalElements = await Promise.all(goals.map(async goal => {
         const totalAchieved = await calculateTotalAchieved(goal);
         const progressPercentage = goal.type === 'positive' 
             ? Math.min(100, (totalAchieved / goal.totalAmount) * 100)
@@ -5333,37 +5394,158 @@ function toggleGoalType(type) {
         
         const daysLeft = goal.deadline ? Math.max(0, Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
         
-        let statusText = '';
-        if (goal.isCompleted) {
-            const successEmoji = goal.success ? '✅' : '❌';
-            const successText = goal.success ? '성공' : '실패';
-            statusText = `완료 (${successText} ${successEmoji}) - ${new Date(goal.completedAt).toLocaleDateString('ko-KR')}`;
-        } else {
-            statusText = `D-${daysLeft} (하루 ${goal.dailyTarget}${goal.unit})`;
+        // 동적 목표량 계산 (진행 중인 목표만)
+        let currentDailyTarget = goal.dailyTarget;
+        let targetChangeInfo = '';
+        
+        if (!goal.isCompleted && goal.deadline) {
+            const dynamicData = await calculateCurrentDailyTarget(goal);
+            currentDailyTarget = dynamicData.currentDailyTarget;
+            
+            if (goal.dailyTarget !== currentDailyTarget) {
+                const isIncreased = currentDailyTarget > goal.dailyTarget;
+                targetChangeInfo = `
+                    <div style="background: ${isIncreased ? '#fff3cd' : '#d1edff'}; border: 1px solid ${isIncreased ? '#ffeaa7' : '#bee5eb'}; border-radius: 8px; padding: 8px; margin-top: 8px; font-size: 12px;">
+                        <div style="display: flex; align-items: center; gap: 6px; color: ${isIncreased ? '#b7791f' : '#0c5460'}; font-weight: 600;">
+                            ${isIncreased ? '⚡' : '🎯'} 목표량 자동 조정됨
+                        </div>
+                        <div style="color: #6c757d; margin-top: 4px; font-size: 11px;">
+                            ${goal.dailyTarget}${goal.unit}/일 → ${currentDailyTarget}${goal.unit}/일 
+                            | 남은 기간: ${dynamicData.remainingDays}일 | 남은 양: ${dynamicData.remainingAmount}${goal.unit}
+                        </div>
+                    </div>
+                `;
+            }
         }
         
-        const actionButton = currentGoalTab === 'active' ? 
-            `<button class="complete-btn" onclick="completePersonalGoal('${goal.id}')">완료</button>` : 
-            `<button class="reopen-btn" onclick="reopenPersonalGoal('${goal.id}')">재개</button>`; 
+        // 진행률에 따른 색상 결정
+        let progressColor = '#e9ecef';
+        let progressFillColor = '#6c757d';
+        if (progressPercentage >= 80) {
+            progressFillColor = '#28a745';
+        } else if (progressPercentage >= 60) {
+            progressFillColor = '#17a2b8';
+        } else if (progressPercentage >= 40) {
+            progressFillColor = '#ffc107';
+        } else {
+            progressFillColor = '#dc3545';
+        }
         
-        return `<div class="personal-goal-item">
-            <div class="personal-goal-header">
-                <div class="personal-goal-name">
-                    ${goal.name} ${goal.type === 'negative' ? '👎' : '👍'} 
-                    (${totalAchieved}/${goal.totalAmount}${goal.unit} - ${Math.round(progressPercentage)}%)
+        // 목표 타입에 따른 이모지와 색상
+        const typeEmoji = goal.type === 'positive' ? '📈' : '📉';
+        const typeColor = goal.type === 'positive' ? '#28a745' : '#dc3545';
+        const typeBg = goal.type === 'positive' ? '#d4edda' : '#f8d7da';
+        
+        let statusInfo = '';
+        if (goal.isCompleted) {
+            const successEmoji = goal.success ? '🎉' : '😔';
+            const successText = goal.success ? '목표 달성!' : '미달성';
+            const successColor = goal.success ? '#28a745' : '#dc3545';
+            statusInfo = `
+                <div style="background: ${goal.success ? '#d4edda' : '#f8d7da'}; color: ${successColor}; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    ${successEmoji} ${successText}
                 </div>
-                <div class="personal-goal-actions" style="display:flex; gap:5px;">
-                    ${currentGoalTab === 'active' ? `<button class="edit-btn" onclick="editPersonalGoal('${goal.id}')">수정</button>` : ''}
-                    ${actionButton}
-                    <button class="delete-btn" onclick="deletePersonalGoal('${goal.id}')">삭제</button>
+            `;
+        } else if (daysLeft === 0) {
+            statusInfo = `
+                <div style="background: #f8d7da; color: #721c24; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                    ⏰ 기간 만료
+                </div>
+            `;
+        } else if (daysLeft <= 3) {
+            statusInfo = `
+                <div style="background: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                    ⚠️ ${daysLeft}일 남음
+                </div>
+            `;
+        } else {
+            statusInfo = `
+                <div style="background: #d1ecf1; color: #0c5460; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                    📅 ${daysLeft}일 남음
+                </div>
+            `;
+        }
+        
+        return `
+            <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e9ecef; transition: all 0.3s ease;">
+                <!-- 헤더 -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                            <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #212529;">${goal.name}</h3>
+                            <div style="background: ${typeBg}; color: ${typeColor}; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                ${typeEmoji} ${goal.type === 'positive' ? '늘리기' : '줄이기'}
+                            </div>
+                        </div>
+                        <div style="font-size: 13px; color: #6c757d; margin-bottom: 8px;">
+                            현재 하루 목표: <strong style="color: #495057;">${currentDailyTarget}${goal.unit}</strong>
+                        </div>
+                    </div>
+                    <div>${statusInfo}</div>
+                </div>
+                
+                <!-- 진행률 바 -->
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 14px; font-weight: 600; color: #495057;">진행률</span>
+                        <span style="font-size: 14px; font-weight: 700; color: ${progressFillColor};">${Math.round(progressPercentage)}%</span>
+                    </div>
+                    <div style="background: ${progressColor}; border-radius: 10px; height: 8px; overflow: hidden;">
+                        <div style="background: ${progressFillColor}; height: 100%; border-radius: 10px; width: ${progressPercentage}%; transition: all 0.3s ease;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: #6c757d;">
+                        <span>현재: ${totalAchieved}${goal.unit}</span>
+                        <span>목표: ${goal.totalAmount}${goal.unit}</span>
+                    </div>
+                </div>
+                
+                ${targetChangeInfo}
+                
+                <!-- 액션 버튼들 -->
+                <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+                    ${!goal.isCompleted ? `
+                        <button onclick="editPersonalGoal('${goal.id}')" style="background: #f8f9fa; color: #495057; border: 1px solid #dee2e6; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex: 1; min-width: 70px;">
+                            ✏️ 수정
+                        </button>
+                        <button onclick="completePersonalGoal('${goal.id}')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex: 1; min-width: 70px;">
+                            ✅ 완료
+                        </button>
+                    ` : `
+                        <button onclick="reopenPersonalGoal('${goal.id}')" style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex: 1; min-width: 70px;">
+                            🔄 재진행
+                        </button>
+                    `}
+                    <button onclick="deletePersonalGoal('${goal.id}')" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex: 1; min-width: 70px;">
+                        🗑️ 삭제
+                    </button>
                 </div>
             </div>
-            <small style="color: #666;">${statusText}</small>
-        </div>`;
-    })).then(results => results.join('')); 
+        `; 
+    }));
     
+    container.innerHTML = goalElements.join(''); 
     const addGoalSection = document.querySelector('#personalGoalsPage .modal-input-group');
     if (addGoalSection) { addGoalSection.style.display = currentGoalTab === 'completed' ? 'none' : 'block'; }
+}
+
+async function calculateCurrentDailyTarget(goal) {
+    const now = new Date();
+    const deadline = new Date(goal.deadline);
+    const remainingDays = Math.max(1, Math.ceil((deadline - now) / (1000 * 60 * 60 * 24)));
+    
+    // 총 달성량 계산
+    const totalAchieved = await calculateTotalAchieved(goal);
+    const remainingAmount = Math.max(0, goal.totalAmount - totalAchieved);
+    
+    // 남은 양을 남은 날짜로 나누어 현재 하루 목표량 계산
+    const currentDailyTarget = Math.ceil(remainingAmount / remainingDays);
+    
+    return {
+        remainingDays,
+        remainingAmount,
+        totalAchieved,
+        currentDailyTarget: currentDailyTarget
+    };
 }
 
         async function reopenPersonalGoal(goalId) { if (!confirm('이 목표를 다시 진행 중으로 변경하시겠습니까?')) return; const goals = await getPersonalGoals(); const goal = goals.find(g => g.id === goalId); if (goal) { goal.isCompleted = false; delete goal.completedAt; await dbSet('personalGoals', goals); await renderPersonalGoalsList(); } }
