@@ -3921,7 +3921,7 @@ function updateSyncStatus(message) {
         async function getPersonalGoals() { return await dbGet('personalGoals') || []; }
         function getEmojiForAchievement(percentage) { if (percentage <= 20) return '😡'; if (percentage <= 40) return '😢'; if (percentage <= 60) return '😐'; if (percentage <= 80) return '😊'; return '🎉'; }
         async function getDayData(date) { return await dbGet(`day_${formatDate(date)}`) || { date: formatDate(date), wakeTime: null, seatTime: null, pomodoro: { morning: 0, afternoon: 0, evening: 0 }, exercise: { done: false, minutes: 0 }, gameTime: 0, writing: 0, sleepTime: null, personalGoals: {}, score: 0, isOffDay: false, comment: "" }; }
-        async function saveDayData(date, data) { const dateString = formatDate(date); data.date = dateString; data.score = data.isOffDay ? 0 : await calculateScoreEnhanced(data); await dbSet(`day_${dateString}`, data); await updateSingleCalendarCell(dateString, data); 
+        async function saveDayData(date, data) { const dateString = formatDate(date); data.date = dateString; data.score = data.isOffDay ? 0 : await calculateScoreEnhanced(data); await dbSet(`day_${dateString}`, data); 
             await checkAndUpdateAllQuests(data, date); }
         
 function adjustPomodoro(inputId, change) {
@@ -4081,21 +4081,142 @@ function showPage(pageId) {
 }
         async function saveGoalAndContinue() { const targetTime = document.getElementById('targetWakeTime').value; if (!/^\d{2}:\d{2}$/.test(targetTime)) { alert('목표 기상 시간을 HH:MM 형식으로 입력해주세요!'); return; } await dbSet('targetWakeTime', targetTime); await initApp(); }
         async function saveWakeTimeFromPrompt() { 
-            const wakeTime = document.getElementById('promptWakeTime').value; 
-            if (!/^\d{2}:\d{2}$/.test(wakeTime)) { alert('기상 시간을 HH:MM 형식으로 입력해주세요!'); return; } 
-            const today = new Date(); 
-            const todayData = await getDayData(today); 
-            todayData.wakeTime = wakeTime; 
-            await saveDayData(today, todayData); 
-            sessionStorage.setItem('promptSkipped', 'true'); 
-            showPage('calendarPage'); 
+    try {
+        const wakeTime = document.getElementById('promptWakeTime').value; 
+        
+        // 1. 입력값 검증
+        if (!wakeTime || !/^\d{2}:\d{2}$/.test(wakeTime)) { 
+            alert('기상 시간을 HH:MM 형식으로 입력해주세요! (예: 07:30)'); 
+            return; 
+        } 
+        
+        // 2. 오늘 데이터 가져오기 및 업데이트
+        const today = new Date(); 
+        const todayData = await getDayData(today); 
+        todayData.wakeTime = wakeTime; 
+        
+        // 3. 데이터 저장
+        await saveDayData(today, todayData); 
+        
+        // 4. 세션 스토리지 설정
+        sessionStorage.setItem('promptSkipped', 'true'); 
+        
+        // 5. ✅ 페이지 전환 (즉시)
+        showPage('calendarPage'); 
+        
+        // 6. ✅ 캘린더 렌더링 (에러 처리 포함)
+        try {
             await renderCalendar(); 
+        } catch (renderError) {
+            console.error('캘린더 렌더링 오류:', renderError);
+            // 렌더링 실패해도 페이지는 전환되게 함
+            await fallbackCalendarRender();
         }
-        async function skipToCalendar() { 
-            sessionStorage.setItem('promptSkipped', 'true'); 
-            showPage('calendarPage'); 
+        
+        // 7. 백그라운드 작업
+        setTimeout(async () => {
+            try {
+                await triggerDailyQuests();
+            } catch (questError) {
+                console.error('퀘스트 업데이트 오류:', questError);
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('기상시간 저장 오류:', error);
+        alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+}
+
+async function fallbackCalendarRender() {
+    try {
+        // 기본 캘린더 구조만 렌더링
+        updateMonthYearDisplay();
+        
+        const grid = document.getElementById('calendarGrid');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        
+        // 요일 헤더 추가
+        const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+        weekdays.forEach(day => {
+            const headerCell = document.createElement('div');
+            headerCell.className = 'calendar-header-cell';
+            headerCell.textContent = day;
+            grid.appendChild(headerCell);
+        });
+        
+        // 기본 캘린더 셀들 생성
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // 이전 달의 빈 셀들
+        for (let i = 0; i < firstDay; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'calendar-cell empty';
+            grid.appendChild(emptyCell);
+        }
+        
+        // 현재 달의 셀들
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cellDate = new Date(year, month, day);
+            const cell = document.createElement('div');
+            cell.className = 'calendar-cell';
+            cell.dataset.date = formatDate(cellDate);
+            
+            cell.innerHTML = `
+                <div class="cell-top-icons"></div>
+                <div class="cell-day-number">${day}</div>
+                <div class="cell-bottom-info"></div>
+            `;
+            
+            // 클릭 이벤트
+            cell.onclick = () => openDayModal(cellDate);
+            
+            // 오늘 날짜 표시
+            const today = new Date();
+            if (formatDate(cellDate) === formatDate(today)) {
+                cell.classList.add('today');
+            }
+            
+            grid.appendChild(cell);
+        }
+        
+        console.log('대체 캘린더 렌더링 완료');
+        
+    } catch (error) {
+        console.error('대체 캘린더 렌더링도 실패:', error);
+    }
+}
+
+async function skipToCalendar() { 
+    try {
+        sessionStorage.setItem('promptSkipped', 'true'); 
+        showPage('calendarPage'); 
+        
+        try {
             await renderCalendar();
+        } catch (renderError) {
+            console.error('캘린더 렌더링 오류:', renderError);
+            await fallbackCalendarRender();
         }
+        
+        setTimeout(async () => {
+            try {
+                await triggerDailyQuests();
+            } catch (questError) {
+                console.error('퀘스트 업데이트 오류:', questError);
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('skipToCalendar 오류:', error);
+    }
+}
+
         async function changeMonth(direction) { currentDate.setMonth(currentDate.getMonth() + direction); updateMonthYearDisplay(); await renderCalendar(); }
         async function backToCalendar() { showPage('calendarPage'); await renderCalendar(); }
         async function updateSettings() {
